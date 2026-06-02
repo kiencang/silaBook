@@ -8,9 +8,9 @@ import { ToastService } from '../../core/toast.service';
   imports: [FormsModule, MatIconModule],
   template: `
     <div class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 selection:bg-indigo-100 selection:text-indigo-900 animate-fade-in" tabindex="0" (click)="triggerClose()" (keydown.escape)="triggerClose()" [class.animate-fade-out]="isClosing()">
-      <div role="presentation" tabindex="-1" (keyup.enter)="$event.stopPropagation()" class="bg-white rounded-2xl shadow-xl w-full max-w-xl overflow-hidden flex flex-col max-h-[90vh] animate-zoom-in cursor-default" (click)="$event.stopPropagation()" [class.animate-zoom-out]="isClosing()">
+      <div role="presentation" tabindex="-1" (keyup.enter)="$event.stopPropagation()" class="bg-white rounded-2xl shadow-xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh] animate-zoom-in cursor-default" (click)="$event.stopPropagation()" [class.animate-zoom-out]="isClosing()">
         <!-- Header -->
-        <div class="p-6 border-b border-zinc-100 flex justify-between items-start bg-white">
+        <div class="p-6 border-b border-zinc-100 flex justify-between items-center bg-white">
           <div class="flex items-center space-x-2.5">
             <div class="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600">
               <mat-icon>vpn_key</mat-icon>
@@ -19,7 +19,7 @@ import { ToastService } from '../../core/toast.service';
               <h3 class="text-lg font-bold text-zinc-900 tracking-tight">Cấu hình Gemini API Key</h3>
             </div>
           </div>
-          <button (click)="triggerClose()" class="text-zinc-400 hover:text-zinc-650 transition-colors p-1 rounded-lg hover:bg-zinc-100 cursor-pointer border-none bg-transparent">
+          <button (click)="triggerClose()" class="w-8 h-8 flex items-center justify-center text-zinc-400 hover:text-zinc-650 transition-colors rounded-lg hover:bg-zinc-100 cursor-pointer border-none bg-transparent focus:outline-none">
             <mat-icon>close</mat-icon>
           </button>
         </div>
@@ -27,7 +27,7 @@ import { ToastService } from '../../core/toast.service';
         <!-- Content -->
         <div class="p-6 space-y-5 overflow-y-auto bg-white">
           <p class="text-sm text-zinc-600 leading-relaxed">
-            Để sử dụng công cụ dịch sách này bạn cần khóa API Key của Gemini. Bạn hãy vào link "Nơi lấy API Key Gemini" để thao tác. Bạn chỉ cần tạo Key miễn phí là đủ dùng.
+            Để sử dụng công cụ dịch sách này bạn cần khóa API Key của Gemini. Bạn hãy vào link "Nơi lấy API Key Gemini" để thao tác. Key miễn phí chỉ có hiệu lực nếu bạn dùng <a href="https://aistudio.google.com/apps/d25924ff-35f1-42f7-9543-f142ecfe037a?showAssistant=true&showPreview=true" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:text-indigo-750 hover:underline">ứng dụng qua AI Studio</a>, với ai dùng trên silabook.wpsila.com, chỉ Key trả phí mới dùng được. Hãy remix ứng dụng trên AI Studio để dùng miễn phí.
           </p>
 
           <!-- Status badge/links -->
