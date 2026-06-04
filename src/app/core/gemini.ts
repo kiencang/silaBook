@@ -21,6 +21,9 @@ export function parseGeminiError(e: unknown): string {
   if (msg.toLowerCase().includes('timeout')) {
     return 'Lỗi: Quá thời gian chờ (Timeout).';
   }
+  if (msg.toLowerCase().includes('bytestring') || msg.toLowerCase().includes('failed to construct \'headers\'')) {
+    return 'Lỗi định dạng API Key: API Key cá nhân bạn nhập chứa ký tự không hợp lệ (như dấu cách, tiếng Việt có dấu). Vui lòng vào Cài đặt để kiểm tra lại.';
+  }
   if (msg.toLowerCase().includes('overloaded') || msg.toLowerCase().includes('503')) {
     return 'Lỗi: Máy chủ cung cấp AI đang quá tải, vui lòng thử lại sau một chút.';
   }

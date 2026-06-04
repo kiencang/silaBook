@@ -8,23 +8,37 @@ export async function processEpubContent(file: File, turndownService: TurndownSe
   const buffer = await file.arrayBuffer();
   try {
     await zip.loadAsync(buffer);
-  } catch (error: any) {
-    throw new Error(`Đã xảy ra lỗi khi đọc file EPUB. File có thể bị lỗi, chưa tải xuống hoàn tất hoặc không đúng định dạng zip: ${error.message}`);
+  } catch (error: unknown) {
+    const errorMsg = error instanceof Error ? error.message : String(error);
+    throw new Error(`Đã xảy ra lỗi khi đọc file EPUB. File có thể bị lỗi, chưa tải xuống hoàn tất hoặc không đúng định dạng zip: ${errorMsg}`);
   }
   
   // 1. Read META-INF/container.xml
+  let opfPath = '';
   const containerFile = zip.file('META-INF/container.xml');
-  if (!containerFile) throw new Error('File không đúng chuẩn EPUB (thiếu META-INF/container.xml)');
-  const containerXml = await containerFile.async('text');
-  
   const parser = new DOMParser();
-  const containerDoc = parser.parseFromString(containerXml, 'application/xml');
-  // Using getElementsByTagName to avoid namespace issues
-  const rootfileNode = containerDoc.getElementsByTagName('rootfile')[0];
-  if (!rootfileNode) throw new Error('File không đúng chuẩn EPUB (thiếu rootfile)');
   
-  const opfPath = rootfileNode.getAttribute('full-path');
-  if (!opfPath) throw new Error('File không đúng chuẩn EPUB (thiếu đường dẫn OPF)');
+  if (containerFile) {
+    try {
+      const containerXml = await containerFile.async('text');
+      const containerDoc = parser.parseFromString(containerXml, 'application/xml');
+      // Sử dụng localName để bỏ qua namespace an toàn nhất
+      const rootfileNode = Array.from(containerDoc.getElementsByTagName('*')).find(el => el.localName === 'rootfile');
+      if (rootfileNode) {
+        opfPath = rootfileNode.getAttribute('full-path') || '';
+      }
+    } catch (e) {
+      console.warn('Lỗi đọc container.xml', e);
+    }
+  }
+  
+  // Fallback 1: Tìm thủ công file .opf nếu container.xml bị thiếu/hỏng
+  if (!opfPath) {
+    const allFiles = Object.keys(zip.files);
+    opfPath = allFiles.find(name => name.toLowerCase().endsWith('.opf')) || '';
+  }
+
+  if (!opfPath) throw new Error('File không đúng chuẩn EPUB (không tìm thấy tệp OPF)');
   
   // Get base path of OPF to resolve relative paths
   const lastSlashIndex = opfPath.lastIndexOf('/');
@@ -35,17 +49,17 @@ export async function processEpubContent(file: File, turndownService: TurndownSe
   if (!opfFile) throw new Error('File không đúng chuẩn EPUB (không tìm thấy tệp OPF)');
   const opfXml = await opfFile.async('text');
   const opfDoc = parser.parseFromString(opfXml, 'application/xml');
+  const allOpfElements = Array.from(opfDoc.getElementsByTagName('*'));
   
   // 3. Get manifest items
-  const manifestItems = opfDoc.getElementsByTagName('item');
+  const manifestItems = allOpfElements.filter(el => el.localName === 'item');
   const itemsMap = new Map<string, string>(); // id -> href
   
   const imagesStore: Record<string, string> = {};
   const hrefToImgId = new Map<string, string>();
   let imgCounter = 0;
   
-  for (let i = 0; i < manifestItems.length; i++) {
-    const item = manifestItems[i];
+  for (const item of manifestItems) {
     const id = item.getAttribute('id');
     const href = item.getAttribute('href');
     const mediaType = item.getAttribute('media-type');
@@ -55,70 +69,102 @@ export async function processEpubContent(file: File, turndownService: TurndownSe
     // Check if it's an image
     if (href && mediaType && mediaType.startsWith('image/')) {
        const imgFilePath = opfBasePath + decodeURIComponent(href);
-       const imgFile = zip.file(imgFilePath);
+       let imgFile = zip.file(imgFilePath);
+       
+       // Fallback 2: Trích xuất ảnh theo đường dẫn mờ (fuzzy)
+       if (!imgFile) {
+          const imgFileName = imgFilePath.split('/').pop();
+          if (imgFileName) {
+              const fallbackPath = Object.keys(zip.files).find(name => name.endsWith(`/${imgFileName}`) || name === imgFileName);
+              if (fallbackPath) imgFile = zip.file(fallbackPath);
+          }
+       }
+
        if (imgFile) {
-          const base64Data = await imgFile.async('base64');
-          const dataUrl = `data:${mediaType};base64,${base64Data}`;
-          const placeholderId = `SILA_IMG_${imgCounter++}`;
-          imagesStore[placeholderId] = dataUrl;
-          hrefToImgId.set(href, placeholderId);
+          try {
+            const base64Data = await imgFile.async('base64');
+            const dataUrl = `data:${mediaType};base64,${base64Data}`;
+            const placeholderId = `SILA_IMG_${imgCounter++}`;
+            imagesStore[placeholderId] = dataUrl;
+            hrefToImgId.set(href, placeholderId);
+            // Lưu key phụ để tra cứu dễ hơn
+            const rawFilename = href.split('/').pop();
+            if (rawFilename) hrefToImgId.set(rawFilename, placeholderId);
+          } catch (e) {
+            console.warn(`Lỗi load ảnh: ${href}`, e);
+          }
        }
     }
   }
   
   // 4. Get spine items
-  const spineItems = opfDoc.getElementsByTagName('itemref');
+  const spineItems = allOpfElements.filter(el => el.localName === 'itemref');
   
   let fullMarkdown = '';
   
-  for (let i = 0; i < spineItems.length; i++) {
-      const idref = spineItems[i].getAttribute('idref');
+  for (const spineItem of spineItems) {
+      const idref = spineItem.getAttribute('idref');
       if (!idref) continue;
       
       const href = itemsMap.get(idref);
       if (!href) continue;
       
-      let decodedHref = decodeURIComponent(href);
+      const decodedHref = decodeURIComponent(href);
       const filePath = opfBasePath + decodedHref;
       
-      const htmlFile = zip.file(filePath);
-      if (!htmlFile) continue;
+      let htmlFile = zip.file(filePath);
       
-      const htmlContent = await htmlFile.async('text');
-      let processedHtml = preprocessHtmlStr(htmlContent);
-      
-      // Replace image src in HTML
-      const pDoc = parser.parseFromString(processedHtml, 'text/html');
-      const imgs = pDoc.getElementsByTagName('img');
-      for (let j = 0; j < imgs.length; j++) {
-         const src = imgs[j].getAttribute('src');
-         if (src) {
-             // src might be relative to the html file, e.g. `../images/cover.jpg`
-             // we need to resolve it relative to OPF base path
-             // OPF base path `OEBPS/` + HTML file path `text/chap1.html`
-             // Let's resolve the path relative to html file path
-             let resolvedPath = '';
-             let htmlDirPath = decodedHref.substring(0, decodedHref.lastIndexOf('/') + 1);
-             // handle ../ and ./
-             let parts = (htmlDirPath + src).split('/');
-             let finalParts: string[] = [];
-             for (let p of parts) {
-                 if (p === '..') finalParts.pop();
-                 else if (p !== '.' && p !== '') finalParts.push(p);
-             }
-             let finalHref = finalParts.join('/');
-             // check if it's in our map
-             const placeholderId = hrefToImgId.get(finalHref);
-             if (placeholderId) {
-                imgs[j].setAttribute('src', placeholderId);
-             }
+      // Fallback 3: Tìm fuzzy match file HTML nếu URL có lỗi
+      if (!htmlFile) {
+         const fallbackHtml = Object.keys(zip.files).find(name => name.endsWith(decodedHref) || name.endsWith(href));
+         if (fallbackHtml) {
+             htmlFile = zip.file(fallbackHtml);
          }
       }
-      processedHtml = pDoc.body.innerHTML || pDoc.documentElement.innerHTML;
       
-      const markdown = turndownService.turndown(processedHtml);
-      if (markdown.trim()) {
-          fullMarkdown += (fullMarkdown ? '\n\n---\n\n' : '') + markdown;
+      if (!htmlFile) continue;
+      
+      try {
+        const htmlContent = await htmlFile.async('text');
+        let processedHtml = preprocessHtmlStr(htmlContent);
+        
+        // Replace image src in HTML
+        const pDoc = parser.parseFromString(processedHtml, 'text/html');
+        const imgs = Array.from(pDoc.getElementsByTagName('img'));
+        for (const img of imgs) {
+           const src = img.getAttribute('src');
+           if (src) {
+               const htmlDirPath = decodedHref.substring(0, decodedHref.lastIndexOf('/') + 1);
+               const parts = (htmlDirPath + src).split('/');
+               const finalParts: string[] = [];
+               for (const p of parts) {
+                   if (p === '..') finalParts.pop();
+                   else if (p !== '.' && p !== '') finalParts.push(p);
+               }
+               const finalHref = finalParts.join('/');
+               
+               let placeholderId = hrefToImgId.get(finalHref);
+               
+               // Fallback 4: Lấy trực tiếp từ tên file nếu sai path
+               if (!placeholderId) {
+                   const bareFilename = src.split('/').pop();
+                   if (bareFilename) placeholderId = hrefToImgId.get(bareFilename);
+               }
+               
+               if (placeholderId) {
+                  img.setAttribute('src', placeholderId);
+               }
+           }
+        }
+        processedHtml = pDoc.body.innerHTML || pDoc.documentElement.innerHTML;
+        
+        const markdown = turndownService.turndown(processedHtml);
+        if (markdown.trim()) {
+            fullMarkdown += (fullMarkdown ? '\n\n---\n\n' : '') + markdown;
+        }
+      } catch (err) {
+        // Fallback 5: Bắt lỗi từng tệp HTML, không chết nguyên EPUB
+        console.warn(`Lỗi khi trích xuất trang ${filePath}`, err);
       }
   }
   

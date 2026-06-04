@@ -137,6 +137,12 @@ export class ApiKeyModal {
   saveKey() {
     const trimmed = this.apiKey.trim();
     if (!trimmed) return;
+    
+    if (!/^[a-zA-Z0-9_\-]+$/.test(trimmed)) {
+      this.toast.error('API Key không hợp lệ. Hãy đảm bảo bạn không dán nhầm chữ tiếng Việt có dấu, khoảng trắng hay ký tự đặc biệt.');
+      return;
+    }
+
     if (typeof window !== 'undefined') {
       localStorage.setItem('user_gemini_api_key', trimmed);
       window.dispatchEvent(new Event('api-key-changed'));
