@@ -5,6 +5,10 @@ Tất cả những thay đổi đáng chú ý của dự án kiencang/Book-silaT
 Định dạng dựa trên [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 và dự án này tuân thủ [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.0.73]- 2026-06-06
+### Fixed
+- Thêm tính năng tải file PDF;
+
 ## [v1.0.72]- 2026-06-04
 ### Fixed
 - Nới lỏng hơn việc phân giải, trích xuất EPUB;
