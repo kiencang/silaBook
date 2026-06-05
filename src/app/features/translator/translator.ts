@@ -109,16 +109,30 @@ import { ChapterItemComponent } from './components/chapter-item';
         </div>
         
         @if (translationState() === 'all') {
-          <button 
-            (click)="store.exportProjectToHtml()"
-            [disabled]="store.isTranslatingAny()"
-            [class.opacity-50]="store.isTranslatingAny()"
-            [class.cursor-not-allowed]="store.isTranslatingAny()"
-            class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium shadow-sm transition-colors flex items-center space-x-2 disabled:hover:bg-green-600 shrink-0"
-          >
-            <mat-icon>download</mat-icon>
-            <span>Download bản dịch</span>
-          </button>
+          <div class="flex items-center space-x-2 shrink-0">
+            <button 
+              (click)="store.exportProjectToPdf()"
+              [disabled]="store.isTranslatingAny()"
+              [class.opacity-50]="store.isTranslatingAny()"
+              [class.cursor-not-allowed]="store.isTranslatingAny()"
+              class="bg-rose-600 hover:bg-rose-700 text-white px-4 py-2 rounded-lg font-medium shadow-sm transition-colors flex items-center space-x-2 disabled:hover:bg-rose-600"
+              title="Tải về định dạng PDF"
+            >
+              <mat-icon>picture_as_pdf</mat-icon>
+              <span>Tải PDF</span>
+            </button>
+            <button 
+              (click)="store.exportProjectToHtml()"
+              [disabled]="store.isTranslatingAny()"
+              [class.opacity-50]="store.isTranslatingAny()"
+              [class.cursor-not-allowed]="store.isTranslatingAny()"
+              class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium shadow-sm transition-colors flex items-center space-x-2 disabled:hover:bg-green-600"
+              title="Tải về định dạng HTML"
+            >
+              <mat-icon>html</mat-icon>
+              <span>Tải HTML</span>
+            </button>
+          </div>
         }
       </div>
 

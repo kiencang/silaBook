@@ -1,3 +1,43 @@
+export const PRINT_PDF_STYLES = `
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-size: 14pt;
+  line-height: 1.6;
+  color: #111;
+  background-color: #FFF;
+  margin: 0;
+  padding: 0;
+}
+.content-wrapper {
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+}
+h1, h2, h3, h4, h5, h6 { color: #000; margin-top: 1.5em; margin-bottom: 0.5em; page-break-after: avoid; }
+h1 { font-size: 24pt; }
+h2 { font-size: 18pt; }
+blockquote { border-left: 4px solid #DFDFDF; padding-left: 1rem; color: #444; margin-left: 0; }
+img { max-width: 100%; height: auto; page-break-inside: avoid; }
+ul, ol, li { page-break-inside: avoid; }
+table { page-break-inside: avoid; }
+@page {
+  size: auto;
+  margin: 20mm;
+  @bottom-center {
+    content: counter(page);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-size: 10pt;
+    color: #666;
+  }
+}
+@media print {
+  body {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
+`;
+
 export const OFFLINE_READER_STYLES = `
 /* CSS variables for theme */
 :root {

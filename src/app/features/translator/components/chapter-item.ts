@@ -67,7 +67,7 @@ import { ToastService } from '../../../core/toast.service';
 import { getConfiguredMarked } from '../../../core/marked-setup';
 import { ReaderStore } from '../../../core/reader.store';
 import { GeminiClient } from '../../../core/gemini';
-import { OFFLINE_READER_SCRIPT, OFFLINE_READER_STYLES, OFFLINE_READER_TOOLBAR_HTML } from '../../../core/html-export.util';
+import { OFFLINE_READER_SCRIPT, OFFLINE_READER_STYLES, OFFLINE_READER_TOOLBAR_HTML, PRINT_PDF_STYLES } from '../../../core/html-export.util';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 @Component({
@@ -217,8 +217,11 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
                 <h5 class="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Bản dịch</h5>
                 @if (chapter().translatedText) {
                   <div class="flex items-center gap-2">
-                    <button (click)="downloadHtml()" class="tooltip-trigger flex items-center justify-center p-1.5 text-zinc-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-md transition-colors" title="Tải xuống HTML">
-                      <mat-icon class="!w-4 !h-4 !text-[16px]">download</mat-icon>
+                    <button (click)="downloadPdf()" class="tooltip-trigger flex items-center justify-center p-1.5 text-zinc-400 hover:text-rose-600 hover:bg-rose-50 rounded-md transition-colors" title="Tải xuống PDF">
+                      <mat-icon class="!w-4 !h-4 !text-[16px]">picture_as_pdf</mat-icon>
+                    </button>
+                    <button (click)="downloadHtml()" class="tooltip-trigger flex items-center justify-center p-1.5 text-zinc-400 hover:text-green-600 hover:bg-green-50 rounded-md transition-colors" title="Tải xuống HTML">
+                      <mat-icon class="!w-4 !h-4 !text-[16px]">html</mat-icon>
                     </button>
                     <button (click)="openBilingualFullscreen()" class="tooltip-trigger flex items-center justify-center p-1.5 text-zinc-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-md transition-colors" title="Đọc song ngữ">
                       <mat-icon class="!w-4 !h-4 !text-[16px]">vertical_split</mat-icon>
@@ -933,6 +936,53 @@ export class ChapterItemComponent {
     }
   }
 
+  downloadPdf() {
+    const text = this.chapter().translatedText;
+    if (!text) return;
+
+    try {
+      const htmlBody = getConfiguredMarked().parse(text);
+      const title = this.chapter().title || `Phần ${this.index() + 1}`;
+      const htmlDoc = `<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>${this.store.currentProjectName()}_${title}_silaBook_vi</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+${PRINT_PDF_STYLES}
+</style>
+</head>
+<body>
+<div class="content-wrapper">
+${htmlBody}
+</div>
+<script>
+  window.onload = () => {
+    setTimeout(() => {
+      window.print();
+    }, 500);
+  };
+</script>
+</body>
+</html>`;
+
+      const blob = new Blob([htmlDoc], { type: 'text/html;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      
+      const newWindow = window.open(url, '_blank');
+      if (!newWindow) {
+        this.toast.error('Vui lòng cho phép popup để nhận PDF');
+        return;
+      }
+      this.toast.success('Đang tạo bản PDF chuẩn bị tải...');
+    } catch (e: unknown) {
+      console.error('Error opening PDF print:', e);
+      this.toast.error('Có lỗi xảy ra khi tải xuống PDF.');
+    }
+  }
+
   downloadHtml() {
     const text = this.chapter().translatedText;
     if (!text) return;
@@ -947,7 +997,7 @@ export class ChapterItemComponent {
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="x-sila-project-id" content="${this.store.currentProjectId()}">
 <meta name="x-sila-chapter-id" content="${this.chapter().id}">
-<title>${title}</title>
+<title>${this.store.currentProjectName()}_${title}_silaBook_vi</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Lexend:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 ${OFFLINE_READER_STYLES}
@@ -966,7 +1016,7 @@ ${OFFLINE_READER_SCRIPT}
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `${this.store.currentProjectName()}_${title}_vi.html`;
+      a.download = `${this.store.currentProjectName()}_${title}_silaBook_vi.html`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);

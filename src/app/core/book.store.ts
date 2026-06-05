@@ -3,7 +3,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { DbService, Project, ProjectMeta, SplitSettings } from './db';
 import { ToastService } from './toast.service';
 import { getConfiguredMarked } from './marked-setup';
-import { OFFLINE_READER_SCRIPT, OFFLINE_READER_STYLES, OFFLINE_READER_TOOLBAR_HTML } from './html-export.util';
+import { OFFLINE_READER_SCRIPT, OFFLINE_READER_STYLES, OFFLINE_READER_TOOLBAR_HTML, PRINT_PDF_STYLES } from './html-export.util';
 
 export interface TranslationVersion {
   versionNumber: number;
@@ -492,11 +492,84 @@ export class BookStore {
     this.chapters.set([]);
   }
 
+  async exportProjectToPdf(project?: Project) {
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    const name = project ? project.name : this.currentProjectName();
+    const chaps = project ? project.chapters : this.chapters();
+    const tempImages = window.__SILA_IMAGES__;
+    if (project) {
+      window.__SILA_IMAGES__ = project.images;
+    }
+
+    let combinedMarkdown = '';
+    for (const c of chaps) {
+      let chapterMarkdown = c.status === 'done' && c.translatedText ? c.translatedText : c.originalText;
+      if (chapterMarkdown) {
+        // Preprocess footnotes to make them unique per chapter
+        chapterMarkdown = chapterMarkdown.replace(/\[\^([^\]]+)\]/g, `[^${c.id}-$1]`);
+        combinedMarkdown += chapterMarkdown + '\n\n';
+      }
+    }
+
+    try {
+      let htmlBody = '';
+      try {
+        htmlBody = await getConfiguredMarked().parse(combinedMarkdown);
+      } finally {
+        if (project) {
+          window.__SILA_IMAGES__ = tempImages;
+        }
+      }
+      const htmlDoc = `<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>${name}_silaBook_vi</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+${PRINT_PDF_STYLES}
+</style>
+</head>
+<body>
+<div class="content-wrapper">
+${htmlBody}
+</div>
+<script>
+  window.onload = () => {
+    setTimeout(() => {
+      window.print();
+    }, 500);
+  };
+</script>
+</body>
+</html>`;
+
+      const blob = new Blob([htmlDoc], { type: 'text/html;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      
+      const newWindow = window.open(url, '_blank');
+      if (!newWindow) {
+        this.toastService.error('Vui lòng cho phép popup để nhận PDF');
+        return;
+      }
+      this.toastService.success('Đang tạo bản PDF chuẩn bị tải...');
+    } catch (e: unknown) {
+      console.error('Error opening PDF print:', e);
+      this.toastService.error('Lỗi khi tải PDF');
+    }
+  }
+
   async exportProjectToHtml(project?: Project) {
     if (!isPlatformBrowser(this.platformId)) return;
 
     const name = project ? project.name : this.currentProjectName();
     const chaps = project ? project.chapters : this.chapters();
+    const tempImages = window.__SILA_IMAGES__;
+    if (project) {
+      window.__SILA_IMAGES__ = project.images;
+    }
 
     let combinedMarkdown = '';
     for (const c of chaps) {
@@ -510,7 +583,14 @@ export class BookStore {
     }
 
     try {
-      const htmlBody = await getConfiguredMarked().parse(combinedMarkdown);
+      let htmlBody = '';
+      try {
+        htmlBody = await getConfiguredMarked().parse(combinedMarkdown);
+      } finally {
+        if (project) {
+          window.__SILA_IMAGES__ = tempImages;
+        }
+      }
       const htmlDoc = `<!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -518,7 +598,7 @@ export class BookStore {
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="x-sila-project-id" content="${this.currentProjectId()}">
 <meta name="x-sila-chapter-id" content="full">
-<title>${name}</title>
+<title>${name}_silaBook_vi</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Lexend:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 ${OFFLINE_READER_STYLES}
@@ -537,7 +617,7 @@ ${OFFLINE_READER_SCRIPT}
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `${name}_silaTranslator_vi.html`;
+      a.download = `${name}_silaBook_vi.html`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);

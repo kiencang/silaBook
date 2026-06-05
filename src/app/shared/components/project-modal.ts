@@ -109,8 +109,11 @@ import { DatePipe } from '@angular/common';
                       </div>
                     } @else {
                       @if (getProgress(p)?.percentage === 100) {
-                        <button (click)="exportProject(p, $event)" class="px-4 py-2 w-full bg-green-50 hover:bg-green-100 text-green-700 rounded-lg text-sm font-medium transition-colors border border-green-200 shadow-sm text-center flex items-center justify-center gap-1.5">
-                          <span class="material-icons text-[18px]">download</span> Download sách
+                        <button (click)="exportProjectToHtml(p, $event)" class="px-4 py-2 w-full bg-green-50 hover:bg-green-100 text-green-700 rounded-lg text-sm font-medium transition-colors border border-green-200 shadow-sm text-center flex items-center justify-center gap-1.5" title="Tải về định dạng HTML">
+                          <span class="material-icons text-[18px]">html</span> Tải HTML
+                        </button>
+                        <button (click)="exportProjectToPdf(p, $event)" class="px-4 py-2 w-full bg-rose-50 hover:bg-rose-100 text-rose-700 rounded-lg text-sm font-medium transition-colors border border-rose-200 shadow-sm text-center flex items-center justify-center gap-1.5" title="Tải về định dạng PDF">
+                          <span class="material-icons text-[18px]">picture_as_pdf</span> Tải PDF
                         </button>
                       }
                       <button (click)="exportProjectData(p, $event)" class="px-4 py-2 w-full bg-purple-50 hover:bg-purple-100 text-purple-700 rounded-lg text-sm font-medium transition-colors border border-purple-200 shadow-sm text-center flex items-center justify-center gap-1.5" title="Xuất toàn bộ dữ liệu dự án (JSON)">
@@ -205,7 +208,17 @@ export class ProjectModal implements OnInit {
     this.confirmingDeleteId.set(null);
   }
 
-  async exportProject(p: Project, event: Event) {
+  async exportProjectToPdf(p: Project, event: Event) {
+    event.stopPropagation();
+    const fullProject = await this.db.getProject(p.id);
+    if (!fullProject) {
+      this.toast.error('Dữ liệu dự án bị lỗi, không thể xuất bản');
+      return;
+    }
+    this.store.exportProjectToPdf(fullProject);
+  }
+
+  async exportProjectToHtml(p: Project, event: Event) {
     event.stopPropagation();
     const fullProject = await this.db.getProject(p.id);
     if (!fullProject) {
