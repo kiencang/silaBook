@@ -86,3 +86,25 @@ Công cụ này có thể được sử dụng cho mục đích nghiên cứu v�
 
 silaBook cũng như người phát triển nó không đưa ra bất kỳ bảo đảm rõ ràng hay ngụ ý nào, cũng như không tuyên bố rằng công cụ sẽ vận hành hoàn hảo, chính xác hoặc cập nhật. Người phát triển sẽ không chịu trách nhiệm cho bất kỳ tổn thất hay thiệt hại nào phát sinh trực tiếp hoặc gián tiếp liên quan đến hoặc phát sinh từ việc sử dụng công cụ này.
 
+## Ghi công
+
+Ứng dụng được phát triển tối ưu hoàn toàn ở phía Client-side (Trình duyệt). Một số thư viện quan trọng mà ứng dụng này dùng:
+
+### 1. Khung Phát Triển Chính (Core Engine)
+*   **[Angular](https://angular.dev/)**: Khung ứng dụng web đơn trang (SPA) mạnh mẽ.
+
+### 2. Giao Diện
+*   **[Tailwind CSS](https://tailwindcss.com/)**: Framework utility-first CSS hiện đại hỗ trợ xây dựng giao diện.
+*   **[Angular Material Icons](https://material.angular.io/)**: Cung cấp hệ thống icon.
+*   **[Motion (Vanilla JS)](https://motion.dev/)**: Thư viện xử lý hiệu ứng chuyển động mượt mà, gia tăng trải nghiệm kéo thả và chuyển trang sinh động.
+
+### 3. Xử Lý & Xuất Bản Tài Liệu (Document Processing)
+*   **[docx](https://docx.js.org/)**: Thư viện chuyên dụng tạo cấu trúc tài liệu Word (`.docx`), hoạt động hoàn toàn phía client.
+*   **[pdf-lib](https://pdf-lib.js.org/)**: Dùng để chia tách PDF thành các chunk (đoạn) để dễ xử lý hơn.
+*   **[JSZip](https://stuk.github.io/jszip/)**: Công cụ nén và đóng gói thư mục sách điện tử EPUB (`.epub`) ngay trên trình duyệt.
+*   **[Marked & marked-footnote](https://marked.js.org/)**: Chuyển Markdown sang cấu trúc HTML, có hỗ trợ ghi chú chân trang (footnotes).
+*   **[Turndown](https://github.com/mixmark-io/turndown)**: Chuyển đổi ngược các định dạng HTML thành cú pháp Markdown.
+
+### 4. Lưu Trữ Nội Bộ (Local Database & Storage)
+*   **[idb (IndexedDB Wrapper)](https://github.com/jakearchibald/idb)**: Thư viện wrap IndexedDB, hỗ trợ xử lý các tác vụ liên quan đến IndexedDB tốt hơn. Toàn bộ dữ liệu sách được lưu cục bộ tại trình duyệt là thông qua IndexedDB.
+
