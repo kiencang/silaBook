@@ -111,26 +111,48 @@ import { ChapterItemComponent } from './components/chapter-item';
         @if (translationState() === 'all') {
           <div class="flex items-center space-x-2 shrink-0">
             <button 
+              (click)="store.exportProjectToEpub()"
+              [disabled]="store.isTranslatingAny()"
+              [class.opacity-50]="store.isTranslatingAny()"
+              [class.cursor-not-allowed]="store.isTranslatingAny()"
+              class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded-lg font-medium shadow-sm transition-colors flex items-center space-x-1.5 disabled:bg-indigo-400"
+              title="Tải về định dạng sách EPUB"
+            >
+              <mat-icon>menu_book</mat-icon>
+              <span>EPUB</span>
+            </button>
+            <button 
+              (click)="store.exportProjectToDocx()"
+              [disabled]="store.isTranslatingAny()"
+              [class.opacity-50]="store.isTranslatingAny()"
+              [class.cursor-not-allowed]="store.isTranslatingAny()"
+              class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg font-medium shadow-sm transition-colors flex items-center space-x-1.5 disabled:bg-blue-400"
+              title="Tải về định dạng Word (DOCX)"
+            >
+              <mat-icon>description</mat-icon>
+              <span>DOCX</span>
+            </button>
+            <button 
               (click)="store.exportProjectToPdf()"
               [disabled]="store.isTranslatingAny()"
               [class.opacity-50]="store.isTranslatingAny()"
               [class.cursor-not-allowed]="store.isTranslatingAny()"
-              class="bg-rose-600 hover:bg-rose-700 text-white px-4 py-2 rounded-lg font-medium shadow-sm transition-colors flex items-center space-x-2 disabled:hover:bg-rose-600"
+              class="bg-rose-600 hover:bg-rose-700 text-white px-3 py-2 rounded-lg font-medium shadow-sm transition-colors flex items-center space-x-1.5 disabled:bg-rose-400"
               title="Tải về định dạng PDF"
             >
               <mat-icon>picture_as_pdf</mat-icon>
-              <span>Tải PDF</span>
+              <span>PDF</span>
             </button>
             <button 
               (click)="store.exportProjectToHtml()"
               [disabled]="store.isTranslatingAny()"
               [class.opacity-50]="store.isTranslatingAny()"
               [class.cursor-not-allowed]="store.isTranslatingAny()"
-              class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium shadow-sm transition-colors flex items-center space-x-2 disabled:hover:bg-green-600"
-              title="Tải về định dạng HTML"
+              class="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-lg font-medium shadow-sm transition-colors flex items-center space-x-1.5 disabled:bg-green-400"
+              title="Tải về định dạng trang web HTML"
             >
               <mat-icon>html</mat-icon>
-              <span>Tải HTML</span>
+              <span>HTML</span>
             </button>
           </div>
         }

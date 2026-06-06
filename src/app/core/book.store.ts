@@ -3,6 +3,8 @@ import { isPlatformBrowser } from '@angular/common';
 import { DbService, Project, ProjectMeta, SplitSettings } from './db';
 import { ToastService } from './toast.service';
 import { getConfiguredMarked } from './marked-setup';
+import { EpubExporter } from './epub-export.util';
+import { DocxExporter } from './docx-export.util';
 import { OFFLINE_READER_SCRIPT, OFFLINE_READER_STYLES, OFFLINE_READER_TOOLBAR_HTML, PRINT_PDF_STYLES } from './html-export.util';
 
 export interface TranslationVersion {
@@ -626,6 +628,78 @@ ${OFFLINE_READER_SCRIPT}
     } catch (e: unknown) {
       console.error('Error exporting to HTML:', e);
       this.toastService.error(this.toastService.Messages.EXPORT_HTML_ERROR);
+    }
+  }
+
+  async exportProjectToEpub(project?: Project) {
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    this.toastService.success('Đang tạo bản EPUB để tải...');
+    try {
+      const name = project ? project.name : this.currentProjectName();
+      const chaps = project ? project.chapters : this.chapters();
+
+      let combinedMarkdown = '';
+      for (const c of chaps) {
+        let chapterMarkdown = c.status === 'done' && c.translatedText ? c.translatedText : c.originalText;
+        if (chapterMarkdown) {
+          chapterMarkdown = chapterMarkdown.replace(/\[\^([^\]]+)\]/g, `[^${c.id}-$1]`);
+          combinedMarkdown += chapterMarkdown + '\n\n';
+        }
+      }
+
+      // EPUB images
+      const imagesInfo = project && project.images ? project.images : window.__SILA_IMAGES__;
+
+      const blob = await EpubExporter.generateEpub(name || 'Untitled', combinedMarkdown, imagesInfo);
+      
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${name}_silaBook_vi.epub`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (e: unknown) {
+      console.error('Error exporting to EPUB:', e);
+      this.toastService.error('Lỗi khi tạo file EPUB');
+    }
+  }
+
+  async exportProjectToDocx(project?: Project) {
+    if (!isPlatformBrowser(this.platformId)) return;
+
+    this.toastService.success('Đang tạo bản DOCX để tải...');
+    try {
+      const name = project ? project.name : this.currentProjectName();
+      const chaps = project ? project.chapters : this.chapters();
+
+      let combinedMarkdown = '';
+      for (const c of chaps) {
+        let chapterMarkdown = c.status === 'done' && c.translatedText ? c.translatedText : c.originalText;
+        if (chapterMarkdown) {
+          chapterMarkdown = chapterMarkdown.replace(/\[\^([^\]]+)\]/g, `[^${c.id}-$1]`);
+          combinedMarkdown += chapterMarkdown + '\n\n';
+        }
+      }
+
+      // DOCX images
+      const imagesInfo = project && project.images ? project.images : window.__SILA_IMAGES__;
+
+      const blob = await DocxExporter.generateDocx(name || 'Untitled', combinedMarkdown, imagesInfo);
+      
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${name}_silaBook_vi.docx`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (e: unknown) {
+      console.error('Error exporting to DOCX:', e);
+      this.toastService.error('Lỗi khi tạo file DOCX');
     }
   }
 }

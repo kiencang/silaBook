@@ -193,7 +193,7 @@ import { processHtmlContent, getTurndownService } from './html.util';
                 <h3 class="text-lg font-medium text-zinc-900">Tải lên cuốn sách cần dịch</h3>
                 <p class="text-sm text-zinc-500 mt-1">Click chọn hoặc kéo thả vào đây.</p>
                 <div class="flex flex-wrap gap-2 justify-center mt-4">
-                  <span class="px-2 py-1 bg-zinc-100 group-hover:bg-zinc-200 text-zinc-600 group-hover:text-zinc-900 text-xs rounded-md font-mono transition-colors">EPUB (30MB)</span>
+                  <span class="px-2 py-1 bg-zinc-100 group-hover:bg-zinc-200 text-zinc-600 group-hover:text-zinc-900 text-xs rounded-md font-mono transition-colors">EPUB (50MB)</span>
                   <span class="px-2 py-1 bg-zinc-100 group-hover:bg-zinc-200 text-zinc-600 group-hover:text-zinc-900 text-xs rounded-md font-mono transition-colors">HTML (10MB)</span>
                   <span class="px-2 py-1 bg-zinc-100 group-hover:bg-zinc-200 text-zinc-600 group-hover:text-zinc-900 text-xs rounded-md font-mono transition-colors">PDF (50MB)</span>
                   <span class="px-2 py-1 bg-zinc-100 group-hover:bg-zinc-200 text-zinc-600 group-hover:text-zinc-900 text-xs rounded-md font-mono transition-colors">TXT (5MB)</span>
@@ -424,7 +424,7 @@ export class Uploader {
        'md': 5 * 1024 * 1024,
        'html': 10 * 1024 * 1024,
        'htm': 10 * 1024 * 1024,
-       'epub': 30 * 1024 * 1024,
+       'epub': 50 * 1024 * 1024,
        'pdf': 50 * 1024 * 1024,
     };
 

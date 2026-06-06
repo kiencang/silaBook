@@ -23,6 +23,7 @@
     "@angular/ssr": "^21.0.0",
     "@google/genai": "^1.27.0",
     "@tailwindcss/typography": "^0.5.19",
+    "docx": "^9.7.1",
     "express": "^5.1.0",
     "idb": "^8.0.3",
     "jszip": "^3.10.1",

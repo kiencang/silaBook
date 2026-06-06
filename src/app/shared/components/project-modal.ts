@@ -44,7 +44,7 @@ import { DatePipe } from '@angular/common';
           } @else {
             <div class="grid gap-4">
               @for (p of projects(); track p.id) {
-                <div class="border border-zinc-200 rounded-xl p-4 hover:border-indigo-300 hover:shadow-md transition-all group flex flex-col sm:flex-row justify-between sm:items-center gap-4 bg-white relative overflow-hidden"
+                <div class="border border-zinc-200 rounded-xl p-4 hover:border-indigo-300 hover:shadow-md transition-all group flex flex-col gap-4 bg-white relative overflow-hidden"
                      [class.ring-2]="store.currentProjectId() === p.id" [class.ring-indigo-500]="store.currentProjectId() === p.id">
                   
                   @if (store.currentProjectId() === p.id) {
@@ -54,79 +54,92 @@ import { DatePipe } from '@angular/common';
                     </div>
                   }
                   
-                  <div class="flex-1 cursor-pointer min-w-0" [class.mt-2]="store.currentProjectId() === p.id" role="button" tabindex="0" (keydown.enter)="loadProject(p.id)" (click)="loadProject(p.id)">
-                    <div class="flex items-start justify-between gap-3">
-                      <h3 class="font-bold text-base text-zinc-900 mb-1 line-clamp-2" [title]="p.name">
-                        {{p.name}}
-                      </h3>
-                    </div>
-                    <div class="flex flex-col gap-2 w-full mt-2">
-                      <div class="flex flex-wrap items-center text-sm text-zinc-500 gap-x-4 gap-y-2">
-                        <span class="flex items-center" title="Ngày tạo ban đầu"><span class="material-icons text-[16px] mr-1 opacity-70">add_circle_outline</span> {{p.createdAt | date:'dd/MM/yy HH:mm'}}</span>
-                        @if (p.importedAt) {
-                          <span class="flex items-center text-indigo-600 font-medium" title="Ngày nhập vào máy"><span class="material-icons text-[16px] mr-1">publish</span> {{p.importedAt | date:'dd/MM/yy HH:mm'}}</span>
-                        }
+                  <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 w-full">
+                    <div class="flex-1 cursor-pointer min-w-0" [class.mt-2]="store.currentProjectId() === p.id" role="button" tabindex="0" (keydown.enter)="loadProject(p.id)" (click)="loadProject(p.id)">
+                      <div class="flex items-start justify-between gap-3">
+                        <h3 class="font-bold text-base text-zinc-900 mb-1 line-clamp-2" [title]="p.name">
+                          {{p.name}}
+                        </h3>
                       </div>
-                      <div class="flex flex-wrap items-center text-sm text-zinc-500 gap-x-4 gap-y-2">
-                        <span class="flex items-center">
-                          <span class="w-2 h-2 rounded-full mr-1.5" 
-                                [class.bg-zinc-400]="p.phase === 1"
-                                [class.bg-yellow-400]="p.phase === 2"
-                                [class.bg-purple-500]="p.phase === 3"
-                                [class.bg-indigo-500]="p.phase === 4"
-                                [class.bg-green-500]="p.phase === 5"></span>
-                          Giai đoạn {{p.phase}}: 
-                          {{p.phase === 1 ? 'Tải lên' : (p.phase === 2 ? 'Chia chương' : (p.phase === 3 ? 'Đại từ' : (p.phase === 4 ? 'Từ khó' : 'Dịch thuật')))}}
-                        </span>
-                        @if (p.pdfTaskMeta) {
-                           <span class="flex items-center text-orange-600 bg-orange-50 px-2 py-0.5 rounded text-xs font-medium border border-orange-100 uppercase tracking-wide">
-                             <span class="material-icons !text-[14px] !w-3.5 !h-3.5 mr-1 leading-none flex items-center justify-center">warning</span> {{ p.pdfTaskMeta.chunkCount > 0 ? 'Gián đoạn PDF' : 'PDF' }}
-                           </span>
-                        }
-                      </div>
-                      @if (getProgress(p); as prog) {
-                        <div class="w-full sm:w-2/3 max-w-sm mt-1 mb-1 flex items-center gap-3">
-                          <div class="flex-1 overflow-hidden h-1.5 bg-zinc-200 rounded-full">
-                            <div class="h-full rounded-full transition-all duration-300" [class]="prog.barColorClass" [style.width.%]="prog.percentage"></div>
+                      <div class="flex flex-col gap-2 w-full mt-2">
+                        <div class="flex flex-wrap items-center text-sm text-zinc-500 gap-x-4 gap-y-2">
+                          <span class="flex items-center" title="Ngày tạo ban đầu"><span class="material-icons text-[16px] mr-1 opacity-70">add_circle_outline</span> {{p.createdAt | date:'dd/MM/yy HH:mm'}}</span>
+                          @if (p.importedAt) {
+                            <span class="flex items-center text-indigo-600 font-medium" title="Ngày nhập vào máy"><span class="material-icons text-[16px] mr-1">publish</span> {{p.importedAt | date:'dd/MM/yy HH:mm'}}</span>
+                          }
+                        </div>
+                        <div class="flex flex-wrap items-center text-sm text-zinc-500 gap-x-4 gap-y-2">
+                          <span class="flex items-center">
+                            <span class="w-2 h-2 rounded-full mr-1.5" 
+                                  [class.bg-zinc-400]="p.phase === 1"
+                                  [class.bg-yellow-400]="p.phase === 2"
+                                  [class.bg-purple-500]="p.phase === 3"
+                                  [class.bg-indigo-500]="p.phase === 4"
+                                  [class.bg-green-500]="p.phase === 5"></span>
+                            Giai đoạn {{p.phase}}: 
+                            {{p.phase === 1 ? 'Tải lên' : (p.phase === 2 ? 'Chia chương' : (p.phase === 3 ? 'Đại từ' : (p.phase === 4 ? 'Từ khó' : 'Dịch thuật')))}}
+                          </span>
+                          @if (p.pdfTaskMeta) {
+                             <span class="flex items-center text-orange-600 bg-orange-50 px-2 py-0.5 rounded text-xs font-medium border border-orange-100 uppercase tracking-wide">
+                               <span class="material-icons !text-[14px] !w-3.5 !h-3.5 mr-1 leading-none flex items-center justify-center">warning</span> {{ p.pdfTaskMeta.chunkCount > 0 ? 'Gián đoạn PDF' : 'PDF' }}
+                             </span>
+                          }
+                        </div>
+                        @if (getProgress(p); as prog) {
+                          <div class="w-full sm:w-2/3 max-w-sm mt-1 mb-1 flex items-center gap-3">
+                            <div class="flex-1 overflow-hidden h-1.5 bg-zinc-200 rounded-full">
+                              <div class="h-full rounded-full transition-all duration-300" [class]="prog.barColorClass" [style.width.%]="prog.percentage"></div>
+                            </div>
+                            <span class="text-xs font-bold min-w-[2.5rem] text-right" [class]="prog.textColorClass">{{prog.percentage}}%</span>
                           </div>
-                          <span class="text-xs font-bold min-w-[2.5rem] text-right" [class]="prog.textColorClass">{{prog.percentage}}%</span>
+                        }
+                      </div>
+                    </div>
+                    
+                    <div class="flex sm:flex-col gap-2 min-w-[120px] justify-center">
+                      @if (confirmingDeleteId() === p.id) {
+                        <div class="flex flex-col gap-2 p-2 bg-red-50 rounded-lg border border-red-100 w-full animate-in fade-in duration-200">
+                          <span class="text-xs text-red-700 font-medium text-center">Xóa dự án này?</span>
+                          <div class="flex gap-2">
+                            <button (click)="deleteProject(p.id, $event)" class="flex-1 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-md text-xs font-semibold transition-colors text-center shadow-sm">
+                              Có
+                            </button>
+                            <button (click)="cancelDelete($event)" class="flex-1 py-1.5 bg-zinc-200 hover:bg-zinc-300 text-zinc-800 rounded-md text-xs font-semibold transition-colors text-center shadow-sm">
+                              Không
+                            </button>
+                          </div>
                         </div>
+                      } @else {
+                        <button (click)="exportProjectData(p, $event)" class="px-4 py-2 w-full bg-purple-50 hover:bg-purple-100 text-purple-700 rounded-lg text-sm font-medium transition-colors border border-purple-200 shadow-sm text-center flex items-center justify-center gap-1.5" title="Xuất toàn bộ dữ liệu dự án (JSON)">
+                          <span class="material-icons text-[18px]">save_alt</span> Sao lưu dự án
+                        </button>
+                        <button (click)="loadProject(p.id)" class="px-4 py-2 w-full bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg text-sm font-medium transition-colors border border-indigo-200 shadow-sm text-center flex items-center justify-center gap-1.5">
+                          <span class="material-icons text-[18px]">folder_open</span> Mở dự án
+                        </button>
+                        <button (click)="initiateDelete(p.id, $event)" class="px-4 py-2 w-full bg-red-50 hover:bg-red-100 text-red-600 rounded-lg text-sm font-medium transition-colors border border-red-200 shadow-sm text-center flex items-center justify-center gap-1.5">
+                          <span class="material-icons text-[18px]">delete</span> Xóa bỏ
+                        </button>
                       }
                     </div>
                   </div>
-                  <div class="flex sm:flex-col gap-2 min-w-[120px] justify-center">
-                    @if (confirmingDeleteId() === p.id) {
-                      <div class="flex flex-col gap-2 p-2 bg-red-50 rounded-lg border border-red-100 w-full animate-in fade-in duration-200">
-                        <span class="text-xs text-red-700 font-medium text-center">Xóa dự án này?</span>
-                        <div class="flex gap-2">
-                          <button (click)="deleteProject(p.id, $event)" class="flex-1 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-md text-xs font-semibold transition-colors text-center shadow-sm">
-                            Có
-                          </button>
-                          <button (click)="cancelDelete($event)" class="flex-1 py-1.5 bg-zinc-200 hover:bg-zinc-300 text-zinc-800 rounded-md text-xs font-semibold transition-colors text-center shadow-sm">
-                            Không
-                          </button>
-                        </div>
-                      </div>
-                    } @else {
-                      @if (getProgress(p)?.percentage === 100) {
-                        <button (click)="exportProjectToHtml(p, $event)" class="px-4 py-2 w-full bg-green-50 hover:bg-green-100 text-green-700 rounded-lg text-sm font-medium transition-colors border border-green-200 shadow-sm text-center flex items-center justify-center gap-1.5" title="Tải về định dạng HTML">
-                          <span class="material-icons text-[18px]">html</span> Tải HTML
-                        </button>
-                        <button (click)="exportProjectToPdf(p, $event)" class="px-4 py-2 w-full bg-rose-50 hover:bg-rose-100 text-rose-700 rounded-lg text-sm font-medium transition-colors border border-rose-200 shadow-sm text-center flex items-center justify-center gap-1.5" title="Tải về định dạng PDF">
-                          <span class="material-icons text-[18px]">picture_as_pdf</span> Tải PDF
-                        </button>
-                      }
-                      <button (click)="exportProjectData(p, $event)" class="px-4 py-2 w-full bg-purple-50 hover:bg-purple-100 text-purple-700 rounded-lg text-sm font-medium transition-colors border border-purple-200 shadow-sm text-center flex items-center justify-center gap-1.5" title="Xuất toàn bộ dữ liệu dự án (JSON)">
-                        <span class="material-icons text-[18px]">save_alt</span> Sao lưu dự án
+
+                  @if (getProgress(p)?.percentage === 100) {
+                    <div class="flex flex-wrap items-center gap-2 mt-1 pt-3 border-t border-dashed border-zinc-200" (click)="$event.stopPropagation()">
+                      <span class="text-xs font-medium text-zinc-500 mr-1">Download</span>
+                      <button (click)="exportProjectToEpub(p, $event)" class="px-2 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded text-xs font-semibold transition-colors border border-indigo-200 shadow-sm flex items-center gap-1" title="Tải về định dạng sách EPUB">
+                        <span class="material-icons text-[13px]">menu_book</span>EPUB
                       </button>
-                      <button (click)="loadProject(p.id)" class="px-4 py-2 w-full bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg text-sm font-medium transition-colors border border-indigo-200 shadow-sm text-center flex items-center justify-center gap-1.5">
-                        <span class="material-icons text-[18px]">folder_open</span> Mở dự án
+                      <button (click)="exportProjectToDocx(p, $event)" class="px-2 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded text-xs font-semibold transition-colors border border-blue-200 shadow-sm flex items-center gap-1" title="Tải về định dạng Word (DOCX)">
+                        <span class="material-icons text-[13px]">description</span>DOCX
                       </button>
-                      <button (click)="initiateDelete(p.id, $event)" class="px-4 py-2 w-full bg-red-50 hover:bg-red-100 text-red-600 rounded-lg text-sm font-medium transition-colors border border-red-200 shadow-sm text-center flex items-center justify-center gap-1.5">
-                        <span class="material-icons text-[18px]">delete</span> Xóa bỏ
+                      <button (click)="exportProjectToPdf(p, $event)" class="px-2 py-1 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded text-xs font-semibold transition-colors border border-rose-200 shadow-sm flex items-center gap-1" title="Tải về định dạng PDF">
+                        <span class="material-icons text-[13px]">picture_as_pdf</span>PDF
                       </button>
-                    }
-                  </div>
+                      <button (click)="exportProjectToHtml(p, $event)" class="px-2 py-1 bg-green-50 hover:bg-green-100 text-green-700 rounded text-xs font-semibold transition-colors border border-green-200 shadow-sm flex items-center gap-1" title="Tải về định dạng trang web HTML">
+                        <span class="material-icons text-[13px]">html</span>HTML
+                      </button>
+                    </div>
+                  }
                 </div>
               }
             </div>
@@ -226,6 +239,26 @@ export class ProjectModal implements OnInit {
       return;
     }
     this.store.exportProjectToHtml(fullProject);
+  }
+
+  async exportProjectToEpub(p: Project, event: Event) {
+    event.stopPropagation();
+    const fullProject = await this.db.getProject(p.id);
+    if (!fullProject) {
+      this.toast.error('Dữ liệu dự án bị lỗi, không thể xuất bản');
+      return;
+    }
+    this.store.exportProjectToEpub(fullProject);
+  }
+
+  async exportProjectToDocx(p: Project, event: Event) {
+    event.stopPropagation();
+    const fullProject = await this.db.getProject(p.id);
+    if (!fullProject) {
+      this.toast.error('Dữ liệu dự án bị lỗi, không thể xuất bản');
+      return;
+    }
+    this.store.exportProjectToDocx(fullProject);
   }
 
   async exportProjectData(p: Project, event: Event) {
