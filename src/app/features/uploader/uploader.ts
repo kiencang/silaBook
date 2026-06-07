@@ -157,7 +157,7 @@ import { processHtmlContent, getTurndownService } from './html.util';
           </div>
         } @else {
           <div 
-            class="border-2 border-dashed border-zinc-300 rounded-2xl p-12 text-center hover:bg-zinc-50 hover:border-zinc-400 transition-colors cursor-pointer relative group"
+            class="border-2 border-dashed border-zinc-300 rounded-2xl py-6 px-8 text-center hover:bg-zinc-50 hover:border-zinc-400 transition-colors cursor-pointer relative group"
           role="button"
           tabindex="0"
           (keydown.enter)="fileInput.click()"
@@ -185,26 +185,41 @@ import { processHtmlContent, getTurndownService } from './html.util';
               <p class="text-sm text-zinc-500">Quá trình này có thể mất một lúc tùy thuộc vào dung lượng file.</p>
             </div>
           } @else {
-            <div class="flex flex-col items-center space-y-4">
-              <div class="w-16 h-16 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center group-hover:bg-indigo-100 transition-colors">
-                <mat-icon class="!text-3xl !w-8 !h-8 !flex !items-center !justify-center">upload_file</mat-icon>
+            <div class="flex flex-col items-center space-y-3">
+              <div class="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center group-hover:bg-indigo-100 transition-colors">
+                <mat-icon class="!text-2xl !w-6 !h-6 !flex !items-center !justify-center">upload_file</mat-icon>
               </div>
-              <div>
-                <h3 class="text-lg font-medium text-zinc-900">Tải lên cuốn sách cần dịch</h3>
-                <p class="text-sm text-zinc-500 mt-1">Click chọn hoặc kéo thả vào đây.</p>
-                <div class="flex flex-wrap gap-2 justify-center mt-4">
-                  <span class="px-2 py-1 bg-zinc-100 group-hover:bg-zinc-200 text-zinc-600 group-hover:text-zinc-900 text-xs rounded-md font-mono transition-colors">EPUB (50MB)</span>
-                  <span class="px-2 py-1 bg-zinc-100 group-hover:bg-zinc-200 text-zinc-600 group-hover:text-zinc-900 text-xs rounded-md font-mono transition-colors">HTML (10MB)</span>
-                  <span class="px-2 py-1 bg-zinc-100 group-hover:bg-zinc-200 text-zinc-600 group-hover:text-zinc-900 text-xs rounded-md font-mono transition-colors">PDF (50MB)</span>
-                  <span class="px-2 py-1 bg-zinc-100 group-hover:bg-zinc-200 text-zinc-600 group-hover:text-zinc-900 text-xs rounded-md font-mono transition-colors">TXT (5MB)</span>
-                  <span class="px-2 py-1 bg-zinc-100 group-hover:bg-zinc-200 text-zinc-600 group-hover:text-zinc-900 text-xs rounded-md font-mono transition-colors">MARKDOWN (5MB)</span>
+              <div class="w-full">
+                <h3 class="text-lg font-semibold text-zinc-900">Tải lên cuốn sách cần dịch</h3>
+                <p class="text-xs text-zinc-500 mt-0.5">Click chọn hoặc kéo thả vào đây.</p>
+                <div class="flex flex-wrap gap-1.5 justify-center mt-2.5">
+                  <span class="px-2.5 py-1 bg-zinc-100 group-hover:bg-zinc-200 text-zinc-600 group-hover:text-zinc-900 text-xs rounded font-mono transition-colors">EPUB (50MB)</span>
+                  <span class="px-2.5 py-1 bg-zinc-100 group-hover:bg-zinc-200 text-zinc-600 group-hover:text-zinc-900 text-xs rounded font-mono transition-colors">HTML (10MB)</span>
+                  <span class="px-2.5 py-1 bg-zinc-100 group-hover:bg-zinc-200 text-zinc-600 group-hover:text-zinc-900 text-xs rounded font-mono transition-colors">PDF (50MB)</span>
+                  <span class="px-2.5 py-1 bg-zinc-100 group-hover:bg-zinc-200 text-zinc-600 group-hover:text-zinc-900 text-xs rounded font-mono transition-colors">TXT (5MB)</span>
+                  <span class="px-2.5 py-1 bg-zinc-100 group-hover:bg-zinc-200 text-zinc-600 group-hover:text-zinc-900 text-xs rounded font-mono transition-colors">MARKDOWN (5MB)</span>
                 </div>
-                <div class="mt-5 pt-4 border-t border-zinc-100 flex flex-col items-center gap-1">
+                <div class="mt-4 pt-3 border-t border-zinc-100 flex flex-col items-center gap-1">
                   <p class="text-xs text-zinc-400 flex items-center justify-center gap-1">
                     <mat-icon class="!w-[14px] !h-[14px] !text-[14px]">info</mat-icon>
                     Giới hạn xử lý tối đa: <span class="font-medium text-zinc-500">1M Tokens</span>
                   </p>
-                  <p class="text-xs text-emerald-600 font-medium tracking-tight">Nên ưu tiên định dạng EPUB hoặc HTML nếu có thể.</p>
+                  <p class="text-xs text-zinc-900 font-medium tracking-tight">Nên ưu tiên định dạng EPUB hoặc HTML nếu có thể.</p>
+                  <div class="mt-3 p-3 bg-zinc-100/50 rounded-xl border border-zinc-200/60 max-w-lg w-full mx-auto cursor-default" (click)="$event.stopPropagation()">
+                    <p class="text-xs text-zinc-500 leading-relaxed mb-2.5">
+                      Để giữ lại hình ảnh trong bản dịch, vui lòng sử dụng định dạng <strong>EPUB</strong>. Nếu bạn chỉ có file PDF, bạn có thể chuyển đổi nhanh chóng tại đây:
+                    </p>
+                    <a 
+                      href="https://pdf-2-epub-docx.wpsila.com/" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      class="inline-flex items-center justify-center gap-1.5 bg-white hover:bg-zinc-50 text-emerald-600 hover:text-emerald-700 font-semibold px-4 py-2 rounded-lg border border-zinc-200 hover:border-emerald-200/50 shadow-sm text-xs transition-colors w-full cursor-pointer group/btn"
+                    >
+                      <mat-icon class="!w-[14px] !h-[14px] !text-[14px] flex items-center justify-center text-emerald-500">transform</mat-icon>
+                      <span>pdf-2-epub-docx.wpsila.com</span>
+                      <mat-icon class="!w-[12px] !h-[12px] !text-[12px] flex items-center justify-center text-zinc-400 group-hover/btn:translate-x-0.5 transition-transform">open_in_new</mat-icon>
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>

@@ -13,11 +13,12 @@ import {ToastComponent} from './shared/components/toast.component';
 import {ApiKeyModal} from './shared/components/api-key-modal';
 import {RemixModalComponent} from './shared/components/remix-modal.component';
 import {FooterComponent} from './shared/components/footer.component';
+import {AppsModalComponent} from './shared/components/apps-modal.component';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-root',
-  imports: [Uploader, Splitter, PronounSetup, GlossarySetup, Translator, Home, ProjectModal, EditProjectModal, ToastComponent, MatIconModule, ApiKeyModal, RemixModalComponent, FooterComponent],
+  imports: [Uploader, Splitter, PronounSetup, GlossarySetup, Translator, Home, ProjectModal, EditProjectModal, ToastComponent, MatIconModule, ApiKeyModal, RemixModalComponent, FooterComponent, AppsModalComponent],
   template: `
     <div class="h-screen bg-zinc-50 flex flex-col font-sans overflow-hidden">
       <header class="bg-white border-b border-zinc-200 shrink-0 w-full py-4 px-6 flex items-center justify-between shadow-sm">
@@ -111,7 +112,7 @@ import {FooterComponent} from './shared/components/footer.component';
         </div>
       </main>
 
-      <app-footer (openApiKeyModal)="showApiKeyModal.set(true)" (openRemixModal)="showRemixModal.set(true)" />
+      <app-footer (openApiKeyModal)="showApiKeyModal.set(true)" (openRemixModal)="showRemixModal.set(true)" (openAppsModal)="showAppsModal.set(true)" />
 
       @if (showProjectModal()) {
          <app-project-modal (closeModal)="showProjectModal.set(false)" />
@@ -129,6 +130,10 @@ import {FooterComponent} from './shared/components/footer.component';
          <app-remix-modal (closeModal)="showRemixModal.set(false)" />
       }
 
+      @if (showAppsModal()) {
+         <app-apps-modal (closeModal)="showAppsModal.set(false)" />
+      }
+
       <app-toast />
     </div>
   `
@@ -139,6 +144,7 @@ export class App {
   showEditProjectModal = signal<boolean>(false);
   showApiKeyModal = signal<boolean>(false);
   showRemixModal = signal<boolean>(false);
+  showAppsModal = signal<boolean>(false);
 
   constructor() {
     effect(() => {
