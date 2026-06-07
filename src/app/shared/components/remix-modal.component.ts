@@ -25,7 +25,7 @@ import { MatIconModule } from '@angular/material/icon';
         <!-- Content -->
         <div class="p-6 space-y-5 overflow-y-auto bg-white">
           <p class="text-sm text-zinc-600 leading-relaxed">
-            Chỉ ứng dụng dùng trên AI Studio mới dùng ngưỡng miễn phí thoải mái, hãy remix app này về AI Studio để tận dụng ngưỡng Free từ Gemini. <a href="https://aistudio.google.com/apps/d25924ff-35f1-42f7-9543-f142ecfe037a?showAssistant=true&showPreview=true" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:text-indigo-750 font-medium hover:underline">Vào app</a>, rồi remix như hình bên dưới:
+            Chỉ ứng dụng dùng trên AI Studio mới dùng ngưỡng miễn phí thoải mái, bạn hãy remix app này về AI Studio để tận dụng ngưỡng Free từ Gemini. <a href="https://aistudio.google.com/apps/d25924ff-35f1-42f7-9543-f142ecfe037a?showAssistant=true&showPreview=true" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:text-indigo-750 font-medium hover:underline">Bạn vào app</a>, rồi remix như hình bên dưới:
           </p>
           
           <img src="/remix-silabook.png" alt="Hướng dẫn remix ứng dụng" class="w-full rounded-xl border border-zinc-200 shadow-sm" referrerpolicy="no-referrer" />
