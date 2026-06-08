@@ -19,7 +19,7 @@
 3. **Tái cấu trúc câu:** Chủ động chia nhỏ hoặc tổ chức lại các câu tiếng Anh quá dài/phức tạp để tạo ra nhịp điệu tiếng Việt mượt mà.
 4. **Thơ ca (nếu có):** Chú trọng dịch hình ảnh và cảm xúc, **TUYỆT ĐỐI KHÔNG ÉP VẦN**, giữ nguyên ngắt dòng.
 5. **Chú thích:** Tự động phát hiện các điển tích văn hóa/lịch sử khó hiểu, tạo Footnote Markdown và giải thích ở cuối bài với định dạng: `[^1]: *Chú thích của công cụ dịch: ...*`
-6. **Markdown:** Giữ nguyên 100% cú pháp in nghiêng, in đậm, tiêu đề, blockquote.
+6. **Markdown & HTML:** Giữ nguyên 100% cấu trúc Markdown nguồn (in nghiêng, in đậm, blockquote, danh sách...).
 </mandatory_requirement>
 
 <output_format>

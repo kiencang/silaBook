@@ -2,6 +2,19 @@ import TurndownService from 'turndown';
 
 const turndownService = new TurndownService({ headingStyle: 'atx' }).remove(['style', 'script', 'head', 'meta', 'title', 'noscript']);
 
+turndownService.addRule('stripInternalLinks', {
+  filter: 'a',
+  replacement: function (content, node) {
+    const href = (node as HTMLElement).getAttribute('href');
+    // Nếu không có href, hoặc là liên kết nội bộ/tương đối -> loại bỏ liên kết, chỉ giữ content
+    if (!href || (!href.startsWith('http://') && !href.startsWith('https://') && !href.startsWith('mailto:'))) {
+      return content;
+    }
+    const title = (node as HTMLElement).title ? ` "${(node as HTMLElement).title}"` : '';
+    return href ? `[${content}](${href}${title})` : content;
+  }
+});
+
 export function preprocessHtmlStr(htmlContent: string): string {
   const parser = new DOMParser();
   const doc = parser.parseFromString(htmlContent, 'text/html');

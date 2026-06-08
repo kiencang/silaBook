@@ -5,7 +5,12 @@ Tất cả những thay đổi đáng chú ý của dự án kiencang/Book-silaT
 Định dạng dựa trên [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 và dự án này tuân thủ [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [v1.0.76]- 2026-06-07
+## [v1.0.77]- 2026-06-09
+### Fixed
+- Loại bỏ các liên kết nội bộ khỏi dữ liệu gốc. Nó đặc biệt gây nhiễu và khó xử lý;
+- Vô hiệu hóa 3 button ở phía trái footer trong quá trình dịch;
+
+## [v1.0.76]- 2026-06-08
 ### Fixed
 - Chuyển đổi sang docx tốt hơn (chú thích chuẩn hơn);
 

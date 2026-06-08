@@ -112,7 +112,7 @@ import {AppsModalComponent} from './shared/components/apps-modal.component';
         </div>
       </main>
 
-      <app-footer (openApiKeyModal)="showApiKeyModal.set(true)" (openRemixModal)="showRemixModal.set(true)" (openAppsModal)="showAppsModal.set(true)" />
+      <app-footer [isDisabled]="store.isBusy()" (openApiKeyModal)="showApiKeyModal.set(true)" (openRemixModal)="showRemixModal.set(true)" (openAppsModal)="showAppsModal.set(true)" />
 
       @if (showProjectModal()) {
          <app-project-modal (closeModal)="showProjectModal.set(false)" />

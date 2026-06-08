@@ -272,6 +272,10 @@ function getImageDimensions(dataUrl: string): Promise<{ width: number; height: n
 
 export class DocxExporter {
   static async generateDocx(title: string, markdownContent: string, images?: Record<string, string>): Promise<Blob> {
+    // Strip ONLY internal Markdown links (but not images) and internal HTML links before processing
+    let cleanedContent = markdownContent.replace(/(^|[^!])\[([^\]]+)\]\(#[^)]*\)/g, '$1$2');
+    cleanedContent = cleanedContent.replace(/<a\b[^>]*href=["']#[^"']*["'][^>]*>(.*?)<\/a>/gi, '$1');
+
     const activeImages: Record<string, { dataUrl: string; width: number; height: number }> = {};
     if (images) {
       const promises = Object.entries(images).map(async ([key, dataUrl]) => {
@@ -301,7 +305,7 @@ export class DocxExporter {
 
     const children: any[] = [];
     
-    const linesRaw = markdownContent.split('\n');
+    const linesRaw = cleanedContent.split('\n');
     const lines: string[] = [];
     const footnoteDefs: Record<string, string> = {};
     for (const line of linesRaw) {
@@ -412,7 +416,10 @@ export class DocxExporter {
         const levelMatch = trimmedLine.match(/^(#{1,6})\s+(.*)$/);
         if (levelMatch) {
           const depth = levelMatch[1].length;
-          const text = levelMatch[2];
+          let text = levelMatch[2];
+          
+          text = text.replace(/\s*\{#[^}]+\}\s*$/, '');
+          
           let headingLevel: any = HeadingLevel.HEADING_1;
           let fontSize = 36;
           let color = "1F497D";

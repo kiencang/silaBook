@@ -128,8 +128,11 @@ export async function processEpubContent(file: File, turndownService: TurndownSe
         const htmlContent = await htmlFile.async('text');
         let processedHtml = preprocessHtmlStr(htmlContent);
         
-        // Replace image src in HTML
+        // Replace image src and rewrite internal links in HTML
         const pDoc = parser.parseFromString(processedHtml, 'text/html');
+
+        // Remove manual internal link generation, Turndown will strip them and keep text only.
+
         const imgs = Array.from(pDoc.getElementsByTagName('img'));
         for (const img of imgs) {
            const src = img.getAttribute('src');
