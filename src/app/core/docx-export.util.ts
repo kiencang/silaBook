@@ -11,7 +11,8 @@ import {
   ImageRun,
   BorderStyle,
   WidthType,
-  VerticalAlign
+  VerticalAlign,
+  FootnoteReferenceRun
 } from 'docx';
 
 function convertDataUrlToUint8Array(dataUrl: string): Uint8Array {
@@ -31,13 +32,42 @@ interface InlineToken {
   bold: boolean;
   italic: boolean;
   code: boolean;
+  footnoteId?: number;
 }
 
-export function tokenizeInline(text: string): InlineToken[] {
+export function tokenizeInline(text: string, getFootnoteId?: (k: string) => number): InlineToken[] {
   const parts: InlineToken[] = [];
   let index = 0;
 
   while (index < text.length) {
+    if (text.startsWith('\\', index)) {
+      if (index + 1 < text.length) {
+        parts.push({
+          text: text[index + 1],
+          bold: false,
+          italic: false,
+          code: false
+        });
+        index += 2;
+        continue;
+      }
+    }
+
+    if (getFootnoteId && text.startsWith('[^', index)) {
+      const end = text.indexOf(']', index + 2);
+      if (end !== -1) {
+        const fnKey = text.substring(index + 2, end);
+        parts.push({
+          text: '',
+          bold: false,
+          italic: false,
+          code: false,
+          footnoteId: getFootnoteId(fnKey)
+        });
+        index = end + 1;
+        continue;
+      }
+    }
     if (text.startsWith('`', index)) {
       const end = text.indexOf('`', index + 1);
       if (end !== -1) {
@@ -125,7 +155,7 @@ export function tokenizeInline(text: string): InlineToken[] {
     let nextIndex = index;
     while (nextIndex < text.length) {
       const char = text[nextIndex];
-      if (char === '`' || char === '*' || char === '_') {
+      if (char === '`' || char === '*' || char === '_' || char === '\\' || (getFootnoteId && char === '[' && text.startsWith('[^', nextIndex))) {
         break;
       }
       nextIndex++;
@@ -153,21 +183,30 @@ export function tokenizeInline(text: string): InlineToken[] {
   return parts;
 }
 
-function createRunsFromText(text: string): TextRun[] {
-  const tokens = tokenizeInline(text);
+interface RunOptions {
+  color?: string;
+  size?: number;
+  italics?: boolean;
+}
+
+function createRunsFromText(text: string, getFootnoteId?: (k: string) => number, opts?: RunOptions): (TextRun | FootnoteReferenceRun)[] {
+  const tokens = tokenizeInline(text, getFootnoteId);
   return tokens.map(token => {
+    if (token.footnoteId) {
+      return new FootnoteReferenceRun(token.footnoteId);
+    }
     return new TextRun({
       text: token.text,
       bold: token.bold || undefined,
-      italics: token.italic || undefined,
+      italics: opts?.italics ?? (token.italic || undefined),
       font: token.code ? "Consolas" : "Calibri",
-      size: token.code ? 19 : 22,
-      color: token.code ? "A855F7" : undefined,
+      size: token.code ? 19 : (opts?.size ?? 22),
+      color: token.code ? "A855F7" : (opts?.color ?? undefined),
     });
   });
 }
 
-function parseMarkdownTable(tableLines: string[]): Table {
+function parseMarkdownTable(tableLines: string[], getFootnoteId?: (k: string) => number): Table {
   const rowsData = tableLines.filter(line => {
     const clean = line.trim();
     if (/^[|:\-\s]+$/.test(clean)) return false;
@@ -186,7 +225,7 @@ function parseMarkdownTable(tableLines: string[]): Table {
       return new TableCell({
         children: [
           new Paragraph({
-            children: createRunsFromText(colText),
+            children: createRunsFromText(colText, getFootnoteId),
             spacing: { before: 80, after: 80 },
           }),
         ],
@@ -261,7 +300,28 @@ export class DocxExporter {
     };
 
     const children: any[] = [];
-    const lines = markdownContent.split('\n');
+    
+    const linesRaw = markdownContent.split('\n');
+    const lines: string[] = [];
+    const footnoteDefs: Record<string, string> = {};
+    for (const line of linesRaw) {
+      const match = line.trim().match(/^\[\^([^\]]+)\]:\s*(.*)$/);
+      if (match) {
+        footnoteDefs[match[1]] = match[2];
+      } else {
+        lines.push(line);
+      }
+    }
+
+    let nextFootnoteId = 1;
+    const footnoteKeyToId: Record<string, number> = {};
+    const getFootnoteId = (key: string) => {
+      if (!footnoteKeyToId[key]) {
+        footnoteKeyToId[key] = nextFootnoteId++;
+      }
+      return footnoteKeyToId[key];
+    };
+
     let idx = 0;
 
     let inCodeBlock = false;
@@ -334,13 +394,13 @@ export class DocxExporter {
           idx++;
         }
         try {
-          children.push(parseMarkdownTable(tableLines));
+          children.push(parseMarkdownTable(tableLines, getFootnoteId));
         } catch {
           tableLines.forEach(l => {
             children.push(
               new Paragraph({
-                children: [new TextRun(l)],
-                spacing: { after: 120 },
+                children: createRunsFromText(l, getFootnoteId),
+            spacing: { after: 120 },
               })
             );
           });
@@ -399,15 +459,10 @@ export class DocxExporter {
         const quoteText = trimmedLine.replace(/^>\s*/, '');
         children.push(
           new Paragraph({
-            children: tokenizeInline(quoteText).map(token => {
-              return new TextRun({
-                text: token.text,
-                bold: token.bold || undefined,
-                italics: true,
-                font: token.code ? "Consolas" : "Calibri",
-                size: token.code ? 19 : 21,
-                color: "4B5563",
-              });
+            children: createRunsFromText(quoteText, getFootnoteId, {
+              italics: true,
+              size: 21,
+              color: "4B5563"
             }),
             indent: { left: 720 },
             spacing: { before: 120, after: 120 },
@@ -421,16 +476,7 @@ export class DocxExporter {
         const bulletText = trimmedLine.substring(2);
         children.push(
           new Paragraph({
-            children: tokenizeInline(bulletText).map(token => {
-              return new TextRun({
-                text: token.text,
-                bold: token.bold || undefined,
-                italics: token.italic || undefined,
-                font: token.code ? "Consolas" : "Calibri",
-                size: token.code ? 19 : 22,
-                color: token.code ? "A855F7" : undefined,
-              });
-            }),
+            children: createRunsFromText(bulletText, getFootnoteId),
             bullet: { level: 0 },
             spacing: { after: 100 },
           })
@@ -452,16 +498,7 @@ export class DocxExporter {
                 font: "Calibri",
                 size: 22,
               }),
-              ...tokenizeInline(ordText).map(token => {
-                return new TextRun({
-                  text: token.text,
-                  bold: token.bold || undefined,
-                  italics: token.italic || undefined,
-                  font: token.code ? "Consolas" : "Calibri",
-                  size: token.code ? 19 : 22,
-                  color: token.code ? "A855F7" : undefined,
-                });
-              }),
+              ...createRunsFromText(ordText, getFootnoteId),
             ],
             indent: { left: 720 },
             spacing: { after: 100 },
@@ -489,16 +526,7 @@ export class DocxExporter {
             if (preText) {
               children.push(
                 new Paragraph({
-                  children: tokenizeInline(preText).map(token => {
-                    return new TextRun({
-                      text: token.text,
-                      bold: token.bold || undefined,
-                      italics: token.italic || undefined,
-                      font: token.code ? "Consolas" : "Calibri",
-                      size: token.code ? 19 : 22,
-                      color: token.code ? "A855F7" : undefined,
-                    });
-                  }),
+                  children: createRunsFromText(preText, getFootnoteId),
                   spacing: { after: 120 },
                 })
               );
@@ -576,16 +604,7 @@ export class DocxExporter {
           if (postText) {
             children.push(
               new Paragraph({
-                children: tokenizeInline(postText).map(token => {
-                  return new TextRun({
-                    text: token.text,
-                    bold: token.bold || undefined,
-                    italics: token.italic || undefined,
-                    font: token.code ? "Consolas" : "Calibri",
-                    size: token.code ? 19 : 22,
-                    color: token.code ? "A855F7" : undefined,
-                  });
-                }),
+                children: createRunsFromText(postText, getFootnoteId),
                 spacing: { after: 120 },
               })
             );
@@ -598,16 +617,7 @@ export class DocxExporter {
 
       children.push(
         new Paragraph({
-          children: tokenizeInline(trimmedLine).map(token => {
-            return new TextRun({
-              text: token.text,
-              bold: token.bold || undefined,
-              italics: token.italic || undefined,
-              font: token.code ? "Consolas" : "Calibri",
-              size: token.code ? 19 : 22,
-              color: token.code ? "A855F7" : undefined,
-            });
-          }),
+          children: createRunsFromText(trimmedLine, getFootnoteId),
           alignment: AlignmentType.JUSTIFIED,
           spacing: { after: 120 },
         })
@@ -616,7 +626,21 @@ export class DocxExporter {
       idx++;
     }
 
+    const docxFootnotes: Record<number, { children: Paragraph[] }> = {};
+    for (const [key, id] of Object.entries(footnoteKeyToId)) {
+      const defText = footnoteDefs[key] || "Chú thích không xác định";
+      docxFootnotes[id] = {
+        children: [
+          new Paragraph({
+            children: createRunsFromText(defText, undefined, { size: 18 }),
+            spacing: { before: 60, after: 60 },
+          })
+        ]
+      };
+    }
+
     const doc = new Document({
+      footnotes: Object.keys(docxFootnotes).length > 0 ? docxFootnotes : undefined,
       sections: [
         {
           properties: {},

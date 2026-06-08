@@ -5,6 +5,10 @@ Tất cả những thay đổi đáng chú ý của dự án kiencang/Book-silaT
 Định dạng dựa trên [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 và dự án này tuân thủ [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.0.76]- 2026-06-07
+### Fixed
+- Chuyển đổi sang docx tốt hơn (chú thích chuẩn hơn);
+
 ## [v1.0.75]- 2026-06-07
 ### Fixed
 - Thêm chỉ dẫn tốt hơn về việc nên dùng EPUB để dịch và công cụ chuyển đổi PDF sang EPUB;
