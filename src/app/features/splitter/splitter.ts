@@ -250,6 +250,12 @@ export class Splitter {
   }
 
   async runBookAnalysis() {
+    const userKey = localStorage.getItem('user_gemini_api_key');
+    if (!userKey?.trim()) {
+      this.toast.error('Vui lòng thêm GEMINI API KEY CÁ NHÂN (biểu tượng chìa khóa ở góc trái dưới cùng màn hình) trước khi sử dụng tính năng này.');
+      return;
+    }
+
     try {
       let text = this.store.rawMarkdown();
       if (!text) {

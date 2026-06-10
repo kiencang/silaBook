@@ -203,6 +203,12 @@ export class Translator {
   }
 
   async translateSingle(chapter: Chapter): Promise<boolean> {
+    const userKey = localStorage.getItem('user_gemini_api_key');
+    if (!userKey?.trim()) {
+      this.toast.error('Vui lòng thêm GEMINI API KEY CÁ NHÂN (biểu tượng chìa khóa ở góc trái dưới cùng màn hình) trước khi dịch.');
+      return false;
+    }
+
     this.store.updateChapter(chapter.id, { status: 'translating' });
     this.expanded[chapter.id] = true;
     
@@ -304,6 +310,13 @@ export class Translator {
   }
 
   async executeTranslateAll(forceAll: boolean) {
+    const userKey = localStorage.getItem('user_gemini_api_key');
+    if (!userKey?.trim()) {
+      this.toast.error('Vui lòng thêm GEMINI API KEY CÁ NHÂN (biểu tượng chìa khóa ở góc trái dưới cùng màn hình) trước khi dịch chức năng này.');
+      this.confirmAction.set('none');
+      return;
+    }
+
     this.confirmAction.set('none');
     this.stopRequested.set(false);
     
