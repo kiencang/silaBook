@@ -5,6 +5,11 @@ Tất cả những thay đổi đáng chú ý của dự án kiencang/Book-silaT
 Định dạng dựa trên [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 và dự án này tuân thủ [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.0.79]- 2026-06-11
+### Fixed
+- Sửa lỗi bắt nhầm dấu chấm trong Key (do API Gemini hiện có dấu . trong Key);
+- Thêm favicon cho ứng dụng;
+
 ## [v1.0.78]- 2026-06-10
 ### Fixed
 - Khắc phục lỗi để trống API Key cá nhân trên AI Studio vẫn hoạt động;

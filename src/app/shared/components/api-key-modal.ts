@@ -138,7 +138,7 @@ export class ApiKeyModal {
     const trimmed = this.apiKey.trim();
     if (!trimmed) return;
     
-    if (!/^[a-zA-Z0-9_\-]+$/.test(trimmed)) {
+    if (!/^[a-zA-Z0-9_\-.]+$/.test(trimmed)) {
       this.toast.error('API Key không hợp lệ. Hãy đảm bảo bạn không dán nhầm chữ tiếng Việt có dấu, khoảng trắng hay ký tự đặc biệt.');
       return;
     }
