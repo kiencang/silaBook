@@ -5,6 +5,10 @@ Tất cả những thay đổi đáng chú ý của dự án kiencang/Book-silaT
 Định dạng dựa trên [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 và dự án này tuân thủ [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.0.80]- 2026-06-11
+### Fixed
+- Bổ sung chỉ thị chuyên cho tài liệu khoa học, học thuật;
+
 ## [v1.0.79]- 2026-06-11
 ### Fixed
 - Sửa lỗi bắt nhầm dấu chấm trong Key (do API Gemini hiện có dấu . trong Key);

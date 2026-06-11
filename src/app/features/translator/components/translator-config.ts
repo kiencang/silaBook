@@ -10,6 +10,37 @@ import { BookStore } from '../../../core/book.store';
   template: `
     <div class="bg-white rounded-xl shadow-sm border border-zinc-200 p-6 mb-8 flex flex-col gap-8 relative">
       <div class="flex flex-col md:flex-row gap-8">
+        <!-- Translation Mode Selection -->
+        <div class="flex-1">
+          <h3 class="text-sm font-semibold text-zinc-900 uppercase tracking-wider mb-4">Chế độ dịch</h3>
+          <div class="flex flex-col space-y-2">
+            <label class="flex items-center space-x-3 transition-opacity"
+                    [class.cursor-pointer]="!store.isTranslatingAny()"
+                    [class.cursor-not-allowed]="store.isTranslatingAny()"
+                    [class.opacity-50]="store.isTranslatingAny()">
+              <input type="radio" name="translationMode" value="standard" 
+                [disabled]="store.isTranslatingAny()"
+                [checked]="!store.config().translationMode || store.config().translationMode === 'standard'"
+                (change)="store.updateConfig({translationMode: 'standard'})"
+                class="w-4 h-4 text-indigo-600 border-zinc-300 focus:ring-indigo-500 disabled:cursor-not-allowed">
+              <span class="text-sm text-zinc-700 font-medium tracking-tight">Tiêu chuẩn (truyện ngắn, tiểu thuyết, v.v..)</span>
+            </label>
+            <label class="flex items-center space-x-3 transition-opacity"
+                    [class.cursor-pointer]="!store.isTranslatingAny()"
+                    [class.cursor-not-allowed]="store.isTranslatingAny()"
+                    [class.opacity-50]="store.isTranslatingAny()">
+              <input type="radio" name="translationMode" value="scientific" 
+                [disabled]="store.isTranslatingAny()"
+                [checked]="store.config().translationMode === 'scientific'"
+                (change)="store.updateConfig({translationMode: 'scientific'})"
+                class="w-4 h-4 text-emerald-600 border-zinc-300 focus:ring-emerald-500 disabled:cursor-not-allowed">
+              <span class="text-sm text-zinc-700 font-medium tracking-tight">Khoa học/Học thuật/Chuyên ngành</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="w-px bg-zinc-200 hidden md:block"></div>
+
         <!-- Model Selection -->
         <div class="flex-1">
           <h3 class="text-sm font-semibold text-zinc-900 uppercase tracking-wider mb-4">Chọn mô hình</h3>

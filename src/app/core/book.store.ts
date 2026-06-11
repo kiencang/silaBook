@@ -26,6 +26,7 @@ export interface TranslationVersion {
   contextSummaryChapterTitle?: string;
   useCustomInstructions?: boolean;
   customInstructionsSnapshot?: string;
+  translationMode?: string;
 }
 
 export interface Chapter {
@@ -44,6 +45,7 @@ export interface Chapter {
 
 export interface TranslationConfig {
   model: 'gemini-flash-latest' | 'gemini-pro-latest';
+  translationMode?: 'standard' | 'scientific';
   pronounGenModel?: string;
   glossaryGenModel?: string;
   analysisModel?: string;
@@ -130,6 +132,7 @@ export class BookStore {
   readonly isBusy = computed(() => this.isConverting() || this.isGeneratingMetadata() || this.isTranslatingAny() || this.isAnalyzingSplits());
   readonly config = signal<TranslationConfig>({
     model: 'gemini-flash-latest',
+    translationMode: 'standard',
     generateSummary: true
   });
   readonly splitSettings = signal<SplitSettings | undefined>(undefined);

@@ -140,10 +140,16 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
                   <div class="text-[11px] text-zinc-500 flex flex-col items-center justify-center gap-y-2 bg-zinc-50 px-3 py-2 rounded-md border border-zinc-100 w-full">
                     <div class="flex flex-wrap items-center justify-center gap-x-4 gap-y-1">
                       <span class="flex items-center gap-1.5">
-                        <mat-icon class="!w-3.5 !h-3.5 !text-[14px] text-indigo-500">smart_toy</mat-icon> {{ activeV.model }}
+                        <mat-icon class="!w-3.5 !h-3.5 !text-[14px] text-indigo-500">smart_toy</mat-icon> Model: {{ activeV.model }}
                       </span>
                       <span class="flex items-center gap-1.5">
                         <mat-icon class="!w-3.5 !h-3.5 !text-[14px] text-green-500">schedule</mat-icon> {{ activeV.timestamp | date:'dd/MM/yy HH:mm' }}
+                      </span>
+                      <span class="flex items-center gap-1.5">
+                        <mat-icon class="!w-3.5 !h-3.5 !text-[14px]" [class]="activeV.translationMode === 'scientific' ? 'text-purple-500' : 'text-amber-500'">
+                          {{ activeV.translationMode === 'scientific' ? 'science' : 'g_translate' }}
+                        </mat-icon>
+                        Chế độ dịch: {{ activeV.translationMode === 'scientific' ? 'Khoa học/Học thuật/Chuyên ngành' : 'Tiêu chuẩn (truyện ngắn, tiểu thuyết, v.v..)' }}
                       </span>
                     </div>
                     <div class="flex flex-wrap items-center justify-center gap-x-4 gap-y-1">

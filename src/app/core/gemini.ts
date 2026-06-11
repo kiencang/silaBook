@@ -260,7 +260,7 @@ export class GeminiClient {
     }
   }
 
-  async translateChapter(text: string, model: string, bookTitle = '', author = '', pronounTable = '', usePronouns = false, glossaryTable = '', useGlossary = false, shouldFilterGlossary = true, contextSummary?: string, customInstructions?: string): Promise<{text: string, customGlossary?: string, glossaryStatus?: 'none' | 'full' | 'filtered', glossaryRatio?: number}> {
+  async translateChapter(text: string, model: string, bookTitle = '', author = '', pronounTable = '', usePronouns = false, glossaryTable = '', useGlossary = false, shouldFilterGlossary = true, contextSummary?: string, customInstructions?: string, translationMode: 'standard' | 'scientific' = 'standard'): Promise<{text: string, customGlossary?: string, glossaryStatus?: 'none' | 'full' | 'filtered', glossaryRatio?: number}> {
     
     let activeGlossary = '';
     let glossaryStatus: 'none' | 'full' | 'filtered' = 'none';
@@ -281,8 +281,11 @@ export class GeminiClient {
         }
     }
     
-    const systemInstruction = await this.loadPromptText('/prompts/multi_system_instructions.md');
-    let finalPrompt = await this.loadPromptText('/prompts/multi_prompt.md') || '';
+    const siFileName = translationMode === 'scientific' ? '/prompts/scientific_system_instructions.md' : '/prompts/multi_system_instructions.md';
+    const promptFileName = translationMode === 'scientific' ? '/prompts/scientific_prompt.md' : '/prompts/multi_prompt.md';
+    
+    const systemInstruction = await this.loadPromptText(siFileName);
+    let finalPrompt = await this.loadPromptText(promptFileName) || '';
     
     if (finalPrompt) {
       finalPrompt = finalPrompt.replace('{{tên sách}}', bookTitle || 'Không rõ');
