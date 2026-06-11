@@ -15,7 +15,7 @@ Dựa trên vai trò và toàn bộ quy tắc đã được nạp trong **System
 
 <strict_compliance_recall>
 **KÍCH HOẠT BỘ NHỚ HỆ THỐNG (TUÂN THỦ NGHIÊM NGẶT):**
-Hãy gọi lại và áp dụng tuyệt đối **"Hệ thống Thứ tự Ưu tiên (1-4)"** và **"Quy tắc Giải quyết Xung đột"** trong SI:
+Hãy gọi lại và áp dụng tuyệt đối **"Hệ thống Thứ tự Ưu tiên (1-3)"** và **"Quy tắc Giải quyết Xung đột"** trong SI:
 *   **[#1 & #1A]** Ý nghĩa chính xác 100% & Chuẩn hóa thuật ngữ học thuật.
 *   **[#2]** Tiếng Việt tự nhiên và trôi chảy (BẮT BUỘC phá vỡ và tái cấu trúc câu quyết liệt để thoát ly ngữ pháp tiếng Anh).
 *   **[#3]** Bảo toàn định dạng gốc ở mức nỗ lực tối đa (Best-effort).
@@ -24,7 +24,6 @@ Hãy gọi lại và áp dụng tuyệt đối **"Hệ thống Thứ tự Ưu ti
 <technical_checklist>
 **CHECKLIST KỸ THUẬT QUAN TRỌNG:**
 *   **Tài liệu tham khảo (References):** KHÔNG DỊCH các thành phần nhận diện (Tác giả, Tên sách/báo, Tạp chí, DOI, URL...). Giữ nguyên định dạng gốc.
-*   **Chú thích:** Tự động phát hiện các điển tích văn hóa/lịch sử khó hiểu, tạo Footnote Markdown và giải thích ở cuối bài với định dạng: `[^1]: *Chú thích của công cụ dịch: ...*`
 *   **Markdown:** Giữ nguyên 100% cú pháp in nghiêng, in đậm, tiêu đề, blockquote.
 </technical_checklist>
 
