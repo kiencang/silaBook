@@ -508,11 +508,13 @@ export class BookStore {
     }
 
     let combinedMarkdown = '';
-    for (const c of chaps) {
-      let chapterMarkdown = c.status === 'done' && c.translatedText ? c.translatedText : c.originalText;
+    for (let i = 0; i < chaps.length; i++) {
+      const c = chaps[i];
+      const isTrans = c.status === 'done' && !!c.translatedText;
+      let chapterMarkdown = isTrans ? c.translatedText : c.originalText;
       if (chapterMarkdown) {
-        // Preprocess footnotes to make them unique per chapter
-        chapterMarkdown = chapterMarkdown.replace(/\[\^([^\]]+)\]/g, `[^${c.id}-$1]`);
+        const prefix = isTrans ? `c${i}-t` : `c${i}-o`;
+        chapterMarkdown = chapterMarkdown.replace(/\[\^([^\]]+)\]/g, `[^${prefix}-$1]`);
         combinedMarkdown += chapterMarkdown + '\n\n';
       }
     }
@@ -577,12 +579,13 @@ ${htmlBody}
     }
 
     let combinedMarkdown = '';
-    for (const c of chaps) {
-      let chapterMarkdown = c.status === 'done' && c.translatedText ? c.translatedText : c.originalText;
+    for (let i = 0; i < chaps.length; i++) {
+      const c = chaps[i];
+      const isTrans = c.status === 'done' && !!c.translatedText;
+      let chapterMarkdown = isTrans ? c.translatedText : c.originalText;
       if (chapterMarkdown) {
-        // Preprocess footnotes to make them unique per chapter
-        // Replace [^id] with [^chapterId-id]
-        chapterMarkdown = chapterMarkdown.replace(/\[\^([^\]]+)\]/g, `[^${c.id}-$1]`);
+        const prefix = isTrans ? `c${i}-t` : `c${i}-o`;
+        chapterMarkdown = chapterMarkdown.replace(/\[\^([^\]]+)\]/g, `[^${prefix}-$1]`);
         combinedMarkdown += chapterMarkdown + '\n\n';
       }
     }
@@ -643,10 +646,13 @@ ${OFFLINE_READER_SCRIPT}
       const chaps = project ? project.chapters : this.chapters();
 
       let combinedMarkdown = '';
-      for (const c of chaps) {
-        let chapterMarkdown = c.status === 'done' && c.translatedText ? c.translatedText : c.originalText;
+      for (let i = 0; i < chaps.length; i++) {
+        const c = chaps[i];
+        const isTrans = c.status === 'done' && !!c.translatedText;
+        let chapterMarkdown = isTrans ? c.translatedText : c.originalText;
         if (chapterMarkdown) {
-          chapterMarkdown = chapterMarkdown.replace(/\[\^([^\]]+)\]/g, `[^${c.id}-$1]`);
+          const prefix = isTrans ? `c${i}-t` : `c${i}-o`;
+          chapterMarkdown = chapterMarkdown.replace(/\[\^([^\]]+)\]/g, `[^${prefix}-$1]`);
           combinedMarkdown += chapterMarkdown + '\n\n';
         }
       }
@@ -679,10 +685,13 @@ ${OFFLINE_READER_SCRIPT}
       const chaps = project ? project.chapters : this.chapters();
 
       let combinedMarkdown = '';
-      for (const c of chaps) {
-        let chapterMarkdown = c.status === 'done' && c.translatedText ? c.translatedText : c.originalText;
+      for (let i = 0; i < chaps.length; i++) {
+        const c = chaps[i];
+        const isTrans = c.status === 'done' && !!c.translatedText;
+        let chapterMarkdown = isTrans ? c.translatedText : c.originalText;
         if (chapterMarkdown) {
-          chapterMarkdown = chapterMarkdown.replace(/\[\^([^\]]+)\]/g, `[^${c.id}-$1]`);
+          const prefix = isTrans ? `c${i}-t` : `c${i}-o`;
+          chapterMarkdown = chapterMarkdown.replace(/\[\^([^\]]+)\]/g, `[^${prefix}-$1]`);
           combinedMarkdown += chapterMarkdown + '\n\n';
         }
       }

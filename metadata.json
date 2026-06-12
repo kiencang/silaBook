@@ -1,6 +1,6 @@
 {
   "name": "silaBook",
-  "description": "Ứng dụng dịch sách bằng AI, các định dạng đầu vào chấp nhận gồm EPUB/HTML/PDF/TXT/MARKDOWN. Xử lý Đại từ & Thuật ngữ để có chất lượng dịch cao hơn.",
+  "description": "Ứng dụng tối giản giúp chuyển đổi file PDF/TXT/HTML sang định dạng Markdown theo từng chương, hỗ trợ xem trước trực quan và dịch thuật từng phần với sức mạnh của Gemini.",
   "requestFramePermissions": [],
   "majorCapabilities": [
     "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"

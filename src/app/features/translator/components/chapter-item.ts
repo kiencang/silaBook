@@ -1,4 +1,4 @@
-import { Component, input, model, output, inject, signal, OnInit, OnDestroy, HostListener } from '@angular/core';
+import { Component, input, model, output, inject, signal, OnInit, OnDestroy } from '@angular/core';
 
 @Component({
   selector: 'app-translating-skeleton',
@@ -75,7 +75,9 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
   standalone: true,
   imports: [MatIconModule, DatePipe, TranslatingSkeletonComponent],
   host: {
-    class: 'block'
+    class: 'block',
+    '(click)': 'onLinkClick($event)',
+    '(window:resize)': 'onResize()'
   },
   template: `
     <div class="bg-white rounded-xl shadow-sm border border-zinc-200 overflow-hidden">
@@ -216,7 +218,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
           <div class="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-zinc-100">
             <div class="p-6">
               <h5 class="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-4">Bản gốc (Markdown)</h5>
-              <div class="prose prose-sm max-w-none text-zinc-700" [innerHTML]="parseMarkdown(chapter().originalText, chapter().id + '-orig')"></div>
+              <div class="prose prose-sm max-w-none text-zinc-700" [innerHTML]="parseMarkdown(chapter().originalText, 'c' + index() + '-o')"></div>
             </div>
             <div class="p-6 bg-zinc-50 relative">
               <div class="flex items-center justify-between mb-4">
@@ -243,7 +245,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
                   <span class="text-sm">Đây là nội dung bản quyền / metadata, nội dung sẽ được giữ nguyên bản gốc khi xuất file.</span>
                 </div>
               } @else if (chapter().translatedText) {
-                <div class="prose prose-sm max-w-none text-zinc-900" [innerHTML]="parseMarkdown(chapter().translatedText, chapter().id + '-trans')"></div>
+                <div class="prose prose-sm max-w-none text-zinc-900" [innerHTML]="parseMarkdown(chapter().translatedText, 'c' + index() + '-t')"></div>
               } @else if (chapter().status === 'translating') {
                 <app-translating-skeleton />
               } @else {
@@ -311,7 +313,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
                  [class]="getContentClass(readerStore.prefs().theme)" 
                  [style.font-size.px]="readerStore.prefs().fontSize"
                  [style.font-family]="getFontFamily(readerStore.prefs().fontFamily)"
-                 [innerHTML]="parseMarkdown(chapter().translatedText, chapter().id + '-transfull')"></div>
+                 [innerHTML]="parseMarkdown(chapter().translatedText, 'c' + index() + '-t')"></div>
 
             <div class="mt-24 pt-8 border-t border-zinc-200/50 flex flex-col sm:flex-row items-center justify-between gap-4 max-w-2xl mx-auto pb-12">
               @if (prevTranslatedChapterIndex() !== -1) {
@@ -388,7 +390,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
                      [class]="getContentClass(readerStore.prefs().theme)"
                      [style.font-size.px]="readerStore.prefs().fontSize"
                      [style.font-family]="getFontFamily(readerStore.prefs().fontFamily)"
-                     [innerHTML]="parseMarkdown(chapter().originalText, chapter().id + '-biorig')"></div>
+                     [innerHTML]="parseMarkdown(chapter().originalText, 'c' + index() + '-o')"></div>
               </div>
             </div>
 
@@ -405,7 +407,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
                      [class]="getContentClass(readerStore.prefs().theme)"
                      [style.font-size.px]="readerStore.prefs().fontSize"
                      [style.font-family]="getFontFamily(readerStore.prefs().fontFamily)"
-                     [innerHTML]="parseMarkdown(chapter().translatedText, chapter().id + '-bitrans')"></div>
+                     [innerHTML]="parseMarkdown(chapter().translatedText, 'c' + index() + '-t')"></div>
               </div>
             </div>
           </div>
@@ -798,7 +800,6 @@ export class ChapterItemComponent {
     }
   }
 
-  @HostListener('window:resize')
   onResize() {
     if (this.isBilingualFullscreen() && this.isBilingualAligned()) {
       this.alignBilingualBlocks();
@@ -807,6 +808,12 @@ export class ChapterItemComponent {
 
   onBilingualContentClick(event: Event, source: 'original' | 'translated') {
     const target = event.target as HTMLElement;
+    
+    // Ignore click on links (like footnotes/back-references) from triggering alignment logic
+    if (target.closest('a')) {
+      return;
+    }
+    
     const blockElement = target.closest('p, h1, h2, h3, h4, h5, h6, ul, ol, blockquote, table') as HTMLElement;
     if (!blockElement) return;
 
@@ -947,7 +954,9 @@ export class ChapterItemComponent {
     if (!text) return;
 
     try {
-      const htmlBody = getConfiguredMarked().parse(text);
+      const prefix = 'c' + this.index() + '-t';
+      const processed = text.replace(/\[\^([^\]]+)\]/g, `[^${prefix}-$1]`);
+      const htmlBody = getConfiguredMarked().parse(processed);
       const title = this.chapter().title || `Phần ${this.index() + 1}`;
       const htmlDoc = `<!DOCTYPE html>
 <html lang="vi">
@@ -994,7 +1003,9 @@ ${htmlBody}
     if (!text) return;
 
     try {
-      const htmlBody = getConfiguredMarked().parse(text);
+      const prefix = 'c' + this.index() + '-t';
+      const processed = text.replace(/\[\^([^\]]+)\]/g, `[^${prefix}-$1]`);
+      const htmlBody = getConfiguredMarked().parse(processed);
       const title = this.chapter().title || `Phần ${this.index() + 1}`;
       const htmlDoc = `<!DOCTYPE html>
 <html lang="vi">
@@ -1044,19 +1055,27 @@ ${OFFLINE_READER_SCRIPT}
     return this.sanitizer.bypassSecurityTrustHtml(parsed);
   }
 
-  @HostListener('click', ['$event'])
   onLinkClick(event: MouseEvent) {
     const target = event.target as HTMLElement;
     const anchor = target.closest('a');
     
     if (anchor) {
       const href = anchor.getAttribute('href');
-      if (href && href.startsWith('#fn')) {
+      if (href && (href.startsWith('#fn') || href.startsWith('#footnote'))) {
         event.preventDefault();
         event.stopPropagation();
         
         const id = href.substring(1);
-        const targetElement = document.getElementById(id);
+        
+        // Locate target element LOCALLY first, to avoid selecting duplicate IDs from other renderers!
+        // We look inside the closest '.prose' container of the clicked link.
+        const parentProse = anchor.closest('.prose');
+        let targetElement = parentProse?.querySelector(`[id="${CSS.escape(id)}"]`) as HTMLElement;
+        
+        // Fallback to global document.getElementById if not found locally
+        if (!targetElement) {
+          targetElement = document.getElementById(id) as HTMLElement;
+        }
         
         if (targetElement) {
           targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
