@@ -207,7 +207,7 @@ import { processHtmlContent, getTurndownService } from './html.util';
                   <p class="text-xs text-zinc-900 font-medium tracking-tight">Nên ưu tiên định dạng EPUB, HTML hoặc Markdown nếu có thể.</p>
                   <div class="mt-3 p-3 bg-zinc-100/50 rounded-xl border border-zinc-200/60 max-w-xl w-full mx-auto cursor-default" (click)="$event.stopPropagation()">
                     <p class="text-xs text-zinc-500 leading-relaxed mb-2.5">
-                      Để giữ lại hình ảnh trong bản dịch, vui lòng sử dụng định dạng <strong>EPUB</strong> hoặc <strong>Markdown</strong>. Nếu bạn chỉ có file PDF, bạn có thể chuyển đổi nhanh chóng tại đây (chọn model PaddleOCR-VL-1.6):
+                      Để giữ lại hình ảnh trong bản dịch, vui lòng sử dụng định dạng <strong>EPUB</strong>, <strong>HTML</strong> hoặc <strong>Markdown</strong>. Nếu bạn chỉ có file PDF, bạn có thể chuyển đổi nhanh chóng qua link Baidu bên dưới (chọn model PaddleOCR-VL-1.6 để có chất lượng chuyển đổi cao nhất), <a href="https://www.youtube.com/watch?v=mWlgsCRZJS8" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:text-indigo-700 hover:underline">xem video hướng dẫn</a>:
                     </p>
                     <a 
                       href="https://aistudio.baidu.com/paddleocr" 
