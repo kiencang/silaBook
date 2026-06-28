@@ -81,6 +81,20 @@ Thường để dịch nguyên một cuốn sách ứng dụng cần 1 - 2 tiế
 
 Bạn có thể vào dự án Gutenberg để tải các sách hết hạn bản quyền về dịch. Ví dụ 100 cuốn được tải về nhiều nhất trong tháng: https://www.gutenberg.org/browse/scores/top#books-last100
 
+## Cách sử dụng PaddleOCR để chuyển đổi PDF sang dạng Markdown
+Điều này giúp bản dịch giữ lại được ảnh trong bản gốc. Trước khi gửi lên silaBook, bạn chuyển định dạng PDF sang markdown bằng công cụ dưới đây của Baidu.
+Link: https://aistudio.baidu.com/paddleocr
+
+Sau đó tải định dạng markdown đã được chuyển đổi rồi up lên silaBook để dịch.
+
+Hướng dẫn sử dụng:
+
+<p align="center">
+  <a href="https://www.youtube.com/watch?v=mWlgsCRZJS8">
+    <img src="https://img.youtube.com/vi/mWlgsCRZJS8/0.jpg" alt="Tiêu đề video" width="600">
+  </a>
+</p>
+
 ## Tuyên bố từ chối trách nhiệm
 Công cụ này có thể được sử dụng cho mục đích nghiên cứu và học tập cá nhân.
 
