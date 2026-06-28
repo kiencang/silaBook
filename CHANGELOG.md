@@ -5,6 +5,11 @@ Tất cả những thay đổi đáng chú ý của dự án kiencang/Book-silaT
 Định dạng dựa trên [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 và dự án này tuân thủ [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.0.83]- 2026-06-28
+### Fixed
+- Cập nhật đường link chuyển PDF sang Markdown bằng một ứng dụng chất lượng cao của Baidu;
+- Nâng dung lượng đầu vào của EPUB, Markdown và TXT;
+
 ## [v1.0.82]- 2026-06-12
 ### Fixed
 - Cải thiện chất lượng của phần footnote;
