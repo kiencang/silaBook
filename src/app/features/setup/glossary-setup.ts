@@ -81,22 +81,22 @@ import * as XLSX from 'xlsx';
           </div>
         </div>
 
-        <div class="bg-white p-4 lg:p-5 rounded-xl border border-zinc-200 flex flex-col sm:flex-row gap-4 items-center justify-between shadow-sm">
+        <div class="bg-white p-4 lg:p-5 rounded-xl border border-zinc-200 flex flex-col sm:flex-row gap-4 sm:items-start justify-between shadow-sm">
           <div>
-            <h3 class="font-bold text-zinc-900">Sử dụng danh sách thuật ngữ cá nhân</h3>
-            <p class="text-sm text-zinc-500 mt-1">Tải lên file Excel (.xlsx) chứa danh sách từ khó của riêng bạn để ứng dụng sử dụng cho bản dịch. Phải có các nội dung Tiếng Anh / Từ loại / Tiếng Việt cho các hàng thông tin, riêng Ghi chú văn cảnh không bắt buộc phải có nội dung.</p>
+            <h3 class="font-bold text-zinc-900">Sử dụng danh sách thuật ngữ của bạn [Khi bạn không muốn AI tạo]</h3>
+            <p class="text-sm text-zinc-500 mt-1">Tải lên file Excel (.xlsx) chứa danh sách từ khó của riêng bạn để ứng dụng sử dụng cho bản dịch. Trước hết hãy "Tải file mẫu" về để có mẫu chuẩn. Lưu ý: Phải có nội dung Tiếng Anh / Từ loại / Tiếng Việt cho các hàng thông tin, riêng Ghi chú văn cảnh không bắt buộc phải có nội dung.</p>
           </div>
-          <div class="flex items-center gap-3 w-full sm:w-auto">
+          <div class="flex flex-col gap-3 w-full sm:w-[220px] shrink-0">
             <button 
               (click)="downloadTemplate()"
-              class="flex-1 sm:flex-none flex justify-center items-center px-4 py-2 bg-white border border-zinc-300 text-sm font-medium rounded-lg text-zinc-700 hover:bg-zinc-50 focus:outline-none transition-colors whitespace-nowrap"
+              class="w-full flex justify-center items-center px-4 py-2 bg-indigo-50 border border-indigo-200 text-sm font-medium rounded-lg text-indigo-700 hover:bg-indigo-100 hover:border-indigo-300 focus:outline-none transition-colors whitespace-nowrap"
             >
               <mat-icon class="mr-2 !w-4 !h-4 !text-[16px]">download</mat-icon>
               Tải file mẫu
             </button>
             <button 
               (click)="fileInput.click()"
-              class="flex-1 sm:flex-none flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg shadow-sm text-white bg-zinc-900 hover:bg-zinc-800 focus:outline-none transition-colors whitespace-nowrap"
+              class="w-full flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg shadow-sm text-white bg-zinc-900 hover:bg-zinc-800 focus:outline-none transition-colors whitespace-nowrap"
             >
               <mat-icon class="mr-2 !w-4 !h-4 !text-[16px]">upload_file</mat-icon>
               Tải lên file (.xlsx)

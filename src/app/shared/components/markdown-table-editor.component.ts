@@ -2,6 +2,7 @@ import { Component, input, model, signal, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
+import * as XLSX from 'xlsx';
 
 @Component({
   selector: 'app-markdown-table-editor',
@@ -63,6 +64,16 @@ import { MatIconModule } from '@angular/material/icon';
           >
             <mat-icon class="!w-4 !h-4 !text-[16px]">code</mat-icon>
             Mã nguồn
+          </button>
+          <div class="w-px h-5 bg-zinc-300 mx-1 self-center"></div>
+          <button 
+            type="button"
+            (click)="exportToExcel()"
+            [disabled]="disabled() || tableData().length === 0"
+            class="px-3 py-1.5 text-xs font-medium rounded-md transition-all flex items-center gap-1.5 text-zinc-700 hover:bg-zinc-200 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <mat-icon class="!w-4 !h-4 !text-[16px]">file_download</mat-icon>
+            Xuất ra Excel (.xlsx)
           </button>
         </div>
       </div>
@@ -169,6 +180,16 @@ export class MarkdownTableEditorComponent {
   tableData = signal<string[][]>([]);
   confirmDelete = signal<{type: 'row' | 'col', index: number} | null>(null);
   isClosingModal = signal<boolean>(false);
+
+  exportToExcel() {
+    const data = this.tableData();
+    if (data.length === 0) return;
+
+    const ws = XLSX.utils.aoa_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Thuật ngữ');
+    XLSX.writeFile(wb, 'danh_sach_thuat_ngu.xlsx');
+  }
 
   // Flag to prevent recursive updates
   private isUpdatingInternally = false;

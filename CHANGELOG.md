@@ -5,6 +5,11 @@ Tất cả những thay đổi đáng chú ý của dự án kiencang/Book-silaT
 Định dạng dựa trên [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 và dự án này tuân thủ [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.0.87]- 2026-06-29
+### Fixed
+- Thêm tính năng tải về bảng .xlsx do AI tạo để lưu trữ hoặc chỉnh sửa thêm nếu cần;
+- Chỉnh sửa một số câu chữ chưa phù hợp ở phần up lên file từ khó tùy chỉnh; Chỉnh nhẹ thiết kế của button;
+
 ## [v1.0.86]- 2026-06-29
 ### Fixed
 - Thêm tính năng up lên bảng thuật ngữ/từ khó tùy chỉnh từ phía người dùng;
