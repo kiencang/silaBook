@@ -1,4 +1,4 @@
-import { Component, inject, signal, effect, computed } from '@angular/core';
+import { Component, inject, signal, effect, computed, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BookStore } from '../../core/book.store';
 import { ToastService } from '../../core/toast.service';
@@ -7,6 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { FormsModule } from '@angular/forms';
 import { MarkdownTableEditorComponent } from '../../shared/components/markdown-table-editor.component';
 import { smartHardSplit } from '../splitter/splitter.util';
+import * as XLSX from 'xlsx';
 
 @Component({
   selector: 'app-glossary-setup',
@@ -77,6 +78,30 @@ import { smartHardSplit } from '../splitter/splitter.util';
                 </button>
               }
             </div>
+          </div>
+        </div>
+
+        <div class="bg-white p-4 lg:p-5 rounded-xl border border-zinc-200 flex flex-col sm:flex-row gap-4 items-center justify-between shadow-sm">
+          <div>
+            <h3 class="font-bold text-zinc-900">Sử dụng danh sách thuật ngữ cá nhân</h3>
+            <p class="text-sm text-zinc-500 mt-1">Tải lên file Excel (.xlsx) chứa danh sách từ khó của riêng bạn để ứng dụng sử dụng cho bản dịch. Phải có các nội dung Tiếng Anh / Từ loại / Tiếng Việt cho các hàng thông tin, riêng Ghi chú văn cảnh không bắt buộc phải có nội dung.</p>
+          </div>
+          <div class="flex items-center gap-3 w-full sm:w-auto">
+            <button 
+              (click)="downloadTemplate()"
+              class="flex-1 sm:flex-none flex justify-center items-center px-4 py-2 bg-white border border-zinc-300 text-sm font-medium rounded-lg text-zinc-700 hover:bg-zinc-50 focus:outline-none transition-colors whitespace-nowrap"
+            >
+              <mat-icon class="mr-2 !w-4 !h-4 !text-[16px]">download</mat-icon>
+              Tải file mẫu
+            </button>
+            <button 
+              (click)="fileInput.click()"
+              class="flex-1 sm:flex-none flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg shadow-sm text-white bg-zinc-900 hover:bg-zinc-800 focus:outline-none transition-colors whitespace-nowrap"
+            >
+              <mat-icon class="mr-2 !w-4 !h-4 !text-[16px]">upload_file</mat-icon>
+              Tải lên file (.xlsx)
+            </button>
+            <input type="file" #fileInput (change)="onFileUpload($event)" accept=".xlsx" class="hidden">
           </div>
         </div>
       </div>
@@ -182,6 +207,8 @@ export class GlossarySetup {
   glossaryModel = signal<string>(this.store.glossaryTask()?.model ?? this.store.config().glossaryGenModel ?? 'gemini-flash-latest');
   isManuallyEdited = signal<boolean>(false);
 
+  @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
+
   constructor() {
     effect(() => {
       const activeContent = this.store.glossaryTable();
@@ -199,8 +226,11 @@ export class GlossarySetup {
 
   getModelDisplay(v: import('../../core/db').ContentVersion | null | undefined): string {
     if (!v) return '';
+    if (v.source === 'manual') {
+      if (v.model === 'Tải lên từ Excel') return 'Từ file Excel';
+      return 'Thủ công';
+    }
     const name = v.model.includes('pro') ? 'Pro' : 'Flash';
-    if (v.source === 'manual') return 'Thủ công';
     if (v.source === 'ai_edited') return `${name} (Chỉnh tay)`;
     return name;
   }
@@ -392,5 +422,116 @@ export class GlossarySetup {
   skipAndContinue() {
     this.store.saveGlossaryConf(false);
     this.store.phase.set(5);
+  }
+
+  downloadTemplate() {
+    const ws_data = [
+      ['Tiếng Anh', 'Từ loại', 'Tiếng Việt', 'Ghi chú văn cảnh'],
+      ['Defenestration', 'Noun', 'Sự ném qua cửa sổ', '(Không bắt buộc) Hành động ném ai đó hoặc thứ gì đó ra ngoài cửa sổ'],
+      ['Petrichor', 'Noun', 'Mùi đất sau mưa', '(Không bắt buộc) Mùi dễ chịu đặc trưng thường theo sau cơn mưa đầu tiên sau một thời gian khô hạn dài']
+    ];
+    const ws = XLSX.utils.aoa_to_sheet(ws_data);
+    
+    // Auto size columns
+    ws['!cols'] = [
+      { wch: 25 }, // Tiếng Anh
+      { wch: 15 }, // Từ loại
+      { wch: 25 }, // Tiếng Việt
+      { wch: 50 }  // Ghi chú văn cảnh
+    ];
+
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Thuật ngữ");
+    XLSX.writeFile(wb, "Mau_Tu_Dien_Thuat_Ngu.xlsx");
+  }
+
+  async onFileUpload(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) return;
+    const file = input.files[0];
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const data = new Uint8Array(e.target?.result as ArrayBuffer);
+        const workbook = XLSX.read(data, { type: 'array' });
+        const firstSheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[firstSheetName];
+        const json = XLSX.utils.sheet_to_json<any>(worksheet, { header: 1 });
+        
+        if (json.length < 2) {
+          this.toast.error('File Excel không có dữ liệu hoặc không đúng định dạng.');
+          return;
+        }
+
+        const headers = json[0] as string[];
+        const requiredHeaders = ['Tiếng Anh', 'Từ loại', 'Tiếng Việt', 'Ghi chú văn cảnh'];
+        
+        const hasAllHeaders = requiredHeaders.every(rh => headers.some(h => String(h).trim().toLowerCase() === rh.toLowerCase()));
+        
+        if (!hasAllHeaders) {
+          this.toast.error('File Excel không đúng định dạng mẫu. Vui lòng tải file mẫu và đảm bảo có đủ 4 cột bắt buộc.');
+          return;
+        }
+        
+        const engIdx = headers.findIndex(h => String(h).trim().toLowerCase() === 'tiếng anh');
+        const posIdx = headers.findIndex(h => String(h).trim().toLowerCase() === 'từ loại');
+        const viIdx = headers.findIndex(h => String(h).trim().toLowerCase() === 'tiếng việt');
+        const noteIdx = headers.findIndex(h => String(h).trim().toLowerCase() === 'ghi chú văn cảnh');
+
+        let result = '| Tiếng Anh | Từ loại | Tiếng Việt | Ghi chú văn cảnh |\n|---|---|---|---|\n';
+        let validRowsCount = 0;
+        let invalidRowsCount = 0;
+
+        for (let i = 1; i < json.length; i++) {
+          const row = json[i];
+          if (!row || row.length === 0) continue;
+          
+          const eng = row[engIdx] ? String(row[engIdx]).trim().replace(/\|/g, '-') : '';
+          const pos = row[posIdx] ? String(row[posIdx]).trim().replace(/\|/g, '-') : '';
+          const vi = row[viIdx] ? String(row[viIdx]).trim().replace(/\|/g, '-') : '';
+          const note = row[noteIdx] ? String(row[noteIdx]).trim().replace(/\|/g, '-') : '';
+
+          if (!eng && !pos && !vi && !note) continue; // Bỏ qua dòng hoàn toàn trống
+
+          if (eng === 'Defenestration' || eng === 'Petrichor') {
+            continue; // Bỏ qua ví dụ mẫu
+          }
+
+          if (eng && pos && vi) {
+            result += `| ${eng} | ${pos} | ${vi} | ${note} |\n`;
+            validRowsCount++;
+          } else {
+            invalidRowsCount++;
+          }
+        }
+
+        if (validRowsCount > 0) {
+          this.draftTable.set(result);
+          this.isManuallyEdited.set(false);
+          this.store.addGlossaryVersion(result, 'Tải lên từ Excel', 'manual');
+          this.store.saveGlossaryConf(true);
+          
+          if (invalidRowsCount > 0) {
+            this.toast.success(`Đã thêm ${validRowsCount} thuật ngữ thành công! Bỏ qua ${invalidRowsCount} dòng thiếu dữ liệu.`);
+          } else {
+            this.toast.success(`Đã tải lên và thêm ${validRowsCount} thuật ngữ thành công!`);
+          }
+        } else {
+           if (invalidRowsCount > 0) {
+             this.toast.error(`Không thêm được thuật ngữ nào. Có ${invalidRowsCount} dòng bị thiếu dữ liệu bắt buộc (Tiếng Anh, Từ loại, Tiếng Việt).`);
+           } else {
+             this.toast.error('Không tìm thấy thuật ngữ hợp lệ nào trong file.');
+           }
+        }
+
+      } catch (err) {
+        this.toast.error('Lỗi khi đọc file Excel: ' + String(err));
+      } finally {
+        if (this.fileInput?.nativeElement) {
+          this.fileInput.nativeElement.value = '';
+        }
+      }
+    };
+    reader.readAsArrayBuffer(file);
   }
 }
