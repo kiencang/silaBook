@@ -12,7 +12,7 @@ import { ToastService } from '../../core/toast.service';
     class: 'flex-1 flex flex-col'
   },
   template: `
-    <div class="flex-1 flex items-center justify-center min-h-[50vh]">
+    <div class="flex-1 flex flex-col items-center justify-center min-h-[50vh] p-4">
       <div class="w-full max-w-2xl p-8 bg-white rounded-2xl shadow-sm border border-zinc-100">
         <div class="text-center mb-5">
         <h2 class="text-3xl font-bold text-zinc-900 tracking-tight">Tạo dự án dịch mới</h2>
@@ -47,7 +47,23 @@ import { ToastService } from '../../core/toast.service';
         </div>
       </div>
       </div>
+
+      <button (click)="showVideo.set(true)" class="mt-6 flex items-center gap-2 text-zinc-500 bg-transparent border border-zinc-200 hover:border-zinc-300 hover:text-indigo-600 transition-all rounded-full px-4 py-2 hover:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+        <mat-icon class="!w-5 !h-5 !text-[20px]">play_circle</mat-icon>
+        <span class="text-sm font-medium">Xem video cách dùng</span>
+      </button>
     </div>
+
+    @if (showVideo()) {
+      <div class="fixed inset-0 z-50 flex items-center justify-center bg-zinc-900/80 backdrop-blur-sm p-4" (click)="showVideo.set(false)">
+        <div class="relative w-full max-w-5xl aspect-video bg-black rounded-2xl overflow-hidden shadow-2xl ring-1 ring-white/10" (click)="$event.stopPropagation()">
+          <button (click)="showVideo.set(false)" class="absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center bg-black/50 hover:bg-black/80 text-white rounded-full transition-colors backdrop-blur-md">
+            <mat-icon class="!w-6 !h-6 !text-[24px]">close</mat-icon>
+          </button>
+          <iframe class="w-full h-full" src="https://www.youtube.com/embed/HetHC9r68dk?autoplay=1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+      </div>
+    }
   `
 })
 export class Home {
@@ -55,6 +71,7 @@ export class Home {
   toast = inject(ToastService);
   bookTitle = signal('');
   author = signal('');
+  showVideo = signal(false);
 
   canCreate() {
     return this.bookTitle().trim().length > 0 && this.author().trim().length > 0;
