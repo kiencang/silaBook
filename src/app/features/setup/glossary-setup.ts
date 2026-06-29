@@ -449,6 +449,15 @@ export class GlossarySetup {
     const input = event.target as HTMLInputElement;
     if (!input.files || input.files.length === 0) return;
     const file = input.files[0];
+    
+    // Check file size limit (2MB)
+    const MAX_SIZE_MB = 2;
+    if (file.size > MAX_SIZE_MB * 1024 * 1024) {
+      this.toast.error(`File Excel tải lên vượt quá giới hạn ${MAX_SIZE_MB}MB.`);
+      input.value = '';
+      return;
+    }
+
     const reader = new FileReader();
     reader.onload = (e) => {
       try {

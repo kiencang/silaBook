@@ -202,7 +202,7 @@ import { processHtmlContent, getTurndownService } from './html.util';
                 <div class="mt-4 pt-3 border-t border-zinc-100 flex flex-col items-center gap-1">
                   <p class="text-xs text-zinc-400 flex items-center justify-center gap-1">
                     <mat-icon class="!w-[14px] !h-[14px] !text-[14px]">info</mat-icon>
-                    Giới hạn xử lý tối đa: <span class="font-medium text-zinc-500">1M Tokens</span>
+                    Giới hạn xử lý tối đa: <span class="font-medium text-zinc-500">1M Tokens</span> hoặc theo dung lượng file.
                   </p>
                   <p class="text-xs text-zinc-900 font-medium tracking-tight">Nên ưu tiên định dạng EPUB, HTML hoặc Markdown nếu có thể.</p>
                   <div class="mt-3 p-3 bg-zinc-100/50 rounded-xl border border-zinc-200/60 max-w-xl w-full mx-auto cursor-default" (click)="$event.stopPropagation()">

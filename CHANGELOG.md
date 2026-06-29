@@ -5,6 +5,11 @@ Tất cả những thay đổi đáng chú ý của dự án kiencang/Book-silaT
 Định dạng dựa trên [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 và dự án này tuân thủ [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.0.88]- 2026-06-29
+### Fixed
+- Chỉnh lại dung lượng file .xlsx tối đa được phép up lên (2MB);
+- Chỉnh lại thông báo giới hạn dung lượng khi up file lên để dịch;
+
 ## [v1.0.87]- 2026-06-29
 ### Fixed
 - Thêm tính năng tải về bảng .xlsx do AI tạo để lưu trữ hoặc chỉnh sửa thêm nếu cần;
