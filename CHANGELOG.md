@@ -7,7 +7,7 @@ và dự án này tuân thủ [Semantic Versioning](https://semver.org/spec/v2.0
 
 ## [v1.0.89]- 2026-07-01
 ### Fixed
-- Nếu đầu vào là định dạng Markdown có cú pháp toán LaTex thì đầu ra sẽ hiển thị được công thức toàn phần HTML;
+- Nếu đầu vào là định dạng Markdown có cú pháp toán LaTex thì đầu ra sẽ hiển thị được công thức toán ở phần bản dịch HTML;
 
 ## [v1.0.88]- 2026-06-29
 ### Fixed
