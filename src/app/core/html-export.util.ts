@@ -371,6 +371,21 @@ export const OFFLINE_READER_TOOLBAR_HTML = `
 </div>
 `;
 
+export const MATHJAX_SCRIPT = `
+<script>
+  window.MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      displayMath: [['$$', '$$'], ['\\[', '\\]']]
+    },
+    svg: {
+      fontCache: 'global'
+    }
+  };
+</script>
+<script type="text/javascript" id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+`;
+
 export const OFFLINE_READER_SCRIPT = `
 <script>
 (function() {

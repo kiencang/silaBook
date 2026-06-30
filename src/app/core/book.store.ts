@@ -5,7 +5,7 @@ import { ToastService } from './toast.service';
 import { getConfiguredMarked } from './marked-setup';
 import { EpubExporter } from './epub-export.util';
 import { DocxExporter } from './docx-export.util';
-import { OFFLINE_READER_SCRIPT, OFFLINE_READER_STYLES, OFFLINE_READER_TOOLBAR_HTML, PRINT_PDF_STYLES } from './html-export.util';
+import { OFFLINE_READER_SCRIPT, OFFLINE_READER_STYLES, OFFLINE_READER_TOOLBAR_HTML, PRINT_PDF_STYLES, MATHJAX_SCRIPT } from './html-export.util';
 
 export interface TranslationVersion {
   versionNumber: number;
@@ -608,6 +608,7 @@ ${htmlBody}
 <meta name="x-sila-chapter-id" content="full">
 <title>${name}_silaBook_vi</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Lexend:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+${MATHJAX_SCRIPT}
 <style>
 ${OFFLINE_READER_STYLES}
 </style>

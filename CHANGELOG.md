@@ -5,6 +5,10 @@ Tất cả những thay đổi đáng chú ý của dự án kiencang/Book-silaT
 Định dạng dựa trên [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 và dự án này tuân thủ [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.0.89]- 2026-07-01
+### Fixed
+- Nếu đầu vào là định dạng Markdown có cú pháp toán LaTex thì đầu ra sẽ hiển thị được công thức toàn phần HTML;
+
 ## [v1.0.88]- 2026-06-29
 ### Fixed
 - Chỉnh lại dung lượng file .xlsx tối đa được phép up lên (2MB);
