@@ -5,9 +5,15 @@ Tất cả những thay đổi đáng chú ý của dự án kiencang/Book-silaT
 Định dạng dựa trên [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 và dự án này tuân thủ [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.0.90]- 2026-07-01
+### Fixed
+- Bật/Tắt phân tích công thức toán bằng cách chèn thêm thư viện MathJax là tùy chọn;
+- Mặc định vô hiệu hóa MathJax với kiểu dịch truyện ngắn, tiểu thuyết;
+- Mặc định bật với chế độ dịch Khoa học, nhưng cho quyền tắt (hữu ích khi dịch tài liệu xã hội);
+
 ## [v1.0.89]- 2026-07-01
 ### Fixed
-- Nếu đầu vào là định dạng Markdown có cú pháp toán LaTex thì đầu ra sẽ hiển thị được công thức toán ở phần bản dịch HTML;
+- Nếu đầu vào là định dạng Markdown có cú pháp toán LaTex thì đầu ra sẽ hiển thị được công thức toàn phần HTML;
 
 ## [v1.0.88]- 2026-06-29
 ### Fixed

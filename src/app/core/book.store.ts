@@ -46,6 +46,7 @@ export interface Chapter {
 export interface TranslationConfig {
   model: 'gemini-flash-latest' | 'gemini-pro-latest';
   translationMode?: 'standard' | 'scientific';
+  parseMath?: boolean;
   pronounGenModel?: string;
   glossaryGenModel?: string;
   analysisModel?: string;
@@ -599,6 +600,10 @@ ${htmlBody}
           window.__SILA_IMAGES__ = tempImages;
         }
       }
+      const activeConfig = project ? project.config : this.config();
+      const isScientific = activeConfig?.translationMode === 'scientific';
+      const parseMath = activeConfig?.parseMath !== false;
+      const mathJaxScriptHTML = (isScientific && parseMath) ? MATHJAX_SCRIPT : '';
       const htmlDoc = `<!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -608,7 +613,7 @@ ${htmlBody}
 <meta name="x-sila-chapter-id" content="full">
 <title>${name}_silaBook_vi</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Lexend:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-${MATHJAX_SCRIPT}
+${mathJaxScriptHTML}
 <style>
 ${OFFLINE_READER_STYLES}
 </style>

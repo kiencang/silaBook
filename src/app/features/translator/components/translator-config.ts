@@ -13,8 +13,8 @@ import { BookStore } from '../../../core/book.store';
         <!-- Translation Mode Selection -->
         <div class="flex-1">
           <h3 class="text-sm font-semibold text-zinc-900 uppercase tracking-wider mb-4">Chế độ dịch</h3>
-          <div class="flex flex-col space-y-2">
-            <label class="flex items-center space-x-3 transition-opacity"
+          <div class="flex flex-col space-y-2.5">
+            <label class="flex items-center space-x-2.5 group transition-opacity"
                     [class.cursor-pointer]="!store.isTranslatingAny()"
                     [class.cursor-not-allowed]="store.isTranslatingAny()"
                     [class.opacity-50]="store.isTranslatingAny()">
@@ -22,10 +22,10 @@ import { BookStore } from '../../../core/book.store';
                 [disabled]="store.isTranslatingAny()"
                 [checked]="!store.config().translationMode || store.config().translationMode === 'standard'"
                 (change)="store.updateConfig({translationMode: 'standard'})"
-                class="w-4 h-4 text-indigo-600 border-zinc-300 focus:ring-indigo-500 disabled:cursor-not-allowed">
-              <span class="text-sm text-zinc-700 font-medium tracking-tight">Tiêu chuẩn (truyện ngắn, tiểu thuyết, v.v..)</span>
+                class="w-4 h-4 text-emerald-600 border-zinc-300 focus:ring-emerald-500 disabled:cursor-not-allowed cursor-pointer">
+              <span class="text-sm text-zinc-700 font-medium tracking-tight group-hover:text-zinc-900 transition-colors">Tiêu chuẩn (truyện ngắn, tiểu thuyết, v.v..)</span>
             </label>
-            <label class="flex items-center space-x-3 transition-opacity"
+            <label class="flex items-center space-x-2.5 group transition-opacity"
                     [class.cursor-pointer]="!store.isTranslatingAny()"
                     [class.cursor-not-allowed]="store.isTranslatingAny()"
                     [class.opacity-50]="store.isTranslatingAny()">
@@ -33,9 +33,24 @@ import { BookStore } from '../../../core/book.store';
                 [disabled]="store.isTranslatingAny()"
                 [checked]="store.config().translationMode === 'scientific'"
                 (change)="store.updateConfig({translationMode: 'scientific'})"
-                class="w-4 h-4 text-emerald-600 border-zinc-300 focus:ring-emerald-500 disabled:cursor-not-allowed">
-              <span class="text-sm text-zinc-700 font-medium tracking-tight">Khoa học/Học thuật/Chuyên ngành</span>
+                class="w-4 h-4 text-emerald-600 border-zinc-300 focus:ring-emerald-500 disabled:cursor-not-allowed cursor-pointer">
+              <span class="text-sm text-zinc-700 font-medium tracking-tight group-hover:text-zinc-900 transition-colors">Khoa học/Học thuật/Chuyên ngành</span>
             </label>
+            @if (store.config().translationMode === 'scientific') {
+              <div class="pl-7 mt-2">
+                <label class="flex items-center space-x-2.5 group transition-opacity"
+                        [class.cursor-pointer]="!store.isTranslatingAny()"
+                        [class.cursor-not-allowed]="store.isTranslatingAny()"
+                        [class.opacity-50]="store.isTranslatingAny()">
+                  <input type="checkbox" 
+                    [disabled]="store.isTranslatingAny()"
+                    [checked]="store.config().parseMath !== false"
+                    (change)="store.updateConfig({parseMath: $any($event.target).checked})"
+                    class="w-4 h-4 text-emerald-600 border-zinc-300 rounded focus:ring-emerald-500 disabled:cursor-not-allowed cursor-pointer">
+                  <span class="text-sm text-zinc-700 font-medium tracking-tight group-hover:text-zinc-900 transition-colors">Phân tích công thức toán</span>
+                </label>
+              </div>
+            }
           </div>
         </div>
 

@@ -1007,6 +1007,9 @@ ${htmlBody}
       const processed = text.replace(/\[\^([^\]]+)\]/g, `[^${prefix}-$1]`);
       const htmlBody = getConfiguredMarked().parse(processed);
       const title = this.chapter().title || `Phần ${this.index() + 1}`;
+      const isScientific = this.store.config()?.translationMode === 'scientific';
+      const parseMath = this.store.config()?.parseMath !== false;
+      const mathJaxScriptHTML = (isScientific && parseMath) ? MATHJAX_SCRIPT : '';
       const htmlDoc = `<!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -1016,7 +1019,7 @@ ${htmlBody}
 <meta name="x-sila-chapter-id" content="${this.chapter().id}">
 <title>${this.store.currentProjectName()}_${title}_silaBook_vi</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Lexend:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-${MATHJAX_SCRIPT}
+${mathJaxScriptHTML}
 <style>
 ${OFFLINE_READER_STYLES}
 </style>
@@ -1055,13 +1058,47 @@ ${OFFLINE_READER_SCRIPT}
     const parsed = getConfiguredMarked().parse(processedText) as string;
     
     // Schedule MathJax rendering after DOM update
-    setTimeout(() => {
-      if (typeof window !== 'undefined' && (window as any).MathJax && (window as any).MathJax.typesetPromise) {
-        (window as any).MathJax.typesetPromise().catch((err: any) => console.warn('MathJax error', err));
-      }
-    }, 50);
+    const isScientific = this.store.config()?.translationMode === 'scientific';
+    const parseMath = this.store.config()?.parseMath !== false;
+    if (isScientific && parseMath) {
+      setTimeout(() => {
+        this.loadAndTypesetMathJax();
+      }, 50);
+    }
 
     return this.sanitizer.bypassSecurityTrustHtml(parsed);
+  }
+
+  private loadAndTypesetMathJax() {
+    if (typeof window === 'undefined') return;
+    
+    if (!(window as any).MathJax) {
+      (window as any).MathJax = {
+        tex: {
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']]
+        },
+        svg: { fontCache: 'global' },
+        startup: { typeset: false }
+      };
+    }
+
+    if (!document.getElementById('MathJax-script')) {
+      const script = document.createElement('script');
+      script.id = 'MathJax-script';
+      script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js';
+      script.async = true;
+      script.onload = () => {
+        if ((window as any).MathJax?.typesetPromise) {
+          (window as any).MathJax.typesetPromise().catch((err: any) => console.warn('MathJax error', err));
+        }
+      };
+      document.head.appendChild(script);
+    } else {
+      if ((window as any).MathJax?.typesetPromise) {
+        (window as any).MathJax.typesetPromise().catch((err: any) => console.warn('MathJax error', err));
+      }
+    }
   }
 
   onLinkClick(event: MouseEvent) {
