@@ -5,6 +5,10 @@ Tất cả những thay đổi đáng chú ý của dự án kiencang/Book-silaT
 Định dạng dựa trên [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 và dự án này tuân thủ [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.0.91]- 2026-07-01
+### Fixed
+- Chỉnh sửa giao diện (modal video bật lên ở phần upload sách, chỉnh một số câu chữ, phần dịch thuật để đồng hồ ở header của mỗi chapter);
+
 ## [v1.0.90]- 2026-07-01
 ### Fixed
 - Bật/Tắt phân tích công thức toán bằng cách chèn thêm thư viện MathJax là tùy chọn;

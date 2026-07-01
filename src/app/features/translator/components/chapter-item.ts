@@ -1,4 +1,4 @@
-import { Component, input, model, output, inject, signal, OnInit, OnDestroy } from '@angular/core';
+import { Component, input, model, output, inject, signal, effect, OnInit, OnDestroy } from '@angular/core';
 
 @Component({
   selector: 'app-translating-skeleton',
@@ -28,37 +28,14 @@ import { Component, input, model, output, inject, signal, OnInit, OnDestroy } fr
         
         <div class="relative z-10 flex flex-col items-center bg-white/90 p-8 rounded-2xl shadow-sm backdrop-blur-sm border border-indigo-100 min-w-[240px]">
             <mat-icon class="animate-spin mb-4 text-indigo-600 !w-8 !h-8 !text-[32px] flex items-center justify-center">sync</mat-icon>
-            <div class="text-4xl font-mono font-medium text-zinc-800 mb-2 tracking-tight">
-                {{ formatTime(elapsedSeconds()) }}
-            </div>
-            <div class="text-xs font-semibold text-indigo-600 tracking-wider uppercase bg-indigo-50 px-3 py-1.5 rounded-full">
+            <div class="text-sm font-semibold text-indigo-600 tracking-wider uppercase bg-indigo-50 px-4 py-2 rounded-full shadow-sm">
                 Gemini đang dịch...
             </div>
         </div>
     </div>
   `
 })
-export class TranslatingSkeletonComponent implements OnInit, OnDestroy {
-  elapsedSeconds = signal(0);
-  private intervalFn: ReturnType<typeof setInterval> | null = null;
-
-  ngOnInit() {
-    this.intervalFn = setInterval(() => {
-        this.elapsedSeconds.update(s => s + 1);
-    }, 1000);
-  }
-
-  ngOnDestroy() {
-    if (this.intervalFn) {
-        clearInterval(this.intervalFn);
-    }
-  }
-
-  formatTime(seconds: number): string {
-    const m = Math.floor(seconds / 60).toString().padStart(2, '0');
-    const s = (seconds % 60).toString().padStart(2, '0');
-    return `${m}:${s}`;
-  }
+export class TranslatingSkeletonComponent {
 }
 import { DatePipe } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
@@ -94,7 +71,15 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
               <span class="w-1 h-1 rounded-full bg-zinc-300"></span>
               @switch (chapter().status) {
                 @case ('pending') { <span class="text-xs font-medium text-zinc-500 bg-zinc-200 px-2 rounded-full py-0.5">Chờ dịch</span> }
-                @case ('translating') { <span class="text-xs font-medium text-indigo-700 bg-indigo-100 px-2 rounded-full py-0.5 animate-pulse">Đang dịch...</span> }
+                @case ('translating') { 
+                  <span class="flex items-center gap-1.5 text-xs font-medium text-indigo-700 bg-indigo-100 px-2 rounded-full py-0.5">
+                    <span class="flex items-center gap-1 animate-pulse">
+                      <mat-icon class="!w-3 !h-3 !text-[12px] animate-spin">sync</mat-icon> Đang dịch...
+                    </span>
+                    <span class="w-[1px] h-3 bg-indigo-300"></span>
+                    <span class="font-mono tracking-tight">{{ formatTime(elapsedSeconds()) }}</span>
+                  </span> 
+                }
                 @case ('done') { <span class="text-xs font-medium text-green-700 bg-green-100 px-2 rounded-full py-0.5">Đã dịch</span> }
                 @case ('error') { <span class="text-xs font-medium text-red-700 bg-red-100 px-2 rounded-full py-0.5">Lỗi</span> }
               }
@@ -575,6 +560,28 @@ export class ChapterItemComponent {
   isBilingualFullscreen = signal(false);
   isBilingualAligned = signal(false);
   
+  elapsedSeconds = signal(0);
+  private intervalFn: ReturnType<typeof setInterval> | null = null;
+  
+  constructor() {
+    effect(() => {
+      const status = this.chapter().status;
+      if (status === 'translating') {
+        if (!this.intervalFn) {
+          this.elapsedSeconds.set(0);
+          this.intervalFn = setInterval(() => {
+            this.elapsedSeconds.update(s => s + 1);
+          }, 1000);
+        }
+      } else {
+        if (this.intervalFn) {
+          clearInterval(this.intervalFn);
+          this.intervalFn = null;
+        }
+      }
+    });
+  }
+
   showGlossaryModal = signal(false);
   isClosingGlossaryModal = signal(false);
   parsedCustomGlossary = signal<SafeHtml | string>('');
@@ -602,6 +609,18 @@ export class ChapterItemComponent {
   isGeneratingSummary = signal(false);
   showConfirmCreateSummary = signal(false);
   selectedVersionForSummary = signal<TranslationVersion | null>(null);
+
+  ngOnDestroy() {
+    if (this.intervalFn) {
+      clearInterval(this.intervalFn);
+    }
+  }
+
+  formatTime(seconds: number): string {
+    const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+    const s = (seconds % 60).toString().padStart(2, '0');
+    return `${m}:${s}`;
+  }
 
   confirmCreateSummary(version: TranslationVersion) {
     this.selectedVersionForSummary.set(version);

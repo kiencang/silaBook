@@ -207,17 +207,17 @@ import { processHtmlContent, getTurndownService } from './html.util';
                   <p class="text-xs text-zinc-900 font-medium tracking-tight">Nên ưu tiên định dạng EPUB, HTML hoặc Markdown nếu có thể.</p>
                   <div class="mt-3 p-3 bg-zinc-100/50 rounded-xl border border-zinc-200/60 max-w-xl w-full mx-auto cursor-default" (click)="$event.stopPropagation()">
                     <p class="text-xs text-zinc-500 leading-relaxed mb-2.5">
-                      Để giữ lại hình ảnh trong bản dịch, vui lòng sử dụng định dạng <strong>EPUB</strong>, <strong>HTML</strong> hoặc <strong>Markdown</strong>. Nếu bạn chỉ có file PDF, bạn có thể chuyển đổi nhanh chóng qua link Baidu bên dưới (chọn model PaddleOCR-VL-1.6 để có chất lượng chuyển đổi cao nhất), <a href="https://www.youtube.com/watch?v=mWlgsCRZJS8" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:text-indigo-700 hover:underline">xem video hướng dẫn</a>:
+                      Để giữ lại hình ảnh trong bản dịch, vui lòng sử dụng định dạng <strong>EPUB</strong>, <strong>HTML</strong> hoặc <strong>Markdown</strong>. Nếu bạn chỉ có file PDF, bạn có thể chuyển đổi nhanh chóng qua link Baidu bên dưới (chọn model PaddleOCR-VL-1.6 để có chất lượng chuyển đổi cao nhất), <button (click)="showVideo.set(true)" class="text-indigo-600 hover:text-indigo-700 hover:underline focus:outline-none">xem video hướng dẫn</button>:
                     </p>
                     <a 
                       href="https://aistudio.baidu.com/paddleocr" 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      class="inline-flex items-center justify-center gap-1.5 bg-white hover:bg-zinc-50 text-emerald-600 hover:text-emerald-700 font-semibold px-4 py-2 rounded-lg border border-zinc-200 hover:border-emerald-200/50 shadow-sm text-xs transition-colors w-full cursor-pointer group/btn"
+                      class="inline-flex items-center justify-center gap-2 bg-white hover:bg-zinc-50 text-emerald-600 hover:text-emerald-700 font-semibold px-4 py-2.5 rounded-lg border border-zinc-200 hover:border-emerald-200/50 shadow-sm text-sm transition-colors w-full cursor-pointer group/btn"
                     >
-                      <mat-icon class="!w-[14px] !h-[14px] !text-[14px] flex items-center justify-center text-emerald-500">transform</mat-icon>
+                      <mat-icon class="!w-[18px] !h-[18px] !text-[18px] flex items-center justify-center text-emerald-500">transform</mat-icon>
                       <span>aistudio.baidu.com/paddleocr</span>
-                      <mat-icon class="!w-[12px] !h-[12px] !text-[12px] flex items-center justify-center text-zinc-400 group-hover/btn:translate-x-0.5 transition-transform">open_in_new</mat-icon>
+                      <mat-icon class="!w-[16px] !h-[16px] !text-[16px] flex items-center justify-center text-zinc-400 group-hover/btn:translate-x-0.5 transition-transform">open_in_new</mat-icon>
                     </a>
                   </div>
                 </div>
@@ -228,6 +228,17 @@ import { processHtmlContent, getTurndownService } from './html.util';
         }
       </div>
     </div>
+
+    @if (showVideo()) {
+      <div class="fixed inset-0 z-50 flex items-center justify-center bg-zinc-900/80 backdrop-blur-sm p-4" (click)="showVideo.set(false)">
+        <div class="relative w-full max-w-5xl aspect-video bg-black rounded-2xl overflow-hidden shadow-2xl ring-1 ring-white/10" (click)="$event.stopPropagation()">
+          <button (click)="showVideo.set(false)" class="absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center bg-black/50 hover:bg-black/80 text-white rounded-full transition-colors backdrop-blur-md">
+            <mat-icon class="!w-6 !h-6 !text-[24px]">close</mat-icon>
+          </button>
+          <iframe class="w-full h-full" src="https://www.youtube.com/embed/mWlgsCRZJS8?autoplay=1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+      </div>
+    }
   `
 })
 export class Uploader {
@@ -241,6 +252,7 @@ export class Uploader {
 
   pendingPdfFile = signal<File | null>(null);
   pdfModel = signal<string>('gemini-flash-lite-latest');
+  showVideo = signal(false);
   
   pdfFileSizeMB = signal<string | null>(null);
   pdfTotalPages = signal<number>(0);
