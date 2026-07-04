@@ -602,7 +602,7 @@ ${htmlBody}
       }
       const activeConfig = project ? project.config : this.config();
       const isScientific = activeConfig?.translationMode === 'scientific';
-      const parseMath = activeConfig?.parseMath !== false;
+      const parseMath = activeConfig?.parseMath === true;
       const mathJaxScriptHTML = (isScientific && parseMath) ? MATHJAX_SCRIPT : '';
       const htmlDoc = `<!DOCTYPE html>
 <html lang="vi">

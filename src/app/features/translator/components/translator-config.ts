@@ -23,7 +23,7 @@ import { BookStore } from '../../../core/book.store';
                 [checked]="!store.config().translationMode || store.config().translationMode === 'standard'"
                 (change)="store.updateConfig({translationMode: 'standard'})"
                 class="w-4 h-4 text-emerald-600 border-zinc-300 focus:ring-emerald-500 disabled:cursor-not-allowed cursor-pointer">
-              <span class="text-sm text-zinc-700 font-medium tracking-tight group-hover:text-zinc-900 transition-colors">Tiêu chuẩn (truyện ngắn, tiểu thuyết, v.v..)</span>
+              <span class="text-sm text-zinc-700 font-medium tracking-tight group-hover:text-zinc-900 transition-colors">Truyện ngắn, tiểu thuyết</span>
             </label>
             <label class="flex items-center space-x-2.5 group transition-opacity"
                     [class.cursor-pointer]="!store.isTranslatingAny()"
@@ -34,7 +34,7 @@ import { BookStore } from '../../../core/book.store';
                 [checked]="store.config().translationMode === 'scientific'"
                 (change)="store.updateConfig({translationMode: 'scientific'})"
                 class="w-4 h-4 text-emerald-600 border-zinc-300 focus:ring-emerald-500 disabled:cursor-not-allowed cursor-pointer">
-              <span class="text-sm text-zinc-700 font-medium tracking-tight group-hover:text-zinc-900 transition-colors">Khoa học/Học thuật/Chuyên ngành</span>
+              <span class="text-sm text-zinc-700 font-medium tracking-tight group-hover:text-zinc-900 transition-colors">Khoa học, chuyên ngành</span>
             </label>
             @if (store.config().translationMode === 'scientific') {
               <div class="pl-7 mt-2">
@@ -44,14 +44,14 @@ import { BookStore } from '../../../core/book.store';
                         [class.opacity-50]="store.isTranslatingAny()">
                   <input type="checkbox" 
                     [disabled]="store.isTranslatingAny()"
-                    [checked]="store.config().parseMath !== false"
+                    [checked]="store.config().parseMath === true"
                     (change)="store.updateConfig({parseMath: $any($event.target).checked})"
                     class="w-4 h-4 text-emerald-600 border-zinc-300 rounded focus:ring-emerald-500 disabled:cursor-not-allowed cursor-pointer">
                   <div class="relative group/tooltip flex items-center" [class.cursor-help]="!store.isTranslatingAny()">
                     <span class="text-sm text-zinc-700 font-medium tracking-tight group-hover:text-zinc-900 transition-colors border-b border-dashed border-zinc-400/70 pb-px">Phân tích công thức toán</span>
                     
                     <div class="absolute bottom-full left-0 mb-2.5 w-[280px] p-3 bg-zinc-800 text-zinc-100 text-xs leading-relaxed rounded-xl opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all duration-200 shadow-xl z-[60] pointer-events-none">
-                      Công thức toán yêu cầu đầu vào (bản gốc) sử dụng cú pháp LaTex. Công thức toán chỉ hiển thị với bản dịch định dạng HTML.
+                      [Chỉ bật tùy chọn này khi cần thiết] - Công thức toán yêu cầu đầu vào (bản gốc) sử dụng cú pháp LaTex. Công thức toán chỉ hiển thị với bản dịch định dạng HTML.
                       <div class="absolute -bottom-1.5 left-12 w-3 h-3 bg-zinc-800 transform rotate-45"></div>
                     </div>
                   </div>
