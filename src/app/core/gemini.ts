@@ -45,6 +45,13 @@ export function parseGeminiError(e: unknown): string {
   return msg ? msg : `Lỗi không xác định trong quá trình xử lý, vui lòng thử lại.`;
 }
 
+const DEFAULT_SAFETY_SETTINGS = [
+  { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' },
+  { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
+  { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' },
+  { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' }
+];
+
 @Injectable({ providedIn: 'root' })
 export class GeminiClient {
   private getApiKey(): string {
@@ -109,7 +116,8 @@ export class GeminiClient {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const configArgs: any = {
-      thinkingConfig: { thinkingLevel: 'HIGH' }
+      thinkingConfig: { thinkingLevel: 'HIGH' },
+      safetySettings: DEFAULT_SAFETY_SETTINGS,
     };
 
     if (pdfSI) {
@@ -173,6 +181,7 @@ export class GeminiClient {
       const filterConfig: any = {
         systemInstruction: si,
         thinkingConfig: { thinkingLevel: 'HIGH' },
+        safetySettings: DEFAULT_SAFETY_SETTINGS,
         responseMimeType: 'application/json',
         responseSchema: {
           type: Type.ARRAY,
@@ -236,7 +245,8 @@ export class GeminiClient {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const filterConfig: any = {
         systemInstruction: si,
-        thinkingConfig: { thinkingLevel: 'HIGH' }
+        thinkingConfig: { thinkingLevel: 'HIGH' },
+        safetySettings: DEFAULT_SAFETY_SETTINGS,
       };
 
       const response = await this.ai.models.generateContent({
@@ -329,7 +339,8 @@ export class GeminiClient {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const configArgs: any = {
-      thinkingConfig: { thinkingLevel: 'HIGH' }
+      thinkingConfig: { thinkingLevel: 'HIGH' },
+      safetySettings: DEFAULT_SAFETY_SETTINGS,
     };
 
     if (systemInstruction) {
@@ -369,6 +380,7 @@ export class GeminiClient {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const configArgs: any = {
       thinkingConfig: { thinkingLevel: 'HIGH' },
+      safetySettings: DEFAULT_SAFETY_SETTINGS,
       responseMimeType: 'application/json'
     };
     if (psi) {
@@ -425,6 +437,7 @@ export class GeminiClient {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const configArgs: any = {
       thinkingConfig: { thinkingLevel: 'HIGH' },
+      safetySettings: DEFAULT_SAFETY_SETTINGS,
       responseMimeType: 'application/json'
     };
 
@@ -482,6 +495,7 @@ export class GeminiClient {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const configArgs: any = {
       thinkingConfig: { thinkingLevel: 'HIGH' },
+      safetySettings: DEFAULT_SAFETY_SETTINGS,
       responseMimeType: 'application/json'
     };
 
@@ -519,7 +533,8 @@ export class GeminiClient {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const configArgs: any = {
         systemInstruction: systemInstruction,
-        thinkingConfig: { thinkingLevel: 'HIGH' }
+        thinkingConfig: { thinkingLevel: 'HIGH' },
+        safetySettings: DEFAULT_SAFETY_SETTINGS,
       };
 
       const response = await this.ai.models.generateContent({
