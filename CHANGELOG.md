@@ -5,6 +5,10 @@ Tất cả những thay đổi đáng chú ý của dự án kiencang/Book-silaT
 Định dạng dựa trên [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 và dự án này tuân thủ [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.0.93]- 2026-07-06
+### Fixed
+- Điều chỉnh cấu hình safetySettings và đưa các mức chặn threshold về BLOCK_NONE giúp AI nới lỏng bộ lọc;
+
 ## [v1.0.92]- 2026-07-05
 ### Fixed
 - Đổi nhãn cho các mục trong `Chế độ dịch`;
