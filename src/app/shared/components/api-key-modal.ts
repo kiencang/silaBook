@@ -19,8 +19,8 @@ import { ToastService } from '../../core/toast.service';
               <h3 class="text-lg font-bold text-zinc-900 tracking-tight">Cấu hình Gemini API Key</h3>
             </div>
           </div>
-          <button (click)="triggerClose()" class="w-8 h-8 flex items-center justify-center text-zinc-400 hover:text-zinc-650 transition-colors rounded-lg hover:bg-zinc-100 cursor-pointer border-none bg-transparent focus:outline-none">
-            <mat-icon>close</mat-icon>
+          <button (click)="triggerClose()" class="w-8 h-8 flex items-center justify-center text-zinc-400 hover:text-zinc-700 transition-colors rounded-full hover:bg-zinc-200 cursor-pointer border-none bg-transparent focus:outline-none">
+            <mat-icon class="!text-[20px] !w-5 !h-5 !flex !items-center !justify-center">close</mat-icon>
           </button>
         </div>
         
@@ -75,21 +75,21 @@ import { ToastService } from '../../core/toast.service';
           <div>
             @if (hasSavedKey()) {
               <button (click)="deleteKey()" 
-                      class="px-3.5 py-1.5 bg-white border border-red-200 text-red-650 font-medium hover:bg-red-50 hover:border-red-300 rounded-xl transition-all shadow-sm focus:ring-2 focus:ring-red-105 focus:outline-none text-xs cursor-pointer">
+                      class="px-3.5 py-1.5 bg-white border border-red-200 text-red-600 font-medium hover:bg-red-50 hover:border-red-300 rounded-lg transition-all shadow-sm focus:ring-2 focus:ring-red-100 focus:outline-none text-xs cursor-pointer">
                 Xóa Key cá nhân
               </button>
             }
           </div>
           <div class="flex space-x-2">
             <button (click)="triggerClose()" 
-                    class="px-4 py-1.5 bg-white border border-zinc-300 text-zinc-700 font-medium hover:bg-zinc-100 rounded-xl transition-colors shadow-sm focus:ring-2 focus:ring-zinc-200 focus:outline-none text-xs cursor-pointer">
+                    class="px-4 py-1.5 bg-white border border-zinc-300 text-zinc-700 font-medium hover:bg-zinc-100 rounded-lg transition-colors shadow-sm focus:ring-2 focus:ring-zinc-200 focus:outline-none text-xs cursor-pointer">
               Hủy
             </button>
             <button (click)="saveKey()" 
                     [disabled]="!apiKey.trim()"
                     [class.opacity-50]="!apiKey.trim()"
                     [class.cursor-not-allowed]="!apiKey.trim()"
-                    class="px-4 py-1.5 bg-indigo-600 text-white font-medium hover:bg-indigo-700 rounded-xl shadow-sm transition-all focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 text-xs cursor-pointer border-none">
+                    class="px-4 py-1.5 bg-indigo-600 text-white font-medium hover:bg-indigo-700 rounded-lg shadow-sm transition-all focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 text-xs cursor-pointer border-none">
               Lưu cấu hình
             </button>
           </div>

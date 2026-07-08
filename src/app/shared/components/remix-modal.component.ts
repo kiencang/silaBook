@@ -17,8 +17,8 @@ import { MatIconModule } from '@angular/material/icon';
               <h3 class="text-lg font-bold text-zinc-900 tracking-tight">Hướng dẫn Remix ứng dụng</h3>
             </div>
           </div>
-          <button (click)="triggerClose()" class="w-8 h-8 flex items-center justify-center text-zinc-400 hover:text-zinc-650 transition-colors rounded-lg hover:bg-zinc-100 cursor-pointer border-none bg-transparent focus:outline-none">
-            <mat-icon>close</mat-icon>
+          <button (click)="triggerClose()" class="w-8 h-8 flex items-center justify-center text-zinc-400 hover:text-zinc-700 transition-colors rounded-full hover:bg-zinc-200 cursor-pointer border-none bg-transparent focus:outline-none">
+            <mat-icon class="!text-[20px] !w-5 !h-5 !flex !items-center !justify-center">close</mat-icon>
           </button>
         </div>
         
@@ -34,7 +34,7 @@ import { MatIconModule } from '@angular/material/icon';
         <!-- Actions -->
         <div class="p-4 bg-zinc-50 border-t border-zinc-100 flex justify-end items-center shrink-0">
           <button (click)="triggerClose()" 
-                  class="px-5 py-2 bg-indigo-600 text-white font-medium hover:bg-indigo-700 rounded-xl shadow-sm transition-all focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 text-sm cursor-pointer border-none">
+                  class="px-5 py-2 bg-indigo-600 text-white font-medium hover:bg-indigo-700 rounded-lg shadow-sm transition-all focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 text-sm cursor-pointer border-none">
             Đã hiểu
           </button>
         </div>

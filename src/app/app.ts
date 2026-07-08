@@ -28,8 +28,8 @@ import {AppsModalComponent} from './shared/components/apps-modal.component';
                [class.cursor-default]="store.isBusy()"
                title="Quay về trang chủ" 
                (click)="!store.isBusy() && store.closeProject()">
-            <div class="w-8 h-8 bg-indigo-600 rounded-full flex items-center justify-center text-white font-bold text-xl font-courier">B</div>
-            <div class="text-2xl font-bold text-zinc-900 tracking-tight flex items-center font-courier">
+            <div class="w-8 h-8 bg-indigo-600 rounded-full flex items-center justify-center text-white font-bold text-xl font-courier pt-0.5">B</div>
+            <div class="text-2xl font-bold text-zinc-900 tracking-tight flex items-center font-courier pt-1">
               <span class="hidden sm:inline">silaBook</span>
             </div>
           </button>

@@ -47,13 +47,13 @@ import { MatIconModule } from '@angular/material/icon';
         <button 
           (click)="analyze.emit()"
           [disabled]="isAnalyzing()"
-          class="flex-shrink-0 w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-lg font-medium transition-colors shadow-sm flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-wait">
+          class="flex-shrink-0 w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-3 rounded-lg font-medium transition-colors shadow-sm flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-wait">
           @if (isAnalyzing()) {
-            <mat-icon class="animate-spin !text-base !w-5 !h-5 hidden sm:block">autorenew</mat-icon>
-            <span>Đang phân tích...</span>
+            <mat-icon class="animate-spin !text-[20px] !w-5 !h-5 hidden sm:block">autorenew</mat-icon>
+            <span class="leading-none mt-[2px]">Đang phân tích...</span>
           } @else {
-            <mat-icon class="!text-base !w-5 !h-5 hidden sm:block">memory</mat-icon>
-            <span>Bắt đầu phân tích bằng AI</span>
+            <mat-icon class="!text-[20px] !w-5 !h-5 hidden sm:block">memory</mat-icon>
+            <span class="leading-none mt-[2px]">Bắt đầu phân tích bằng AI</span>
           }
         </button>
       </div>

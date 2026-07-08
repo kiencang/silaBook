@@ -18,8 +18,8 @@ import { MatIconModule } from '@angular/material/icon';
               <h3 class="text-lg font-bold text-zinc-900 tracking-tight">Các ứng dụng dịch thuật từ Anh sang Việt tiện dùng khác</h3>
             </div>
           </div>
-          <button (click)="triggerClose()" class="w-8 h-8 flex items-center justify-center text-zinc-400 hover:text-zinc-600 transition-colors rounded-lg hover:bg-zinc-100 cursor-pointer border-none bg-transparent focus:outline-none">
-            <mat-icon>close</mat-icon>
+          <button (click)="triggerClose()" class="w-8 h-8 flex items-center justify-center text-zinc-400 hover:text-zinc-700 transition-colors rounded-full hover:bg-zinc-200 cursor-pointer border-none bg-transparent focus:outline-none">
+            <mat-icon class="!text-[20px] !w-5 !h-5 !flex !items-center !justify-center">close</mat-icon>
           </button>
         </div>
         
@@ -34,7 +34,7 @@ import { MatIconModule } from '@angular/material/icon';
             <a href="https://aistudio.google.com/apps/bb5c61b7-e110-49aa-933c-04c4ccd18e16?showPreview=true&showAssistant=true&fullscreenApplet=true" 
                target="_blank" 
                rel="noopener noreferrer" 
-               class="group flex items-start p-4 bg-zinc-50/50 hover:bg-zinc-50 border border-zinc-150 hover:border-zinc-300 rounded-2xl transition-all duration-250 text-left cursor-pointer no-underline">
+               class="group flex items-start p-4 bg-zinc-50/50 hover:bg-zinc-50 border border-zinc-200 hover:border-indigo-300 hover:shadow-md rounded-2xl transition-all duration-250 text-left cursor-pointer no-underline">
               <div class="mr-4 p-3 rounded-xl shrink-0 flex items-center justify-center transition-all group-hover:scale-105 duration-200 bg-rose-50 text-rose-600 border border-rose-100">
                 <mat-icon class="!text-[24px] !w-6 !h-6 !flex !items-center !justify-center">picture_as_pdf</mat-icon>
               </div>
@@ -57,7 +57,7 @@ import { MatIconModule } from '@angular/material/icon';
             <a href="https://aistudio.google.com/apps/b98324ac-cdef-4887-961c-dbcc2c50a6c7?fullscreenApplet=true&showPreview=true&showAssistant=true" 
                target="_blank" 
                rel="noopener noreferrer" 
-               class="group flex items-start p-4 bg-zinc-50/50 hover:bg-zinc-50 border border-zinc-150 hover:border-zinc-300 rounded-2xl transition-all duration-250 text-left cursor-pointer no-underline">
+               class="group flex items-start p-4 bg-zinc-50/50 hover:bg-zinc-50 border border-zinc-200 hover:border-indigo-300 hover:shadow-md rounded-2xl transition-all duration-250 text-left cursor-pointer no-underline">
               <div class="mr-4 p-3 rounded-xl shrink-0 flex items-center justify-center transition-all group-hover:scale-105 duration-200 bg-sky-50 text-sky-600 border border-sky-100">
                 <mat-icon class="!text-[24px] !w-6 !h-6 !flex !items-center !justify-center">smart_display</mat-icon>
               </div>
@@ -80,7 +80,7 @@ import { MatIconModule } from '@angular/material/icon';
             <a href="https://aistudio.google.com/apps/4cc7e19e-46dd-4d38-8617-ba38ef1c80c3?fullscreenApplet=true&showPreview=true&showAssistant=true" 
                target="_blank" 
                rel="noopener noreferrer" 
-               class="group flex items-start p-4 bg-zinc-50/50 hover:bg-zinc-50 border border-zinc-150 hover:border-zinc-300 rounded-2xl transition-all duration-250 text-left cursor-pointer no-underline">
+               class="group flex items-start p-4 bg-zinc-50/50 hover:bg-zinc-50 border border-zinc-200 hover:border-indigo-300 hover:shadow-md rounded-2xl transition-all duration-250 text-left cursor-pointer no-underline">
               <div class="mr-4 p-3 rounded-xl shrink-0 flex items-center justify-center transition-all group-hover:scale-105 duration-200 bg-violet-50 text-violet-600 border border-violet-100">
                 <mat-icon class="!text-[24px] !w-6 !h-6 !flex !items-center !justify-center">language</mat-icon>
               </div>
@@ -104,7 +104,7 @@ import { MatIconModule } from '@angular/material/icon';
         <!-- Actions -->
         <div class="p-4 bg-zinc-50 border-t border-zinc-100 flex justify-end items-center shrink-0">
           <button (click)="triggerClose()" 
-                  class="px-5 py-2 bg-indigo-600 text-white font-medium hover:bg-indigo-700 rounded-xl shadow-sm transition-all focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 text-sm cursor-pointer border-none">
+                  class="px-5 py-2 bg-indigo-600 text-white font-medium hover:bg-indigo-700 rounded-lg shadow-sm transition-all focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 text-sm cursor-pointer border-none">
             Đóng
           </button>
         </div>

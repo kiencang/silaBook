@@ -16,8 +16,8 @@ import { BookStore } from '../../core/book.store';
             <p class="text-sm text-zinc-500 mt-1">Cập nhật thông tin tác phẩm hoặc tác giả.</p>
           </div>
           <button (click)="triggerClose()" 
-                  class="text-zinc-400 hover:text-zinc-600 transition-colors p-2 -mr-2 -mt-2 rounded-full hover:bg-zinc-100 focus:outline-none flex items-center justify-center">
-            <mat-icon class="text-[20px]">close</mat-icon>
+                  class="w-8 h-8 flex items-center justify-center text-zinc-400 hover:text-zinc-700 transition-colors rounded-full hover:bg-zinc-200 cursor-pointer border-none bg-transparent focus:outline-none">
+            <mat-icon class="!text-[20px] !w-5 !h-5 !flex !items-center !justify-center">close</mat-icon>
           </button>
         </div>
         
@@ -38,14 +38,14 @@ import { BookStore } from '../../core/book.store';
         
         <div class="p-4 bg-zinc-50 border-t border-zinc-100 flex justify-end space-x-3">
           <button (click)="triggerClose()" 
-                  class="px-5 py-2.5 bg-white border border-zinc-300 text-zinc-700 font-medium hover:bg-zinc-50 rounded-xl transition-colors shadow-sm focus:ring-2 focus:ring-zinc-200 focus:outline-none">
+                  class="px-5 py-2.5 bg-white border border-zinc-300 text-zinc-700 font-medium hover:bg-zinc-50 rounded-lg transition-colors shadow-sm focus:ring-2 focus:ring-zinc-200 focus:outline-none">
             Hủy
           </button>
           <button (click)="saveProject()" 
                   [disabled]="!canSave()"
                   [class.opacity-50]="!canSave()"
                   [class.cursor-not-allowed]="!canSave()"
-                  class="px-5 py-2.5 bg-indigo-600 text-white font-medium hover:bg-indigo-700 rounded-xl shadow-sm transition-all focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                  class="px-5 py-2.5 bg-indigo-600 text-white font-medium hover:bg-indigo-700 rounded-lg shadow-sm transition-all focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
             Lưu
           </button>
         </div>
