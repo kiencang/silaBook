@@ -1,6 +1,5 @@
 name = "silabook"
 compatibility_date = "2026-07-08"
 
-[site]
-bucket = "./dist/ai-studio-angular-app/browser"
-entry-point = "workers-site"
+[assets]
+directory = "./dist"
