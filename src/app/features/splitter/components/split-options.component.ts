@@ -130,7 +130,7 @@ import { MatIconModule } from '@angular/material/icon';
       <div class="flex flex-col md:flex-row gap-4 md:items-start justify-between">
         <div class="flex-1 w-full">
           <h4 class="block text-sm font-bold text-zinc-900 mb-1">Tùy chọn 3: Chia đều tự động (Hard-Split)</h4>
-          <p class="text-xs text-zinc-500">Dùng khi sách không có cấu trúc chuẩn nào. Ứng dụng sẽ tự động chia đều sách thành các khối theo chuẩn giới hạn số từ tối đa, tối thiểu bên trên dựa vào các khoảng nghỉ (xuống dòng, ngắt câu...).</p>
+          <p class="text-xs text-zinc-500">Dùng khi sách không có cấu trúc chuẩn nào (khi 2 tùy chọn đầu chia không hiệu quả). Ứng dụng sẽ tự động chia đều sách thành các khối văn bản theo giới hạn số từ tối đa (riêng tùy chọn này không dùng giới hạn "số từ tối thiểu"), nó dựa vào các khoảng nghỉ (xuống dòng, ngắt câu...) để chia.</p>
         </div>
         <div class="w-full md:w-32 flex-shrink-0">
           <button 

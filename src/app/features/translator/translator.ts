@@ -23,7 +23,11 @@ import { ChapterItemComponent } from './components/chapter-item';
         </div>
         <div class="p-4 bg-indigo-50/50 border border-indigo-100 rounded-xl flex gap-3 text-sm text-indigo-900 w-full">
           <mat-icon class="text-indigo-500 shrink-0">lightbulb</mat-icon>
-          <p>Nếu có thể, hãy luôn chọn mô hình AI mạnh nhất để dịch. Nếu bạn đã tạo bảng Thuật ngữ - Từ khó hoặc/và bảng Đại từ nhân xưng, nhớ tích hợp chúng vào trong quá trình dịch bằng cách tick tùy chọn "Kích hoạt..."</p>
+          <div class="space-y-2">
+            <p>Model Flash là đủ cho phần lớn trường hợp, đặc biệt với cuốn sách dài (để không bị gián đoạn trong quá trình dịch do hết ngưỡng miễn phí sớm trong ngày). Với những cuốn nhỏ, hoặc khó dịch có thể dùng model Pro để cải thiện chất lượng hơn.</p>
+            <p>Nếu hết ngưỡng miễn phí sớm, bạn có thể xuất dự án (ở mục "Quản lý dự án") và nhập lại dự án vào tài khoản miễn phí khác để tiếp tục tận dụng ngưỡng miễn phí trong ngày (thay vì phải dùng API Key trả phí tốn kém).</p>
+            <p>Nếu bạn đã tạo bảng "Thuật ngữ - Từ khó" hoặc/và bảng "Đại từ nhân xưng", nhớ tích hợp chúng vào trong quá trình dịch bằng cách tick tùy chọn "Kích hoạt..."</p>
+          </div>
         </div>
       </div>
 
