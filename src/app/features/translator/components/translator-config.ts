@@ -51,7 +51,7 @@ import { BookStore } from '../../../core/book.store';
                     <span class="text-sm text-zinc-700 font-medium tracking-tight group-hover:text-zinc-900 transition-colors border-b border-dashed border-zinc-400/70 pb-px">Phân tích công thức toán</span>
                     
                     <div class="absolute bottom-full left-0 mb-2.5 w-[280px] p-3 bg-zinc-800 text-zinc-100 text-xs leading-relaxed rounded-xl opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all duration-200 shadow-xl z-[60] pointer-events-none">
-                      [Chỉ bật tùy chọn này khi cần thiết] - Công thức toán yêu cầu đầu vào (bản gốc) sử dụng cú pháp LaTex. Công thức toán chỉ hiển thị với bản dịch định dạng HTML.
+                      [Chỉ bật tùy chọn này khi cần thiết] - Công thức toán yêu cầu đầu vào (bản gốc) sử dụng cú pháp LaTex. Công thức toán chỉ hiển thị với bản dịch định dạng HTML. Nếu tài liệu khoa học của bạn không có các công thức toán phức tạp thì chỉ cần chọn chế độ dịch "Khoa học, chuyên ngành" là đủ, không cần bật thêm "Phân tích công thức toán".
                       <div class="absolute -bottom-1.5 left-12 w-3 h-3 bg-zinc-800 transform rotate-45"></div>
                     </div>
                   </div>

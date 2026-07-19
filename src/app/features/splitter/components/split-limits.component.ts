@@ -11,8 +11,8 @@ import { MatIconModule } from '@angular/material/icon';
         <!-- Tối thiểu -->
         <div class="flex items-center gap-4 w-full xl:w-[45%] justify-between xl:justify-start">
           <div>
-            <label for="draftMinWords" class="block text-sm font-bold text-zinc-900 mb-1">Số từ tối thiểu</label>
-            <p class="text-xs text-zinc-500">Gộp các phần nhỏ hơn mức này.</p>
+            <label for="draftMinWords" class="block text-sm font-bold text-zinc-900 mb-1">Số từ tối thiểu ({{ draftMinWords() === 3000 ? 'mặc định' : 'tùy chỉnh' }})</label>
+            <p class="text-xs text-zinc-500">Gộp các khối văn bản nhỏ hơn mức này.</p>
           </div>
           <input type="number" 
                 id="draftMinWords"
@@ -30,8 +30,8 @@ import { MatIconModule } from '@angular/material/icon';
         <!-- Tối đa -->
         <div class="flex items-center gap-4 w-full xl:w-[45%] justify-between xl:justify-end">
           <div>
-            <label for="draftMaxWords" class="block text-sm font-bold text-zinc-900 mb-1">Số từ tối đa</label>
-            <p class="text-xs text-zinc-500">Chia các phần lớn hơn mức này.</p>
+            <label for="draftMaxWords" class="block text-sm font-bold text-zinc-900 mb-1">Số từ tối đa ({{ draftMaxWords() === 9000 ? 'mặc định' : 'tùy chỉnh' }})</label>
+            <p class="text-xs text-zinc-500">Chia các khối văn bản lớn hơn mức này.</p>
           </div>
           <input type="number" 
                 id="draftMaxWords"
@@ -44,7 +44,16 @@ import { MatIconModule } from '@angular/material/icon';
       </div>
 
       <!-- Nút áp dụng -->
-      <div class="mt-6 flex justify-center">
+      <div class="mt-6 flex justify-center gap-3">
+        <button 
+          (click)="draftMinWords.set(3000); draftMaxWords.set(9000); apply.emit()"
+          class="h-11 px-4 flex items-center justify-center space-x-1.5 rounded-lg font-medium transition-colors border shadow-sm text-sm bg-white hover:bg-zinc-50 text-zinc-700 border-zinc-300"
+          title="Khôi phục thiết lập mặc định (3000 - 9000)"
+        >
+          <mat-icon class="!w-4 !h-4 !text-base !flex !items-center !justify-center">refresh</mat-icon>
+          <span class="hidden sm:inline">Về mặc định</span>
+        </button>
+
         <button 
           (click)="apply.emit()"
           class="w-48 h-11 flex items-center justify-center space-x-1.5 rounded-lg font-medium transition-colors border shadow-sm text-sm"

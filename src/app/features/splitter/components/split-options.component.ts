@@ -14,7 +14,7 @@ import { MatIconModule } from '@angular/material/icon';
          [class.border-transparent]="activeSplitMode() !== 'keyword'">
       <div class="flex flex-col md:flex-row gap-4 md:items-start justify-between mb-4">
         <div class="flex-1 w-full">
-          <label for="keywordInput" class="block text-sm font-bold text-zinc-900 mb-1">Tùy chọn 1: Chia theo Từ khóa Tiêu đề</label>
+          <label for="keywordInput" class="block text-sm font-bold text-zinc-900 mb-1">Tùy chọn 1: Chia theo Từ khóa của Tiêu đề</label>
           <p class="text-xs text-zinc-500">Dùng khi các phần trong sách gốc bắt đầu bằng chữ như "Chapter", "Part", "Section", v.v.. Các khối vượt trần sẽ tự động được chia nhỏ bằng cách chia đôi.</p>
         </div>
         <div class="w-full md:w-32 flex-shrink-0">
@@ -72,8 +72,8 @@ import { MatIconModule } from '@angular/material/icon';
          [class.border-transparent]="activeSplitMode() !== 'heading'">
       <div class="flex flex-col md:flex-row gap-4 md:items-start justify-between mb-4">
         <div class="flex-1 w-full">
-          <h4 class="block text-sm font-bold text-zinc-900 mb-1">Tùy chọn 2: Chia theo cấu trúc Thẻ Heading (H2, H3)</h4>
-          <p class="text-xs text-zinc-500">Dùng khi sách gốc không có từ "Chapter", "Section" nhưng có thẻ <code>##</code> (H2) hoặc <code>###</code> (H3) phân định rõ ràng. Các khối vượt trần sẽ tự động được chia nhỏ bằng cách chia đôi.</p>
+          <h4 class="block text-sm font-bold text-zinc-900 mb-1">Tùy chọn 2: Chia theo cấu trúc thẻ Heading / Tiêu đề (H2, H3)</h4>
+          <p class="text-xs text-zinc-500">Dùng khi các mục tiêu đề của sách gốc không bắt đầu bằng các từ như "Chapter", "Part", "Section" nhưng có thẻ <code>##</code> (H2) hoặc <code>###</code> (H3) phân định rõ ràng (hiểu đơn giản là các tiêu đề lớn). Các khối vượt trần sẽ tự động được chia nhỏ bằng cách chia đôi.</p>
         </div>
         <div class="w-full md:w-32 flex-shrink-0">
           <button 
@@ -130,7 +130,7 @@ import { MatIconModule } from '@angular/material/icon';
       <div class="flex flex-col md:flex-row gap-4 md:items-start justify-between">
         <div class="flex-1 w-full">
           <h4 class="block text-sm font-bold text-zinc-900 mb-1">Tùy chọn 3: Chia đều tự động (Hard-Split)</h4>
-          <p class="text-xs text-zinc-500">Dùng khi sách không có cấu trúc chuẩn nào. Ứng dụng sẽ tự động chia đều sách thành các khối theo chuẩn giới hạn tối đa bên trên dựa vào các khoảng nghỉ (xuống dòng, ngắt câu...)</p>
+          <p class="text-xs text-zinc-500">Dùng khi sách không có cấu trúc chuẩn nào. Ứng dụng sẽ tự động chia đều sách thành các khối theo chuẩn giới hạn số từ tối đa, tối thiểu bên trên dựa vào các khoảng nghỉ (xuống dòng, ngắt câu...).</p>
         </div>
         <div class="w-full md:w-32 flex-shrink-0">
           <button 
