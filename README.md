@@ -95,6 +95,12 @@ Hướng dẫn sử dụng:
   </a>
 </p>
 
+Với cách trên ảnh sẽ vẫn hiển thị bình thường khi bạn đọc trực tiếp trên ứng dụng hoặc tải về bản PDF hoặc HTML. Nhưng vì ảnh là dạng link nên không hiển thị được ở định dạng EPUB và DOCX.
+
+Trường hợp bạn bắt buộc cần định dạng DOCX chứa ảnh, mà định dạng gốc lại là file PDF thì thay vì dùng PaddleOCR làm công cụ trung gian bạn nên sử dụng công cụ pdf-2-epub-docx này: https://aistudio.google.com/apps/9a11586a-e712-4c10-a1b6-751ab78fc10b?showAssistant=true&showCode=true
+
+Nó sẽ chuyển thành dạng EPUB có chứa ảnh gốc, bạn tải định dạng EPUB này về và up lên công cụ dịch là được.
+
 ## Tuyên bố từ chối trách nhiệm
 Công cụ này có thể được sử dụng cho mục đích nghiên cứu và học tập cá nhân.
 
