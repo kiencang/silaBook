@@ -120,7 +120,7 @@ import { ChapterItemComponent } from './components/chapter-item';
               [class.opacity-50]="store.isTranslatingAny()"
               [class.cursor-not-allowed]="store.isTranslatingAny()"
               class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded-lg font-medium shadow-sm transition-colors flex items-center space-x-1.5 disabled:bg-indigo-400"
-              title="Tải về định dạng sách EPUB"
+              title="Tải về định dạng sách điện tử EPUB."
             >
               <mat-icon>menu_book</mat-icon>
               <span>EPUB</span>
@@ -131,7 +131,7 @@ import { ChapterItemComponent } from './components/chapter-item';
               [class.opacity-50]="store.isTranslatingAny()"
               [class.cursor-not-allowed]="store.isTranslatingAny()"
               class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg font-medium shadow-sm transition-colors flex items-center space-x-1.5 disabled:bg-blue-400"
-              title="Tải về định dạng Word (DOCX)"
+              title="Tải về định dạng Word (DOCX)."
             >
               <mat-icon>description</mat-icon>
               <span>DOCX</span>
@@ -142,7 +142,7 @@ import { ChapterItemComponent } from './components/chapter-item';
               [class.opacity-50]="store.isTranslatingAny()"
               [class.cursor-not-allowed]="store.isTranslatingAny()"
               class="bg-rose-600 hover:bg-rose-700 text-white px-3 py-2 rounded-lg font-medium shadow-sm transition-colors flex items-center space-x-1.5 disabled:bg-rose-400"
-              title="Tải về định dạng PDF"
+              title="Tải về định dạng PDF."
             >
               <mat-icon>picture_as_pdf</mat-icon>
               <span>PDF</span>
@@ -153,7 +153,7 @@ import { ChapterItemComponent } from './components/chapter-item';
               [class.opacity-50]="store.isTranslatingAny()"
               [class.cursor-not-allowed]="store.isTranslatingAny()"
               class="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-lg font-medium shadow-sm transition-colors flex items-center space-x-1.5 disabled:bg-green-400"
-              title="Tải về định dạng trang web HTML"
+              title="Tải về định dạng trang web HTML (tối ưu cho khả năng đọc)."
             >
               <mat-icon>html</mat-icon>
               <span>HTML</span>

@@ -63,9 +63,9 @@ import { DatePipe } from '@angular/common';
                       </div>
                       <div class="flex flex-col gap-2 w-full mt-2">
                         <div class="flex flex-wrap items-center text-sm text-zinc-500 gap-x-4 gap-y-2">
-                          <span class="flex items-center" title="Ngày tạo ban đầu"><span class="material-icons text-[16px] mr-1 opacity-70">add_circle_outline</span> {{p.createdAt | date:'dd/MM/yy HH:mm'}}</span>
+                          <span class="flex items-center" title="Ngày tạo ban đầu."><span class="material-icons text-[16px] mr-1 opacity-70">add_circle_outline</span> {{p.createdAt | date:'dd/MM/yy HH:mm'}}</span>
                           @if (p.importedAt) {
-                            <span class="flex items-center text-indigo-600 font-medium" title="Ngày nhập vào máy"><span class="material-icons text-[16px] mr-1">publish</span> {{p.importedAt | date:'dd/MM/yy HH:mm'}}</span>
+                            <span class="flex items-center text-indigo-600 font-medium" title="Ngày nhập vào máy."><span class="material-icons text-[16px] mr-1">publish</span> {{p.importedAt | date:'dd/MM/yy HH:mm'}}</span>
                           }
                         </div>
                         <div class="flex flex-wrap items-center text-sm text-zinc-500 gap-x-4 gap-y-2">
@@ -110,7 +110,7 @@ import { DatePipe } from '@angular/common';
                           </div>
                         </div>
                       } @else {
-                        <button (click)="exportProjectData(p, $event)" class="px-4 py-2 w-full bg-purple-50 hover:bg-purple-100 text-purple-700 rounded-lg text-sm font-medium transition-colors border border-purple-200 shadow-sm text-center flex items-center justify-center gap-1.5" title="Xuất toàn bộ dữ liệu dự án (JSON)">
+                        <button (click)="exportProjectData(p, $event)" class="px-4 py-2 w-full bg-purple-50 hover:bg-purple-100 text-purple-700 rounded-lg text-sm font-medium transition-colors border border-purple-200 shadow-sm text-center flex items-center justify-center gap-1.5" title="Xuất toàn bộ dữ liệu dự án (JSON).&#10;Cho mục đích lưu trữ hoặc nhập vào tài khoản khác dịch tiếp.">
                           <span class="material-icons text-[18px]">save_alt</span> Sao lưu dự án
                         </button>
                         <button (click)="loadProject(p.id)" class="px-4 py-2 w-full bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg text-sm font-medium transition-colors border border-indigo-200 shadow-sm text-center flex items-center justify-center gap-1.5">
@@ -126,16 +126,16 @@ import { DatePipe } from '@angular/common';
                   @if (getProgress(p)?.percentage === 100) {
                     <div class="flex flex-wrap items-center gap-2 mt-1 pt-3 border-t border-dashed border-zinc-200" (click)="$event.stopPropagation()">
                       <span class="text-xs font-medium text-zinc-500 mr-1">Download</span>
-                      <button (click)="exportProjectToEpub(p, $event)" class="px-2 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded text-xs font-semibold transition-colors border border-indigo-200 shadow-sm flex items-center gap-1" title="Tải về định dạng sách EPUB">
+                      <button (click)="exportProjectToEpub(p, $event)" class="px-2 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded text-xs font-semibold transition-colors border border-indigo-200 shadow-sm flex items-center gap-1" title="Tải về định dạng sách điện tử EPUB.">
                         <span class="material-icons text-[13px]">menu_book</span>EPUB
                       </button>
-                      <button (click)="exportProjectToDocx(p, $event)" class="px-2 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded text-xs font-semibold transition-colors border border-blue-200 shadow-sm flex items-center gap-1" title="Tải về định dạng Word (DOCX)">
+                      <button (click)="exportProjectToDocx(p, $event)" class="px-2 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded text-xs font-semibold transition-colors border border-blue-200 shadow-sm flex items-center gap-1" title="Tải về định dạng Word (DOCX).">
                         <span class="material-icons text-[13px]">description</span>DOCX
                       </button>
-                      <button (click)="exportProjectToPdf(p, $event)" class="px-2 py-1 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded text-xs font-semibold transition-colors border border-rose-200 shadow-sm flex items-center gap-1" title="Tải về định dạng PDF">
+                      <button (click)="exportProjectToPdf(p, $event)" class="px-2 py-1 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded text-xs font-semibold transition-colors border border-rose-200 shadow-sm flex items-center gap-1" title="Tải về định dạng PDF.">
                         <span class="material-icons text-[13px]">picture_as_pdf</span>PDF
                       </button>
-                      <button (click)="exportProjectToHtml(p, $event)" class="px-2 py-1 bg-green-50 hover:bg-green-100 text-green-700 rounded text-xs font-semibold transition-colors border border-green-200 shadow-sm flex items-center gap-1" title="Tải về định dạng trang web HTML">
+                      <button (click)="exportProjectToHtml(p, $event)" class="px-2 py-1 bg-green-50 hover:bg-green-100 text-green-700 rounded text-xs font-semibold transition-colors border border-green-200 shadow-sm flex items-center gap-1" title="Tải về định dạng trang web HTML (tối ưu cho khả năng đọc).">
                         <span class="material-icons text-[13px]">html</span>HTML
                       </button>
                     </div>

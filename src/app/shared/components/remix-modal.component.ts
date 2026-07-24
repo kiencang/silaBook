@@ -29,6 +29,9 @@ import { MatIconModule } from '@angular/material/icon';
           </p>
           
           <img src="/remix-silabook.png" alt="Hướng dẫn remix ứng dụng" class="w-full rounded-xl border border-zinc-200 shadow-sm" referrerpolicy="no-referrer" />
+          <p class="text-sm text-zinc-600 leading-relaxed mt-4">
+            Thi thoảng bạn hãy vào app gốc để remix lại nếu bạn thấy app gốc ra phiên bản mới và bạn muốn dùng phiên bản mới nhất đó.
+          </p>
         </div>
 
         <!-- Actions -->
