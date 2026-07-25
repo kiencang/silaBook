@@ -101,6 +101,8 @@ Trường hợp bạn bắt buộc cần định dạng DOCX chứa ảnh, mà �
 
 Nó sẽ chuyển thành dạng EPUB có chứa ảnh gốc, bạn tải định dạng EPUB này về và up lên công cụ dịch là được.
 
+**Ghi chú thêm**: Một công cụ khác để OCR chuyển PDF thành markdown là GLM-OCR, các bạn có thể truy cập ở đường dẫn này: https://ocr.z.ai
+
 ## Tuyên bố từ chối trách nhiệm
 Công cụ này có thể được sử dụng cho mục đích nghiên cứu và học tập cá nhân.
 
