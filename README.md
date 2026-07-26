@@ -1,6 +1,13 @@
 # silaBook
-Công cụ dịch sách từ tiếng Anh sang tiếng Việt bằng Gemini. Tận dụng được ngưỡng API miễn phí khi dùng app qua AI Studio.
+Công cụ dịch sách từ tiếng Anh sang tiếng Việt bằng Gemini. Tận dụng được ngưỡng API miễn phí khi dùng app qua AI Studio (dịch không tốn tiền).
 
+Một số tính năng quan trọng khác:
+- Nhận nhiều định dạng sách: 5 định dạng đầu vào là EPUB, HTML, PDF, TXT, và Markdown;
+- Bảo toàn được ảnh trong bản dịch với một số định dạng nhất định (EPUB, HTML, Markdown);
+- Đối với định dạng PDF, nên chuyển đổi sang Markdwon bằng các công cụ ngoài nếu muốn giữ được ảnh (công cụ có hướng dẫn đầy đủ);
+- Có các phase phân tích đại từ, thuật ngữ (từ khó) và tóm tắt chương trước để việc dịch được chuẩn xác hơn;
+- Có khả năng xử lý được các cuốn sách lớn có độ dày lên đến 500 - 700 trang;
+  
 Chương trình sử dụng SI & Prompt từ dự án này: https://github.com/kiencang/SI-Prompt-Book-EV-Translate (**v1.0.35**).
 
 Xem hướng dẫn đầy đủ và cập nhật: https://silabook-intro.wpsila.com/
