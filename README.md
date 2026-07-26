@@ -133,7 +133,6 @@ silaBook cũng như người phát triển nó không đưa ra bất kỳ bảo 
 ### 2. Giao Diện
 *   **[Tailwind CSS](https://tailwindcss.com/)**: Framework utility-first CSS hỗ trợ xây dựng giao diện.
 *   **[Angular Material Icons](https://material.angular.io/)**: Cung cấp hệ thống icon.
-*   **[Motion (Vanilla JS)](https://motion.dev/)**: Thư viện xử lý hiệu ứng chuyển động.
 
 ### 3. Xử Lý & Xuất Bản Tài Liệu (Document Processing)
 *   **[docx](https://docx.js.org/)**: Thư viện chuyên dụng tạo cấu trúc tài liệu Word (`.docx`), hoạt động hoàn toàn phía client.
