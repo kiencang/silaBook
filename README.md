@@ -103,6 +103,14 @@ Nó sẽ chuyển thành dạng EPUB có chứa ảnh gốc, bạn tải định
 
 **Ghi chú thêm**: Một công cụ khác để OCR chuyển PDF thành markdown là GLM-OCR, các bạn có thể truy cập ở đường dẫn này: https://ocr.z.ai
 
+## Thử nghiệm thêm để có thể kết nối với bất cứ AI nào
+
+Nhìn chung tôi hài lòng với Gemini, nó có chất lượng tốt và có gói miễn phí hàng ngày tương đối rộng rãi.
+
+Tuy nhiên vẫn có nhu cầu sử dụng các model AI khác để dịch. Và tôi đang triển khai một công cụ tương tự dựa trên công cụ này, nó sẽ kết hợp với OpenRouter- vốn là cổng trung gian có thể kết nối với hầu hết các AI quan trọng nhất. Điều đó giúp bạn có khả năng sử dụng bất cứ AI nào bạn muốn để dịch!
+
+Bạn có thể tham khảo repo đó ở đây: https://github.com/kiencang/silaBook-openSky
+
 ## Tuyên bố từ chối trách nhiệm
 Công cụ này có thể được sử dụng cho mục đích nghiên cứu và học tập cá nhân.
 
