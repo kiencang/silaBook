@@ -84,6 +84,10 @@ import { processHtmlContent, getTurndownService } from './html.util';
               </div>
             </div>
 
+            <div class="mb-6 p-4 rounded-lg border border-dashed border-amber-400 bg-amber-50 text-amber-800 text-sm leading-relaxed text-left">
+              <strong>Lưu ý:</strong> Bạn nên sử dụng các công cụ chuyên sâu để chuyển PDF thành định dạng markdown, rồi tải tài liệu markdown đó lên ứng dụng này, điều đó vừa đỡ tốn token, vừa nhanh và ít lỗi hơn. Hãy sử dụng các công cụ như <a href="https://aistudio.baidu.com/paddleocr" target="_blank" rel="noopener noreferrer" class="font-semibold underline hover:text-amber-900">PaddleOCR</a> hoặc <a href="https://ocr.z.ai" target="_blank" rel="noopener noreferrer" class="font-semibold underline hover:text-amber-900">GLM-OCR</a>.
+            </div>
+
             <div class="flex flex-col gap-3">
               <button (click)="startPdfConversion(pFile)" [disabled]="store.isConverting() || isCountingTokens() || (tokenCount() || 0) > 1000000" class="w-full justify-center flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                 @if (store.isConverting()) {
@@ -100,7 +104,7 @@ import { processHtmlContent, getTurndownService } from './html.util';
             </div>
             
             <p class="mt-6 text-[13px] text-zinc-400 italic text-left leading-relaxed">
-              (*) Tài liệu PDF trước khi dịch sẽ được <strong class="font-medium text-zinc-500">chuyển sang định dạng thân thiện với AI hơn</strong>. Việc này có thể dễ dàng thực hiện với các model thấp để có tốc độ cao và tiết kiệm ngưỡng miễn phí (giúp bạn dùng miễn phí được nhiều hơn). Khi tiến hành dịch thuật chính thức bạn có tùy chọn với các model AI cao nhất để có chất lượng dịch tốt nhất.
+              (*) Tài liệu PDF trước khi dịch sẽ được <strong class="font-medium text-zinc-500">chuyển sang định dạng thân thiện với AI hơn (markdown)</strong>. Việc này có thể thực hiện được với các model thấp để có tốc độ cao và tiết kiệm ngưỡng miễn phí (giúp bạn dùng miễn phí được nhiều hơn). Khi tiến hành dịch thuật chính thức bạn vẫn có tùy chọn với các model AI cao nhất để có chất lượng dịch tốt nhất.
             </p>
           </div>
         } @else if (store.pdfTask(); as task) {
