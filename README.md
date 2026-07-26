@@ -12,7 +12,7 @@ Chương trình sử dụng SI & Prompt từ dự án này: https://github.com/k
 
 Xem hướng dẫn đầy đủ và cập nhật: https://silabook-intro.wpsila.com/
 
-Remix trên AI Studio và chỉnh sửa thêm nếu muốn: https://aistudio.google.com/apps/d25924ff-35f1-42f7-9543-f142ecfe037a?showPreview=true&showAssistant=true
+Remix trên AI Studio (để tận dụng API Key miễn phí) và chỉnh sửa thêm nếu muốn: https://aistudio.google.com/apps/d25924ff-35f1-42f7-9543-f142ecfe037a?showPreview=true&showAssistant=true
 
 ## Hướng dẫn sử dụng nhanh
 
