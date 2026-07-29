@@ -5,6 +5,11 @@ Tất cả những thay đổi đáng chú ý của dự án kiencang/Book-silaT
 Định dạng dựa trên [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 và dự án này tuân thủ [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.0.101]- 2026-07-29
+### Fixed
+- Chỉnh sửa SI, loại bỏ chỉ thị giữ lại công thức toán học phức tạp, không hiệu quả và hay gây lỗi hiển thị;
+- Loại bỏ việc lồng MathJax vào file HTML (loại bỏ tính năng Phân tích công thức toán);
+
 ## [v1.0.100]- 2026-07-27
 ### Fixed
 - Thêm thông tin khi người dùng tải lên file PDF, khuyến khích họ sử dụng các công cụ chuyên sâu bên ngoài để chuyển PDF thành markdown;
