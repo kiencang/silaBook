@@ -27,6 +27,7 @@ BẠN PHẢI TUÂN THỦ NGHIÊM NGẶT CÁC RÀNG BUỘC SAU:
 4. XỬ LÝ CHÚ THÍCH (FOOTNOTES/ENDNOTES):
 - Gom toàn bộ nội dung giải nghĩa của các chú thích xuống CUỐI CÙNG của file Markdown theo định dạng: `[^1]: Nội dung giải nghĩa...`. Không để nội dung chú thích xen giữa các đoạn văn làm gián đoạn luồng dịch thuật.
 - Sử dụng định dạng chú thích Markdown chuẩn: `[^1]`, `[^2]`.
+- Chuyển đổi các ký hiệu trích dẫn nguồn chỉ số trên dạng giả LaTeX như `$^{12}$` hoặc `$ ^{12} $` thành thẻ HTML chỉ số trên `<sup>12</sup>`.
 
 5. ĐẦU RA ZERO-FLUFF (CHỈ CODE):
 - KHÔNG có bất kỳ lời chào hỏi, xác nhận, hay giải thích nào (Ví dụ: Không dùng "Dưới đây là...", "Đã xong...").
