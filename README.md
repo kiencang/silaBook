@@ -118,15 +118,15 @@ Tuy nhiên vẫn có nhu cầu sử dụng các model AI khác để dịch. Và
 
 Bạn có thể tham khảo repo đó ở đây: https://github.com/kiencang/silaBook-openSky
 
-## Tuyên bố từ chối trách nhiệm
-Công cụ này có thể được sử dụng cho mục đích nghiên cứu và học tập cá nhân.
-
-silaBook cũng như người phát triển nó không đưa ra bất kỳ bảo đảm rõ ràng hay ngụ ý nào, cũng như không tuyên bố rằng công cụ sẽ vận hành hoàn hảo, chính xác hoặc cập nhật. Người phát triển sẽ không chịu trách nhiệm cho bất kỳ tổn thất hay thiệt hại nào phát sinh trực tiếp hoặc gián tiếp liên quan đến hoặc phát sinh từ việc sử dụng công cụ này.
-
 ## Một nhánh khác để bảo lưu định dạng tốt hơn
 silaBook rất mạnh dịch EPUB, HTML, Markdown, nhưng không mạnh dịch PDF ở khía cạnh bảo toàn định dạng, nhất là công thức toán.
 
 Tôi phát triển một nhánh khác của công cụ này với khả năng dịch PDF tốt hơn hẳn, bảo toàn định dạng ở mức khá cao, và đặc biệt công thức toán được giữ lại chuẩn hơn, kể cả là các công thức phức tạp. Bạn có thể tham khảo repo đó ở đây: https://github.com/kiencang/1987-Layout
+
+## Tuyên bố từ chối trách nhiệm
+Công cụ này có thể được sử dụng cho mục đích nghiên cứu và học tập cá nhân.
+
+silaBook cũng như người phát triển nó không đưa ra bất kỳ bảo đảm rõ ràng hay ngụ ý nào, cũng như không tuyên bố rằng công cụ sẽ vận hành hoàn hảo, chính xác hoặc cập nhật. Người phát triển sẽ không chịu trách nhiệm cho bất kỳ tổn thất hay thiệt hại nào phát sinh trực tiếp hoặc gián tiếp liên quan đến hoặc phát sinh từ việc sử dụng công cụ này.
 
 ## Ghi công
 
