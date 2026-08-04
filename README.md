@@ -4,7 +4,7 @@ Công cụ dịch sách từ tiếng Anh sang tiếng Việt bằng Gemini. Tậ
 Một số tính năng quan trọng khác:
 - Nhận nhiều định dạng sách: 5 định dạng đầu vào là EPUB, HTML, PDF, TXT, và Markdown;
 - Bảo toàn được ảnh trong bản dịch với một số định dạng nhất định (EPUB, HTML, Markdown);
-- Đối với định dạng PDF, nên chuyển đổi sang Markdwon bằng các công cụ ngoài nếu muốn giữ được ảnh (công cụ có hướng dẫn đầy đủ);
+- Đối với định dạng PDF, nên chuyển đổi sang Markdown bằng các công cụ ngoài nếu muốn giữ được ảnh (công cụ có hướng dẫn đầy đủ);
 - Có các phase phân tích đại từ, thuật ngữ (từ khó) và tóm tắt chương trước để việc dịch được chuẩn xác hơn;
 - Có khả năng xử lý được các cuốn sách lớn có độ dày lên đến 500 - 700 trang;
   
@@ -87,6 +87,17 @@ Thường để dịch nguyên một cuốn sách ứng dụng cần 1 - 2 tiế
 </p>
 
 Bạn có thể vào dự án Gutenberg để tải các sách hết hạn bản quyền về dịch. Ví dụ 100 cuốn được tải về nhiều nhất trong tháng: https://www.gutenberg.org/browse/scores/top#books-last100
+
+## Cách thức hoạt động
+
+Về cơ bản, ý tưởng của silaBook là `chia để trị`. Một cuốn sách lớn không bao giờ dịch trong một phiên là xong, ứng dụng chia cuốn sách thành nhiều phần để `xử lý dần dần`.
+
+Định dạng markdown đầu vào (EPUB, HTML đều sẽ được chuyển thành markdown trước khi phân tích) là một lợi thế lớn. Nó giúp công cụ ở nhiều khía cạnh:
+- Sách được chia dễ hơn, và thường được chia rất tốt theo chương hoặc các đề mục lớn. Trong trường hợp bất đắc dĩ cũng chia được theo khối, cực kỳ hiếm trường hợp phải chia `giữa dòng` làm gián đoạn luồng dịch & gây tình trạng lửng lơ ở các câu cuối...
+- Kiểm soát số lượng từ đầu vào chính xác gần như tuyệt đối, vì markdown về cơ bản giống như văn bản thuần, việc đếm từ để tránh các giới hạn quá thấp hoặc quá cao được triển khai dễ dàng;
+- Tiết kiệm hơn, việc chỉ phải xử lý văn bản thuần giúp AI giảm thiểu chi phí đáng kể. Các ảnh nếu có đều đã tồn tại sẵn dưới dạng link, và AI không cần can thiệp mà chỉ cần giữ đúng vị trí của link trong bản dịch tương ứng với bản gốc là đã đủ yêu cầu;
+- Có nhiều AI có khả năng xử lý hơn. Vì không phải AI nào cũng là dạng đa phương thức có khả năng nhìn ảnh, trong khi tất cả các AI lớn đều có khả năng xử lý đầu vào là text nói chung và markdown nói riêng;
+- Giảm lỗi sai. Các đầu vào chuẩn như EPUB, HTML được chuyển thành markdown có độ chính xác rất cao, và các ảnh được giữ nguyên vẹn 100%. Nếu phải xử lý các định dạng không thân thiện như PDF, rất khó công cụ nào chuyển thành markdown & giữ ảnh tuyệt đối chính xác;
 
 ## Cách sử dụng PaddleOCR để chuyển đổi PDF sang dạng Markdown
 Điều này giúp bản dịch giữ lại được ảnh trong bản gốc. Trước khi gửi lên silaBook, bạn chuyển định dạng PDF sang markdown bằng công cụ dưới đây của Baidu.
