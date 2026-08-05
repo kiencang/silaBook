@@ -5,7 +5,7 @@ Tất cả những thay đổi đáng chú ý của dự án kiencang/Book-silaT
 Định dạng dựa trên [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 và dự án này tuân thủ [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [v1.0.101]- 2026-07-29
+## [v1.0.102]- 2026-08-05
 ### Fixed
 - Chỉnh sửa nhỏ một số câu chữ ở phase5;
 - Quản lý dự án cải tiến khả năng sắp xếp theo dòng thời gian và theo vần ABC tên dự án; ngoài ra dự án đang mở luôn được xếp vị trí đầu tiên;
