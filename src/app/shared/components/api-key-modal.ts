@@ -2,6 +2,7 @@ import { Component, Output, EventEmitter, signal, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { ToastService } from '../../core/toast.service';
+import { getSecureApiKey, saveSecureApiKey, removeSecureApiKey, hasSecureApiKey } from '../../core/crypto-storage.util';
 
 @Component({
   selector: 'app-api-key-modal',
@@ -54,7 +55,8 @@ import { ToastService } from '../../core/toast.service';
             <div class="relative flex items-center">
               <input id="geminiApiKey" 
                      [type]="showKey() ? 'text' : 'password'" 
-                     [(ngModel)]="apiKey" 
+                     [ngModel]="apiKey()"
+                     (ngModelChange)="apiKey.set($event)" 
                      placeholder="AIzaSy..." 
                      (keydown.enter)="saveKey()"
                      class="w-full pl-4 pr-11 py-2.5 border border-zinc-305 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm tracking-wide font-mono transition-shadow outline-none text-zinc-800 bg-zinc-50 focus:bg-white">
@@ -86,9 +88,9 @@ import { ToastService } from '../../core/toast.service';
               Hủy
             </button>
             <button (click)="saveKey()" 
-                    [disabled]="!apiKey.trim()"
-                    [class.opacity-50]="!apiKey.trim()"
-                    [class.cursor-not-allowed]="!apiKey.trim()"
+                    [disabled]="!apiKey().trim()"
+                    [class.opacity-50]="!apiKey().trim()"
+                    [class.cursor-not-allowed]="!apiKey().trim()"
                     class="px-4 py-1.5 bg-indigo-600 text-white font-medium hover:bg-indigo-700 rounded-lg shadow-sm transition-all focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 text-xs cursor-pointer border-none">
               Lưu cấu hình
             </button>
@@ -104,21 +106,22 @@ export class ApiKeyModal {
   
   isClosing = signal(false);
   showKey = signal(false);
-  apiKey = '';
+  apiKey = signal('');
   hasSavedKey = signal(false);
 
   constructor() {
     this.checkSavedKey();
   }
 
-  checkSavedKey() {
+  async checkSavedKey() {
     if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('user_gemini_api_key');
-      this.hasSavedKey.set(!!(saved && saved.trim() !== ''));
-      if (saved) {
-        this.apiKey = saved;
+      const hasKey = await hasSecureApiKey();
+      this.hasSavedKey.set(hasKey);
+      if (hasKey) {
+        const saved = await getSecureApiKey();
+        this.apiKey.set(saved || '');
       } else {
-        this.apiKey = '';
+        this.apiKey.set('');
       }
     }
   }
@@ -134,8 +137,8 @@ export class ApiKeyModal {
     }, 200);
   }
 
-  saveKey() {
-    const trimmed = this.apiKey.trim();
+  async saveKey() {
+    const trimmed = this.apiKey().trim();
     if (!trimmed) return;
     
     if (!/^[a-zA-Z0-9_\-.]+$/.test(trimmed)) {
@@ -144,16 +147,20 @@ export class ApiKeyModal {
     }
 
     if (typeof window !== 'undefined') {
-      localStorage.setItem('user_gemini_api_key', trimmed);
-      window.dispatchEvent(new Event('api-key-changed'));
-      this.toast.success('Đã lưu cấu hình API Key cá nhân thành công!');
+      const success = await saveSecureApiKey(trimmed);
+      if (success) {
+        window.dispatchEvent(new Event('api-key-changed'));
+        this.toast.success('Đã lưu cấu hình API Key cá nhân thành công!');
+      } else {
+        this.toast.error('Lỗi khi lưu API Key bảo mật.');
+      }
     }
     this.triggerClose();
   }
 
-  deleteKey() {
+  async deleteKey() {
     if (typeof window !== 'undefined') {
-      localStorage.removeItem('user_gemini_api_key');
+      await removeSecureApiKey();
       window.dispatchEvent(new Event('api-key-changed'));
       this.toast.success('Xóa API Key cá nhân thành công.');
     }

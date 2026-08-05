@@ -12,7 +12,7 @@ import { BookStore } from '../../../core/book.store';
       <div class="flex flex-col md:flex-row gap-8">
         <!-- Translation Mode Selection -->
         <div class="flex-1">
-          <h3 class="text-sm font-semibold text-zinc-900 uppercase tracking-wider mb-4">Chế độ dịch</h3>
+          <h3 class="text-sm font-semibold text-zinc-900 uppercase tracking-wider mb-4">Phong cách dịch</h3>
           <div class="flex flex-col space-y-2.5">
             <label class="flex items-center space-x-2.5 group transition-opacity"
                     [class.cursor-pointer]="!store.isTranslatingAny()"
@@ -55,7 +55,7 @@ import { BookStore } from '../../../core/book.store';
                 [checked]="store.config().model === 'gemini-flash-latest'"
                 (change)="store.updateConfig({model: 'gemini-flash-latest'})"
                 class="w-4 h-4 text-indigo-600 border-zinc-300 focus:ring-indigo-500 disabled:cursor-not-allowed">
-              <span class="text-sm text-zinc-700 font-medium tracking-tight">[Nhanh & Tiết kiệm] - Flash</span>
+              <span class="text-sm text-zinc-700 font-medium tracking-tight">Flash</span>
             </label>
             <label class="flex items-center space-x-3 transition-opacity"
                     [class.cursor-pointer]="!store.isTranslatingAny()"
@@ -66,7 +66,7 @@ import { BookStore } from '../../../core/book.store';
                 [checked]="store.config().model === 'gemini-pro-latest'"
                 (change)="store.updateConfig({model: 'gemini-pro-latest'})"
                 class="w-4 h-4 text-red-600 border-zinc-300 focus:ring-red-500 disabled:cursor-not-allowed">
-              <span class="text-sm text-zinc-700 font-medium tracking-tight">[Tư duy sâu] - Pro</span>
+              <span class="text-sm text-zinc-700 font-medium tracking-tight">Pro</span>
             </label>
           </div>
         </div>

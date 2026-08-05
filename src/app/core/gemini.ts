@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { GoogleGenAI, Type } from '@google/genai';
+import { getSecureApiKey } from './crypto-storage.util';
 
 export function isQuotaError(e: unknown): boolean {
   const msg = (e as Error)?.message || e?.toString() || '';
@@ -54,9 +55,9 @@ const DEFAULT_SAFETY_SETTINGS = [
 
 @Injectable({ providedIn: 'root' })
 export class GeminiClient {
-  private getApiKey(): string {
+  private async getApiKey(): Promise<string> {
     if (typeof window !== 'undefined') {
-      const userKey = localStorage.getItem('user_gemini_api_key');
+      const userKey = await getSecureApiKey();
       if (userKey && userKey.trim()) {
         return userKey.trim();
       }
@@ -64,9 +65,10 @@ export class GeminiClient {
     return GEMINI_API_KEY;
   }
 
-  private get ai(): GoogleGenAI {
+  private async getAi(): Promise<GoogleGenAI> {
+    const key = await this.getApiKey();
     return new GoogleGenAI({ 
-      apiKey: this.getApiKey(),
+      apiKey: key,
       httpOptions: {
         headers: {
           'User-Agent': 'aistudio-build'
@@ -95,7 +97,8 @@ export class GeminiClient {
 
   async countTokens(base64Data: string, mimeType = 'application/pdf', model = 'gemini-flash-lite-latest'): Promise<number> {
     try {
-      const response = await this.ai.models.countTokens({
+      const ai = await this.getAi();
+      const response = await ai.models.countTokens({
         model: model,
         contents: [
           { inlineData: { data: base64Data, mimeType } }
@@ -124,7 +127,7 @@ export class GeminiClient {
       configArgs.systemInstruction = pdfSI;
     }
 
-    const response = await this.ai.models.generateContent({
+    const response = await (await this.getAi()).models.generateContent({
       model: model,
       config: configArgs,
       contents: [
@@ -196,7 +199,7 @@ export class GeminiClient {
         }
       };
 
-      const response = await this.ai.models.generateContent({
+      const response = await (await this.getAi()).models.generateContent({
         model: 'gemini-flash-lite-latest',
         contents: [ { text: prompt } ],
         config: filterConfig
@@ -249,7 +252,7 @@ export class GeminiClient {
         safetySettings: DEFAULT_SAFETY_SETTINGS,
       };
 
-      const response = await this.ai.models.generateContent({
+      const response = await (await this.getAi()).models.generateContent({
         model: model,
         contents: [ { text: prompt } ],
         config: filterConfig
@@ -347,7 +350,7 @@ export class GeminiClient {
       configArgs.systemInstruction = systemInstruction;
     }
 
-    const response = await this.ai.models.generateContent({
+    const response = await (await this.getAi()).models.generateContent({
       model: model,
       contents: [
         { text: finalPrompt }
@@ -387,7 +390,7 @@ export class GeminiClient {
        configArgs.systemInstruction = psi;
     }
 
-    const response = await this.ai.models.generateContent({
+    const response = await (await this.getAi()).models.generateContent({
       model: model,
       contents: [{ text: finalPrompt }],
       config: configArgs
@@ -445,7 +448,7 @@ export class GeminiClient {
        configArgs.systemInstruction = gsi;
     }
 
-    const response = await this.ai.models.generateContent({
+    const response = await (await this.getAi()).models.generateContent({
       model: model,
       contents: [{ text: finalPrompt }],
       config: configArgs
@@ -503,7 +506,7 @@ export class GeminiClient {
        configArgs.systemInstruction = si;
     }
 
-    const response = await this.ai.models.generateContent({
+    const response = await (await this.getAi()).models.generateContent({
       model: model,
       contents: [{ text: finalPrompt }],
       config: configArgs
@@ -537,7 +540,7 @@ export class GeminiClient {
         safetySettings: DEFAULT_SAFETY_SETTINGS,
       };
 
-      const response = await this.ai.models.generateContent({
+      const response = await (await this.getAi()).models.generateContent({
         model: model,
         contents: [ { text: finalPrompt } ],
         config: configArgs

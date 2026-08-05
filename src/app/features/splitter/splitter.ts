@@ -8,6 +8,7 @@ import { AiAnalysisComponent } from './components/ai-analysis.component';
 import { SplitLimitsComponent } from './components/split-limits.component';
 import { SplitOptionsComponent } from './components/split-options.component';
 import { SplitPreviewComponent } from './components/split-preview.component';
+import { hasSecureApiKey } from '../../core/crypto-storage.util';
 
 @Component({
   selector: 'app-splitter',
@@ -250,8 +251,8 @@ export class Splitter {
   }
 
   async runBookAnalysis() {
-    const userKey = localStorage.getItem('user_gemini_api_key');
-    if (!userKey?.trim()) {
+    const hasKey = await hasSecureApiKey();
+    if (!hasKey) {
       this.toast.error('Vui lòng thêm GEMINI API KEY CÁ NHÂN (biểu tượng chìa khóa ở góc trái dưới cùng màn hình) trước khi sử dụng tính năng này.');
       return;
     }

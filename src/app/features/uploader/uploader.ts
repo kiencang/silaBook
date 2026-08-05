@@ -8,6 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { PdfService } from './pdf.service';
 import { processEpubContent } from './epub.util';
 import { processHtmlContent, getTurndownService } from './html.util';
+import { hasSecureApiKey } from '../../core/crypto-storage.util';
 
 @Component({
   selector: 'app-uploader',
@@ -523,8 +524,8 @@ export class Uploader {
   }
 
   async startPdfConversion(file: File) {
-    const userKey = localStorage.getItem('user_gemini_api_key');
-    if (!userKey?.trim()) {
+    const hasKey = await hasSecureApiKey();
+    if (!hasKey) {
       this.toast.error('Vui lòng thêm GEMINI API KEY CÁ NHÂN (biểu tượng chìa khóa ở góc trái dưới cùng màn hình) trước khi sử dụng tính năng này.');
       if (this.fileInput()) {
         this.fileInput().nativeElement.value = '';

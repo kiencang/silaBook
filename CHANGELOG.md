@@ -7,6 +7,12 @@ và dự án này tuân thủ [Semantic Versioning](https://semver.org/spec/v2.0
 
 ## [v1.0.101]- 2026-07-29
 ### Fixed
+- Chỉnh sửa nhỏ một số câu chữ ở phase5;
+- Quản lý dự án cải tiến khả năng sắp xếp theo dòng thời gian và theo vần ABC tên dự án; ngoài ra dự án đang mở luôn được xếp vị trí đầu tiên;
+- Cải tiến cách lưu khóa API Key;
+
+## [v1.0.101]- 2026-07-29
+### Fixed
 - Chỉnh sửa SI, loại bỏ chỉ thị giữ lại công thức toán học phức tạp, không hiệu quả và hay gây lỗi hiển thị;
 - Loại bỏ việc lồng MathJax vào file HTML (loại bỏ tính năng Phân tích công thức toán);
 

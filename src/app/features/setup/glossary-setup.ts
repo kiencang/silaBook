@@ -8,6 +8,7 @@ import { FormsModule } from '@angular/forms';
 import { MarkdownTableEditorComponent } from '../../shared/components/markdown-table-editor.component';
 import { smartHardSplit } from '../splitter/splitter.util';
 import * as XLSX from 'xlsx';
+import { hasSecureApiKey } from '../../core/crypto-storage.util';
 
 @Component({
   selector: 'app-glossary-setup',
@@ -273,8 +274,8 @@ export class GlossarySetup {
   }
 
   async startGeneration() {
-    const userKey = localStorage.getItem('user_gemini_api_key');
-    if (!userKey?.trim()) {
+    const hasKey = await hasSecureApiKey();
+    if (!hasKey) {
       this.toast.error('Vui lòng thêm GEMINI API KEY CÁ NHÂN (biểu tượng chìa khóa ở góc trái dưới cùng màn hình) trước khi sử dụng tính năng này.');
       return;
     }

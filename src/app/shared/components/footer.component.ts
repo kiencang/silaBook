@@ -1,6 +1,7 @@
 import { Component, input, output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
+import { hasSecureApiKey } from '../../core/crypto-storage.util';
 
 @Component({
   selector: 'app-footer',
@@ -43,7 +44,7 @@ import { MatIconModule } from '@angular/material/icon';
       </div>
 
       <div class="flex items-center flex-wrap justify-center gap-x-2 gap-y-1">
-        <span class="font-medium text-zinc-600">v1.0.101</span>
+        <span class="font-medium text-zinc-600">v1.0.102</span>
         <span class="text-zinc-300">•</span>
         <a href="https://github.com/kiencang/silaBook" target="_blank" rel="noopener noreferrer" class="hover:text-indigo-600 transition-colors">GitHub</a>
         <span class="text-zinc-300">•</span>
@@ -74,10 +75,10 @@ export class FooterComponent {
     }
   }
 
-  checkUserApiKey() {
+  async checkUserApiKey() {
     if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('user_gemini_api_key');
-      this.hasUserApiKey.set(!!(saved && saved.trim() !== ''));
+      const hasKey = await hasSecureApiKey();
+      this.hasUserApiKey.set(hasKey);
     }
   }
 }

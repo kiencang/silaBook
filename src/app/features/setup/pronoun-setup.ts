@@ -7,6 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { FormsModule } from '@angular/forms';
 import { MarkdownTableEditorComponent } from '../../shared/components/markdown-table-editor.component';
 import { smartHardSplit } from '../splitter/splitter.util';
+import { hasSecureApiKey } from '../../core/crypto-storage.util';
 
 @Component({
   selector: 'app-pronoun-setup',
@@ -244,8 +245,8 @@ export class PronounSetup {
   }
 
   async startGeneration() {
-    const userKey = localStorage.getItem('user_gemini_api_key');
-    if (!userKey?.trim()) {
+    const hasKey = await hasSecureApiKey();
+    if (!hasKey) {
       this.toast.error('Vui lòng thêm GEMINI API KEY CÁ NHÂN (biểu tượng chìa khóa ở góc trái dưới cùng màn hình) trước khi sử dụng tính năng này.');
       return;
     }

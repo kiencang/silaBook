@@ -7,6 +7,7 @@ import { FormsModule } from '@angular/forms';
 import { TokenEstimationComponent } from './components/token-estimation';
 import { TranslatorConfigComponent } from './components/translator-config';
 import { ChapterItemComponent } from './components/chapter-item';
+import { hasSecureApiKey } from '../../core/crypto-storage.util';
 
 @Component({
   selector: 'app-translator',
@@ -207,8 +208,8 @@ export class Translator {
   }
 
   async translateSingle(chapter: Chapter): Promise<boolean> {
-    const userKey = localStorage.getItem('user_gemini_api_key');
-    if (!userKey?.trim()) {
+    const hasKey = await hasSecureApiKey();
+    if (!hasKey) {
       this.toast.error('Vui lòng thêm GEMINI API KEY CÁ NHÂN (biểu tượng chìa khóa ở góc trái dưới cùng màn hình) trước khi dịch.');
       return false;
     }
@@ -316,8 +317,8 @@ export class Translator {
   }
 
   async executeTranslateAll(forceAll: boolean) {
-    const userKey = localStorage.getItem('user_gemini_api_key');
-    if (!userKey?.trim()) {
+    const hasKey = await hasSecureApiKey();
+    if (!hasKey) {
       this.toast.error('Vui lòng thêm GEMINI API KEY CÁ NHÂN (biểu tượng chìa khóa ở góc trái dưới cùng màn hình) trước khi dịch chức năng này.');
       this.confirmAction.set('none');
       return;
