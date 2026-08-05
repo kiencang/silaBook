@@ -129,9 +129,15 @@ import { hasSecureApiKey } from '../../core/crypto-storage.util';
                         [class.bg-white]="store.activeGlossaryVersionId() !== v.id"
                         [class.text-zinc-600]="store.activeGlossaryVersionId() !== v.id"
                         [class.border-zinc-200]="store.activeGlossaryVersionId() !== v.id"
-                        class="px-3 py-1 text-xs font-medium border rounded-md transition-colors hover:bg-indigo-50 hover:text-indigo-700"
+                        class="group relative px-3 py-1 text-xs font-medium border rounded-md transition-colors hover:bg-indigo-50 hover:text-indigo-700"
                       >
                         V{{ v.versionNumber }}
+                        @if (store.activeGlossaryVersionId() === v.id) {
+                          <div class="pointer-events-none font-normal normal-case absolute top-full left-0 mt-2 w-72 opacity-0 transition-opacity group-hover:opacity-100 z-[100] bg-zinc-900 text-zinc-100 text-xs rounded-lg py-2 px-3 shadow-lg text-left">
+                            Bạn đang đọc phiên bản này, phiên bản nào được bạn chọn sẽ là phiên bản công cụ dùng trong quá trình dịch thuật. Bạn có thể chọn bất cứ phiên bản nào mình muốn. Có tối đa 3 phiên bản gần nhất được lưu trữ.
+                            <div class="absolute bottom-full left-4 border-4 border-transparent border-b-zinc-900"></div>
+                          </div>
+                        }
                       </button>
                     }
                   </div>
@@ -152,7 +158,7 @@ import { hasSecureApiKey } from '../../core/crypto-storage.util';
                   @if (activeVersion()) {
                     <div class="flex items-center space-x-3 text-xs text-zinc-500">
                       <span class="flex items-center" title="Model"><mat-icon class="!w-4 !h-4 !text-[16px] mr-1">model_training</mat-icon> {{ getModelDisplay(activeVersion()) }}</span>
-                      <span class="flex items-center" title="Thời gian"><mat-icon class="!w-4 !h-4 !text-[16px] mr-1">schedule</mat-icon> {{ activeVersion()?.timestamp | date:'HH:mm:ss dd/MM' }}</span>
+                      <span class="flex items-center" title="Thời gian"><mat-icon class="!w-4 !h-4 !text-[16px] mr-1">schedule</mat-icon> {{ activeVersion()?.timestamp | date:'HH:mm dd/MM/yy' }}</span>
                     </div>
                   }
                 </div>

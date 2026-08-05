@@ -117,9 +117,20 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
                       [class.font-semibold]="chapter().activeVersionNumber === v.versionNumber"
                       [class.bg-zinc-100]="chapter().activeVersionNumber !== v.versionNumber"
                       [class.text-zinc-600]="chapter().activeVersionNumber !== v.versionNumber"
-                      class="px-2 py-1.5 min-w-[36px] rounded-md text-xs font-medium transition-colors hover:bg-zinc-200"
+                      class="group relative px-2 py-1.5 min-w-[36px] rounded-md text-xs font-medium transition-colors hover:bg-zinc-200"
                     >
                       v{{ v.versionNumber }}
+                      @if (v.versionNumber === 1) {
+                        <div class="pointer-events-none font-normal normal-case absolute top-full left-0 mt-2 w-72 opacity-0 transition-opacity group-hover:opacity-100 z-[100] bg-zinc-900 text-zinc-100 text-xs rounded-lg py-2 px-3 shadow-lg text-left">
+                          Đây là bản dịch đầu tiên (v1) của phần này, bạn có quyền tạo các bản dịch khác để tạo các phiên bản khác của bản dịch. Ví dụ bạn có thể điều chỉnh model dùng để dịch, chỉnh sửa bảng thuật ngữ rồi dịch lại phần này hoặc dịch lại toàn cuốn sách. Có tối đa 3 phiên bản dịch gần nhất của mỗi phần được lưu lại.
+                          <div class="absolute bottom-full left-4 border-4 border-transparent border-b-zinc-900"></div>
+                        </div>
+                      } @else if (chapter().activeVersionNumber === v.versionNumber) {
+                        <div class="pointer-events-none font-normal normal-case absolute top-full left-0 mt-2 w-72 opacity-0 transition-opacity group-hover:opacity-100 z-[100] bg-zinc-900 text-zinc-100 text-xs rounded-lg py-2 px-3 shadow-lg text-left">
+                          Bạn đang đọc phiên bản này, phiên bản nào được bạn chọn sẽ là phiên bản được xuất ra khi bản tải file về, bạn có thể chọn bất cứ phiên bản nào mình muốn.
+                          <div class="absolute bottom-full left-4 border-4 border-transparent border-b-zinc-900"></div>
+                        </div>
+                      }
                     </button>
                   }
                 </div>
