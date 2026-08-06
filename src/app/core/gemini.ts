@@ -396,10 +396,16 @@ export class GeminiClient {
       config: configArgs
     });
 
+    if (response.promptFeedback?.blockReason) {
+      throw new Error(`Nội dung bị chặn bởi bộ lọc an toàn của Google: ${response.promptFeedback.blockReason}`);
+    }
+
     let result = response.text || '';
     const match = result.match(/\[[\s\S]*\]/);
     if (!match) {
-      throw new Error('Không thể đọc dữ liệu từ AI. Vui lòng thử lại sau vài giây.');
+      console.error('Lỗi phân tích Đại từ. Toàn bộ response object:', JSON.stringify(response, null, 2));
+      console.error('Kết quả trả về từ AI (dạng text):', result);
+      throw new Error(`Lỗi phân tích AI: Không tìm thấy mảng JSON. Text trả về: "${result.substring(0, 50)}..."`);
     }
     result = match[0];
 
@@ -454,10 +460,16 @@ export class GeminiClient {
       config: configArgs
     });
 
+    if (response.promptFeedback?.blockReason) {
+      throw new Error(`Nội dung bị chặn bởi bộ lọc an toàn của Google: ${response.promptFeedback.blockReason}`);
+    }
+
     let result = response.text || '';
     const match = result.match(/\[[\s\S]*\]/);
     if (!match) {
-      throw new Error('Không thể đọc dữ liệu từ AI. Vui lòng thử lại sau vài giây.');
+      console.error('Lỗi phân tích Từ khó. Toàn bộ response object:', JSON.stringify(response, null, 2));
+      console.error('Kết quả trả về từ AI (dạng text):', result);
+      throw new Error(`Lỗi phân tích AI: Không tìm thấy mảng JSON. Text trả về: "${result.substring(0, 50)}..."`);
     }
     result = match[0];
 
