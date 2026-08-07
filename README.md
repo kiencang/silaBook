@@ -100,6 +100,7 @@ Về cơ bản, ý tưởng của silaBook là `chia để trị`. Một cuốn 
 - Giảm lỗi sai. Các đầu vào chuẩn như EPUB, HTML được chuyển thành markdown có độ chính xác rất cao, và các ảnh được giữ nguyên vẹn 100%. Nếu phải xử lý các định dạng không thân thiện như PDF, rất khó công cụ nào chuyển thành markdown & giữ ảnh tuyệt đối chính xác;
 
 ## Cách sử dụng PaddleOCR để chuyển đổi PDF sang dạng Markdown
+
 Điều này giúp bản dịch giữ lại được ảnh trong bản gốc. Trước khi gửi lên silaBook, bạn chuyển định dạng PDF sang markdown bằng công cụ dưới đây của Baidu.
 Link: https://aistudio.baidu.com/paddleocr
 
@@ -119,7 +120,7 @@ Trường hợp bạn bắt buộc cần định dạng DOCX chứa ảnh, mà �
 
 Nó sẽ chuyển thành dạng EPUB có chứa ảnh gốc, bạn tải định dạng EPUB này về và up lên công cụ dịch là được.
 
-**Ghi chú thêm**: Một công cụ khác để OCR chuyển PDF thành markdown là GLM-OCR, các bạn có thể truy cập ở đường dẫn này: https://ocr.z.ai
+**Ghi chú thêm**: Một công cụ khác để OCR chuyển PDF thành markdown rất mạnh & rất đẹp là MinerU, các bạn có thể truy cập ở đường dẫn này: https://mineru.net/
 
 ## Thử nghiệm thêm để có thể kết nối với bất cứ AI nào
 
