@@ -47,7 +47,7 @@ import { MatIconModule } from '@angular/material/icon';
                   Cố gắng bảo toàn định dạng gốc, giữ lại công thức toán học, tối ưu cho tài liệu học thuật dưới 30 trang.
                 </p>
                 <div class="mt-3 flex justify-end">
-                  <div class="inline-flex items-center justify-center px-3 py-1.5 text-xs font-medium text-white bg-indigo-600 rounded-lg group-hover:bg-indigo-700 transition-colors shadow-sm">
+                  <div class="inline-flex items-center justify-center px-3 py-1.5 text-xs font-medium text-indigo-600 bg-indigo-50 border border-indigo-100 rounded-lg group-hover:bg-indigo-100 transition-colors">
                     Trải nghiệm ngay
                     <mat-icon class="!text-[14px] !w-[14px] !h-[14px] ml-1 transition-transform group-hover:translate-x-1 duration-200">arrow_forward</mat-icon>
                   </div>
@@ -72,7 +72,7 @@ import { MatIconModule } from '@angular/material/icon';
                   Dịch phụ đề video YouTube chất lượng hơn, chế độ song ngữ, lịch sử dịch để tiện xem lại khi cần.
                 </p>
                 <div class="mt-3 flex justify-end">
-                  <div class="inline-flex items-center justify-center px-3 py-1.5 text-xs font-medium text-white bg-indigo-600 rounded-lg group-hover:bg-indigo-700 transition-colors shadow-sm">
+                  <div class="inline-flex items-center justify-center px-3 py-1.5 text-xs font-medium text-indigo-600 bg-indigo-50 border border-indigo-100 rounded-lg group-hover:bg-indigo-100 transition-colors">
                     Trải nghiệm ngay
                     <mat-icon class="!text-[14px] !w-[14px] !h-[14px] ml-1 transition-transform group-hover:translate-x-1 duration-200">arrow_forward</mat-icon>
                   </div>
@@ -97,7 +97,7 @@ import { MatIconModule } from '@angular/material/icon';
                   Dịch website chất lượng hơn & tối ưu cho việc đọc hiểu tài liệu.
                 </p>
                 <div class="mt-3 flex justify-end">
-                  <div class="inline-flex items-center justify-center px-3 py-1.5 text-xs font-medium text-white bg-indigo-600 rounded-lg group-hover:bg-indigo-700 transition-colors shadow-sm">
+                  <div class="inline-flex items-center justify-center px-3 py-1.5 text-xs font-medium text-indigo-600 bg-indigo-50 border border-indigo-100 rounded-lg group-hover:bg-indigo-100 transition-colors">
                     Trải nghiệm ngay
                     <mat-icon class="!text-[14px] !w-[14px] !h-[14px] ml-1 transition-transform group-hover:translate-x-1 duration-200">arrow_forward</mat-icon>
                   </div>
