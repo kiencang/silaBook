@@ -7,7 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
   imports: [MatIconModule],
   template: `
     <div class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 selection:bg-indigo-100 selection:text-indigo-900 animate-fade-in" tabindex="0" (click)="triggerClose()" (keydown.escape)="triggerClose()" [class.animate-fade-out]="isClosing()">
-      <div role="presentation" tabindex="-1" (keyup.enter)="$event.stopPropagation()" class="bg-white rounded-2xl shadow-xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh] animate-zoom-in cursor-default" (click)="$event.stopPropagation()" [class.animate-zoom-out]="isClosing()">
+      <div role="presentation" tabindex="-1" (keyup.enter)="$event.stopPropagation()" class="bg-white rounded-2xl shadow-xl w-full max-w-3xl overflow-hidden flex flex-col max-h-[90vh] animate-zoom-in cursor-default" (click)="$event.stopPropagation()" [class.animate-zoom-out]="isClosing()">
         <!-- Header -->
         <div class="p-6 border-b border-zinc-100 flex justify-between items-center bg-white shrink-0">
           <div class="flex items-center space-x-2.5">
@@ -35,20 +35,22 @@ import { MatIconModule } from '@angular/material/icon';
                target="_blank" 
                rel="noopener noreferrer" 
                class="group flex items-start p-4 bg-zinc-50/50 hover:bg-zinc-50 border border-zinc-200 hover:border-indigo-300 hover:shadow-md rounded-2xl transition-all duration-250 text-left cursor-pointer no-underline">
-              <div class="mr-4 p-3 rounded-xl shrink-0 flex items-center justify-center transition-all group-hover:scale-105 duration-200 bg-rose-50 text-rose-600 border border-rose-100">
+              <div class="mr-4 p-3 rounded-xl shrink-0 flex items-center justify-center transition-all group-hover:scale-105 duration-200 bg-amber-50 text-amber-600 border border-amber-100">
                 <mat-icon class="!text-[24px] !w-6 !h-6 !flex !items-center !justify-center">picture_as_pdf</mat-icon>
               </div>
               <div class="flex-1 min-w-0">
                 <div class="flex items-center justify-between mb-1">
                   <h4 class="text-base font-semibold text-zinc-900 group-hover:text-indigo-600 transition-colors">Dịch PDF ngắn chuyên ngành</h4>
-                  <span class="text-[10px] font-bold uppercase tracking-wider text-rose-600 bg-rose-50/80 px-2 py-0.5 rounded-md border border-rose-100/50">PDF</span>
+                  <span class="text-[10px] font-bold uppercase tracking-wider text-amber-600 bg-amber-50/80 px-2 py-0.5 rounded-md border border-amber-100/50">PDF</span>
                 </div>
                 <p class="text-xs text-zinc-500 leading-relaxed">
-                  Cố gắng bảo toàn định dạng gốc, có khả năng giữ lại công thức toán học, tối ưu cho tài liệu học thuật dưới 25 - 30 trang.
+                  Cố gắng bảo toàn định dạng gốc, giữ lại công thức toán học, tối ưu cho tài liệu học thuật dưới 30 trang.
                 </p>
-                <div class="mt-2.5 flex items-center text-xs font-semibold text-indigo-600 group-hover:text-indigo-700">
-                  <span>Trải nghiệm ngay</span>
-                  <mat-icon class="!text-[14px] !w-[14px] !h-[14px] ml-1 transition-transform group-hover:translate-x-1 duration-200">arrow_forward</mat-icon>
+                <div class="mt-3 flex justify-end">
+                  <div class="inline-flex items-center justify-center px-3 py-1.5 text-xs font-medium text-white bg-indigo-600 rounded-lg group-hover:bg-indigo-700 transition-colors shadow-sm">
+                    Trải nghiệm ngay
+                    <mat-icon class="!text-[14px] !w-[14px] !h-[14px] ml-1 transition-transform group-hover:translate-x-1 duration-200">arrow_forward</mat-icon>
+                  </div>
                 </div>
               </div>
             </a>
@@ -58,20 +60,22 @@ import { MatIconModule } from '@angular/material/icon';
                target="_blank" 
                rel="noopener noreferrer" 
                class="group flex items-start p-4 bg-zinc-50/50 hover:bg-zinc-50 border border-zinc-200 hover:border-indigo-300 hover:shadow-md rounded-2xl transition-all duration-250 text-left cursor-pointer no-underline">
-              <div class="mr-4 p-3 rounded-xl shrink-0 flex items-center justify-center transition-all group-hover:scale-105 duration-200 bg-sky-50 text-sky-600 border border-sky-100">
+              <div class="mr-4 p-3 rounded-xl shrink-0 flex items-center justify-center transition-all group-hover:scale-105 duration-200 bg-red-50 text-red-600 border border-red-100">
                 <mat-icon class="!text-[24px] !w-6 !h-6 !flex !items-center !justify-center">smart_display</mat-icon>
               </div>
               <div class="flex-1 min-w-0">
                 <div class="flex items-center justify-between mb-1">
                   <h4 class="text-base font-semibold text-zinc-900 group-hover:text-indigo-600 transition-colors">Dịch phụ đề YouTube</h4>
-                  <span class="text-[10px] font-bold uppercase tracking-wider text-sky-600 bg-sky-50/80 px-2 py-0.5 rounded-md border border-sky-100/50">YouTube</span>
+                  <span class="text-[10px] font-bold uppercase tracking-wider text-red-600 bg-red-50/80 px-2 py-0.5 rounded-md border border-red-100/50">YouTube</span>
                 </div>
                 <p class="text-xs text-zinc-500 leading-relaxed">
                   Dịch phụ đề video YouTube chất lượng hơn, chế độ song ngữ, lịch sử dịch để tiện xem lại khi cần.
                 </p>
-                <div class="mt-2.5 flex items-center text-xs font-semibold text-indigo-600 group-hover:text-indigo-700">
-                  <span>Trải nghiệm ngay</span>
-                  <mat-icon class="!text-[14px] !w-[14px] !h-[14px] ml-1 transition-transform group-hover:translate-x-1 duration-200">arrow_forward</mat-icon>
+                <div class="mt-3 flex justify-end">
+                  <div class="inline-flex items-center justify-center px-3 py-1.5 text-xs font-medium text-white bg-indigo-600 rounded-lg group-hover:bg-indigo-700 transition-colors shadow-sm">
+                    Trải nghiệm ngay
+                    <mat-icon class="!text-[14px] !w-[14px] !h-[14px] ml-1 transition-transform group-hover:translate-x-1 duration-200">arrow_forward</mat-icon>
+                  </div>
                 </div>
               </div>
             </a>
@@ -81,20 +85,22 @@ import { MatIconModule } from '@angular/material/icon';
                target="_blank" 
                rel="noopener noreferrer" 
                class="group flex items-start p-4 bg-zinc-50/50 hover:bg-zinc-50 border border-zinc-200 hover:border-indigo-300 hover:shadow-md rounded-2xl transition-all duration-250 text-left cursor-pointer no-underline">
-              <div class="mr-4 p-3 rounded-xl shrink-0 flex items-center justify-center transition-all group-hover:scale-105 duration-200 bg-violet-50 text-violet-600 border border-violet-100">
+              <div class="mr-4 p-3 rounded-xl shrink-0 flex items-center justify-center transition-all group-hover:scale-105 duration-200 bg-blue-50 text-blue-600 border border-blue-100">
                 <mat-icon class="!text-[24px] !w-6 !h-6 !flex !items-center !justify-center">language</mat-icon>
               </div>
               <div class="flex-1 min-w-0">
                 <div class="flex items-center justify-between mb-1">
                   <h4 class="text-base font-semibold text-zinc-900 group-hover:text-indigo-600 transition-colors">Dịch website</h4>
-                  <span class="text-[10px] font-bold uppercase tracking-wider text-violet-600 bg-violet-50/80 px-2 py-0.5 rounded-md border border-violet-100/50">Trang Web</span>
+                  <span class="text-[10px] font-bold uppercase tracking-wider text-blue-600 bg-blue-50/80 px-2 py-0.5 rounded-md border border-blue-100/50">Trang Web</span>
                 </div>
                 <p class="text-xs text-zinc-500 leading-relaxed">
                   Dịch website chất lượng hơn & tối ưu cho việc đọc hiểu tài liệu.
                 </p>
-                <div class="mt-2.5 flex items-center text-xs font-semibold text-indigo-600 group-hover:text-indigo-700">
-                  <span>Trải nghiệm ngay</span>
-                  <mat-icon class="!text-[14px] !w-[14px] !h-[14px] ml-1 transition-transform group-hover:translate-x-1 duration-200">arrow_forward</mat-icon>
+                <div class="mt-3 flex justify-end">
+                  <div class="inline-flex items-center justify-center px-3 py-1.5 text-xs font-medium text-white bg-indigo-600 rounded-lg group-hover:bg-indigo-700 transition-colors shadow-sm">
+                    Trải nghiệm ngay
+                    <mat-icon class="!text-[14px] !w-[14px] !h-[14px] ml-1 transition-transform group-hover:translate-x-1 duration-200">arrow_forward</mat-icon>
+                  </div>
                 </div>
               </div>
             </a>
@@ -104,7 +110,7 @@ import { MatIconModule } from '@angular/material/icon';
         <!-- Actions -->
         <div class="p-4 bg-zinc-50 border-t border-zinc-100 flex justify-end items-center shrink-0">
           <button (click)="triggerClose()" 
-                  class="px-5 py-2 bg-indigo-600 text-white font-medium hover:bg-indigo-700 rounded-lg shadow-sm transition-all focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 text-sm cursor-pointer border-none">
+                  class="px-5 py-2 bg-zinc-200 text-zinc-700 font-medium hover:bg-zinc-300 rounded-lg transition-all focus:ring-2 focus:ring-zinc-400 focus:ring-offset-2 text-sm cursor-pointer border-none">
             Đóng
           </button>
         </div>

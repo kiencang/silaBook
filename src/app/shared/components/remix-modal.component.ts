@@ -6,7 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
   imports: [MatIconModule],
   template: `
     <div class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 selection:bg-indigo-100 selection:text-indigo-900 animate-fade-in" tabindex="0" (click)="triggerClose()" (keydown.escape)="triggerClose()" [class.animate-fade-out]="isClosing()">
-      <div role="presentation" tabindex="-1" (keyup.enter)="$event.stopPropagation()" class="bg-white rounded-2xl shadow-xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh] animate-zoom-in cursor-default" (click)="$event.stopPropagation()" [class.animate-zoom-out]="isClosing()">
+      <div role="presentation" tabindex="-1" (keyup.enter)="$event.stopPropagation()" class="bg-white rounded-2xl shadow-xl w-full max-w-3xl overflow-hidden flex flex-col max-h-[90vh] animate-zoom-in cursor-default" (click)="$event.stopPropagation()" [class.animate-zoom-out]="isClosing()">
         <!-- Header -->
         <div class="p-6 border-b border-zinc-100 flex justify-between items-center bg-white">
           <div class="flex items-center space-x-2.5">
@@ -37,8 +37,8 @@ import { MatIconModule } from '@angular/material/icon';
         <!-- Actions -->
         <div class="p-4 bg-zinc-50 border-t border-zinc-100 flex justify-end items-center shrink-0">
           <button (click)="triggerClose()" 
-                  class="px-5 py-2 bg-indigo-600 text-white font-medium hover:bg-indigo-700 rounded-lg shadow-sm transition-all focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 text-sm cursor-pointer border-none">
-            Đã hiểu
+                  class="px-5 py-2 bg-zinc-200 text-zinc-700 font-medium hover:bg-zinc-300 rounded-lg transition-all focus:ring-2 focus:ring-zinc-400 focus:ring-offset-2 text-sm cursor-pointer border-none">
+            Đóng
           </button>
         </div>
       </div>

@@ -5,6 +5,10 @@ Tất cả những thay đổi đáng chú ý của dự án kiencang/Book-silaT
 Định dạng dựa trên [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 và dự án này tuân thủ [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.0.105]- 2026-08-09
+### Fixed
+- Chỉnh sửa nhỏ về giao diện (một số màu button, một số thông báo, độ rộng modal, v.v...);
+
 ## [v1.0.104]- 2026-08-07
 ### Fixed
 - Thêm thông báo toast phù hợp trong trường hợp nội dung bị chặn bởi Gemini;

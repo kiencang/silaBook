@@ -17,7 +17,7 @@ import { hasSecureApiKey } from '../../core/crypto-storage.util';
       <div class="w-full max-w-2xl p-8 bg-white rounded-2xl shadow-sm border border-zinc-100">
         <div class="text-center mb-5">
         <h2 class="text-3xl font-bold text-zinc-900 tracking-tight">Tạo dự án dịch mới</h2>
-        <p class="text-zinc-500 mt-3 text-lg">Bắt đầu bằng cách nhập thông tin cho dự án sách của bạn.</p>
+        <p class="text-zinc-500 mt-3 text-base">Nhập chính xác tên tác phẩm, tác giả giúp công cụ dịch tốt hơn.</p>
       </div>
       
       <div class="space-y-4">
