@@ -257,7 +257,7 @@ export class Translator {
       
       let summaryText: string | undefined = undefined;
       if (config.generateSummary !== false) {
-        summaryText = await this.gemini.summarizeTranslation(translatedText, config.model);
+        summaryText = await this.gemini.summarizeTranslation(translatedText, config.model, config.translationMode);
       }
       
       const newVersionNumber = (chapter.latestVersionNumber || 0) + 1;

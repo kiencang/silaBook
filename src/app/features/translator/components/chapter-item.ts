@@ -656,7 +656,7 @@ export class ChapterItemComponent {
     try {
       // Use the model stored in the version, or fallback to config model
       const model = version.model || this.store.config().model;
-      const summary = await this.gemini.summarizeTranslation(version.text, model);
+      const summary = await this.gemini.summarizeTranslation(version.text, model, this.store.config().translationMode);
       
       if (summary) {
         // Update the version in the chapter

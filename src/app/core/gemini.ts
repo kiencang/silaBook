@@ -533,15 +533,27 @@ export class GeminiClient {
     return result.trim();
   }
 
-  async summarizeTranslation(translatedText: string, model: string): Promise<string> {
+  async summarizeTranslation(translatedText: string, model: string, translationMode: 'standard' | 'scientific' = 'standard'): Promise<string> {
     try {
       if (!translatedText.trim()) return '';
 
-      const si = await this.loadPromptText('/prompts/summary_system_instruction.md');
-      const p = await this.loadPromptText('/prompts/summary_prompt.md');
+      let siPath = '/prompts/summary_multi_system_instruction.md';
+      let pPath = '/prompts/summary_multi_prompt.md';
+      let fallbackSi = 'Bạn là chuyên gia phân tích ngữ cảnh truyện/tiểu thuyết. Nhiệm vụ của bạn là trích xuất ngữ cảnh kết nối cốt lõi để làm đầu vào cho khối dịch tiếp theo.';
+      let fallbackP = 'Phân tích khối văn bản dưới đây và trích xuất thông tin bối cảnh thiết yếu nhất:\n\n{{nội dung}}';
 
-      const systemInstruction = si || 'You are an expert summarizer for a translation workflow. Your task is to summarize the provided translated chapter/block (Vietnamese text). The summary MUST be concise (not exceeding 10% of the original text length) and MUST focus on providing contextual information for translating the NEXT chapter/block (e.g., key plot progression, character state changes, new places, or important items mentioned). The summary MUST be in Vietnamese.';
-      const promptTemplate = p || 'Hãy tóm tắt nội dung bản dịch dưới đây để làm thông tin bối cảnh (context) cho việc dịch phần tiếp theo. Yêu cầu:\n- Độ dài không vượt quá 10% nội dung gốc.\n- Tập trung vào các diễn biến chính, trạng thái nhân vật, địa điểm, hoặc sự kiện quan trọng có thể ảnh hưởng đến phần sau.\n\nNội dung bản dịch:\n{{nội dung}}';
+      if (translationMode === 'scientific') {
+        siPath = '/prompts/summary_scientific_system_instruction.md';
+        pPath = '/prompts/summary_scientific_prompt.md';
+        fallbackSi = 'Bạn là chuyên gia phân tích ngữ cảnh tài liệu khoa học/kỹ thuật. Nhiệm vụ của bạn là trích xuất ngữ cảnh kết nối logic để làm đầu vào cho khối dịch tiếp theo.';
+        fallbackP = 'Phân tích khối tài liệu khoa học dưới đây và trích xuất thông tin bối cảnh thiết yếu nhất:\n\n{{nội dung}}';
+      }
+
+      const si = await this.loadPromptText(siPath);
+      const p = await this.loadPromptText(pPath);
+
+      const systemInstruction = si || fallbackSi;
+      const promptTemplate = p || fallbackP;
       
       const finalPrompt = promptTemplate.replace('{{nội dung}}', translatedText);
 
