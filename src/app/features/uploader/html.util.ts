@@ -15,12 +15,27 @@ turndownService.addRule('stripInternalLinks', {
   }
 });
 
-export function preprocessHtmlStr(htmlContent: string): string {
+export function preprocessHtmlStr(htmlContent: string, imagesStore?: Record<string, string>): string {
   const parser = new DOMParser();
   const doc = parser.parseFromString(htmlContent, 'text/html');
   
+  // Extract base64 images
+  if (imagesStore) {
+    let imgCounter = 0;
+    const imgs = doc.querySelectorAll('img');
+    imgs.forEach(img => {
+      const src = img.getAttribute('src');
+      if (src && src.startsWith('data:image/')) {
+        const placeholderId = `SILA_IMG_HTML_${imgCounter++}`;
+        imagesStore[placeholderId] = src;
+        img.setAttribute('src', placeholderId);
+      }
+    });
+  }
+  
   const elements = doc.querySelectorAll('[style]');
   elements.forEach(node => {
+
     const el = node as HTMLElement;
     const styleAttr = el.getAttribute('style') || '';
     
@@ -47,10 +62,15 @@ export function preprocessHtmlStr(htmlContent: string): string {
   return doc.body.innerHTML;
 }
 
-export async function processHtmlContent(file: File): Promise<string> {
+export async function processHtmlContent(file: File): Promise<{ markdown: string, images?: Record<string, string> }> {
   const text = await file.text();
-  const processedHtml = preprocessHtmlStr(text);
-  return turndownService.turndown(processedHtml);
+  const imagesStore: Record<string, string> = {};
+  const processedHtml = preprocessHtmlStr(text, imagesStore);
+  const markdown = turndownService.turndown(processedHtml);
+  return { 
+    markdown, 
+    images: Object.keys(imagesStore).length > 0 ? imagesStore : undefined 
+  };
 }
 
 export function getTurndownService(): TurndownService {

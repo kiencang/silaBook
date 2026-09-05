@@ -504,8 +504,8 @@ export class Uploader {
         const text = await file.text();
         this.store.setMarkdown(text, file.name);
       } else if (file.name.toLowerCase().endsWith('.html') || file.name.toLowerCase().endsWith('.htm')) {
-        const markdown = await processHtmlContent(file);
-        this.store.setMarkdown(markdown, file.name);
+        const result = await processHtmlContent(file);
+        this.store.setMarkdown(result.markdown, file.name, result.images);
       } else if (file.name.toLowerCase().endsWith('.epub')) {
         const result = await processEpubContent(file, getTurndownService());
         this.store.setMarkdown(result.markdown, file.name, result.images);
