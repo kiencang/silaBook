@@ -1,6 +1,6 @@
 {
   "name": "silaBook",
-  "description": "Ứng dụng tối giản giúp chuyển đổi file PDF/TXT/HTML sang định dạng Markdown theo từng chương, hỗ trợ xem trước trực quan và dịch thuật từng phần với sức mạnh của Gemini.",
+  "description": "Công cụ dịch sách từ tiếng Anh sang tiếng Việt bằng Gemini. Có khả năng bảo toàn ảnh trong bản dịch ở một số định dạng đầu vào nhất định.",
   "requestFramePermissions": [],
   "majorCapabilities": [
     "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
