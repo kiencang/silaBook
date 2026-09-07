@@ -36,6 +36,8 @@ class OmmlMathComponent extends XmlComponent {
     if (mathml) {
       try {
         ommlStr = mml2omml(mathml);
+        // Fix for mathml2omml bug where \mathrm produces m:val="undefined"
+        ommlStr = ommlStr.replace(/m:val="undefined"/g, 'm:val="p"');
       } catch (e) {
         console.error("mml2omml error", e);
       }

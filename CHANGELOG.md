@@ -5,6 +5,11 @@ Tất cả những thay đổi đáng chú ý của dự án kiencang/Book-silaT
 Định dạng dựa trên [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 và dự án này tuân thủ [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.0.111]- 2026-09-08
+### Fixed
+- Giảm hiển thị lỗi công thức toán trong DOCX và EPUB, mặc dù chưa hoàn thiện hẳn;
+- Công thức toán hiển thị hoàn hảo hiển vẫn hiện chỉ có ở định dạng HTML;
+
 ## [v1.0.110]- 2026-09-08
 ### Fixed
 - Khắc phục vấn đề hiển thị công thức toán học, hiện đã xử lý tốt công thức toán hiển thị trên giao diện web (HTML);

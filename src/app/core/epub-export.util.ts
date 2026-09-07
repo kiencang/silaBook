@@ -64,6 +64,9 @@ export class EpubExporter {
     });
     htmlContent = htmlContent.replace(/<br>/g, '<br />');
     htmlContent = htmlContent.replace(/<hr>/g, '<hr />');
+    
+    // Strip MathML annotation tags to prevent fallback text from showing up in old EPUB readers
+    htmlContent = htmlContent.replace(/<annotation[^>]*>[\s\S]*?<\/annotation>/gi, '');
 
     zip.file('OEBPS/section1.xhtml', `<?xml version="1.0" encoding="utf-8"?>
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -166,7 +169,7 @@ code {
     <item id="ncx" href="toc.ncx" media-type="application/x-dtbncx+xml"/>
     <item id="nav" href="nav.xhtml" media-type="application/xhtml+xml" properties="nav"/>
     <item id="style" href="stylesheet.css" media-type="text/css"/>
-    <item id="section1" href="section1.xhtml" media-type="application/xhtml+xml"/>
+    <item id="section1" href="section1.xhtml" media-type="application/xhtml+xml" properties="math"/>
 ${imageManifestItems}  </manifest>
   <spine toc="ncx">
     <itemref idref="nav"/>
