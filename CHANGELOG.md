@@ -5,6 +5,10 @@ Tất cả những thay đổi đáng chú ý của dự án kiencang/Book-silaT
 Định dạng dựa trên [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 và dự án này tuân thủ [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.0.108]- 2026-09-06
+### Fixed
+- Cập nhật SI/Prompt cho mục đích tóm tắt chunk. Điều chỉnh để nó tập trung và thống nhất hơn;
+
 ## [v1.0.107]- 2026-09-05
 ### Fixed
 - Trường hợp file HTML tải lên chứa ảnh base64 thì cần đóng gói lại dưới dạng ID rồi lưu vào IndexedDB trước khi gửi lên AI. Bản dịch khôi phục lại ảnh dựa trên ID đã lưu;
