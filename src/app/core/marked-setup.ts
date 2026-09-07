@@ -1,5 +1,7 @@
 import { marked } from 'marked';
 import markedFootnote from 'marked-footnote';
+import markedKatex from 'marked-katex-extension';
+import katex from 'katex';
 
 declare global {
   interface Window {
@@ -12,7 +14,33 @@ let isConfigured = false;
 export function getConfiguredMarked() {
   if (!isConfigured) {
     marked.use(markedFootnote());
+    marked.use(markedKatex({
+      throwOnError: false,
+      output: 'mathml',
+      nonStandard: true
+    }));
+    
     marked.use({
+      walkTokens(token: any) {
+        if (token.type === 'html') {
+          // Process block equations $$...$$ inside HTML
+          token.text = token.text.replace(/\$\$(.*?)\$\$/gs, (match: string, p1: string) => {
+            try {
+              return katex.renderToString(p1, { displayMode: true, output: 'mathml', throwOnError: false });
+            } catch (e) {
+              return match;
+            }
+          });
+          // Process inline equations $...$ inside HTML
+          token.text = token.text.replace(/\$([^\$\n]+?)\$/g, (match: string, p1: string) => {
+            try {
+              return katex.renderToString(p1, { displayMode: false, output: 'mathml', throwOnError: false });
+            } catch (e) {
+              return match;
+            }
+          });
+        }
+      },
       renderer: {
         heading(token) {
           // Token is just a single object in marked v12+

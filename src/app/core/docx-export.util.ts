@@ -12,8 +12,72 @@ import {
   BorderStyle,
   WidthType,
   VerticalAlign,
-  FootnoteReferenceRun
+  FootnoteReferenceRun,
+  XmlComponent
 } from 'docx';
+import katex from 'katex';
+import { mml2omml } from 'mathml2omml';
+
+class OmmlMathComponent extends XmlComponent {
+  private xmlObj: any;
+
+  constructor(latex: string, display: boolean = false) {
+    super("");
+    let mathml = "";
+    try {
+      const rendered = katex.renderToString(latex, { output: 'mathml', throwOnError: false, displayMode: display });
+      const match = rendered.match(/<math[^>]*>[\s\S]*<\/math>/);
+      mathml = match ? match[0] : "";
+    } catch (e) {
+      console.error("KaTeX error", e);
+    }
+    
+    let ommlStr = "";
+    if (mathml) {
+      try {
+        ommlStr = mml2omml(mathml);
+      } catch (e) {
+        console.error("mml2omml error", e);
+      }
+    }
+    
+    if (ommlStr) {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(ommlStr, "application/xml");
+      this.xmlObj = this.buildXml(doc.documentElement);
+    } else {
+      this.xmlObj = null;
+    }
+  }
+
+  private buildXml(node: any): any {
+    if (node.nodeType === 3) return node.textContent;
+    if (node.nodeType === 1) {
+      const obj: any = {};
+      const children: any[] = [];
+      if (node.attributes && node.attributes.length > 0) {
+        const attr: any = {};
+        for (let i = 0; i < node.attributes.length; i++) {
+          attr[node.attributes[i].name] = node.attributes[i].value;
+        }
+        children.push({ _attr: attr });
+      }
+      for (let i = 0; i < node.childNodes.length; i++) {
+        const childObj = this.buildXml(node.childNodes[i]);
+        if (childObj !== null && childObj !== undefined && childObj !== "") {
+          children.push(childObj);
+        }
+      }
+      obj[node.nodeName] = children;
+      return obj;
+    }
+    return null;
+  }
+
+  override prepForXml(context: any): any {
+    return this.xmlObj || { "m:oMath": [] };
+  }
+}
 
 function convertDataUrlToUint8Array(dataUrl: string): Uint8Array {
   const parts = dataUrl.split(';base64,');
@@ -33,6 +97,8 @@ interface InlineToken {
   italic: boolean;
   code: boolean;
   footnoteId?: number;
+  math?: boolean;
+  display?: boolean;
 }
 
 export function tokenizeInline(text: string, getFootnoteId?: (k: string) => number): InlineToken[] {
@@ -49,6 +115,38 @@ export function tokenizeInline(text: string, getFootnoteId?: (k: string) => numb
           code: false
         });
         index += 2;
+        continue;
+      }
+    }
+
+    if (text.startsWith('$$', index)) {
+      const end = text.indexOf('$$', index + 2);
+      if (end !== -1) {
+        parts.push({
+          text: text.substring(index + 2, end),
+          bold: false,
+          italic: false,
+          code: false,
+          math: true,
+          display: true
+        });
+        index = end + 2;
+        continue;
+      }
+    }
+
+    if (text.startsWith('$', index)) {
+      const end = text.indexOf('$', index + 1);
+      if (end !== -1) {
+        parts.push({
+          text: text.substring(index + 1, end),
+          bold: false,
+          italic: false,
+          code: false,
+          math: true,
+          display: false
+        });
+        index = end + 1;
         continue;
       }
     }
@@ -155,7 +253,7 @@ export function tokenizeInline(text: string, getFootnoteId?: (k: string) => numb
     let nextIndex = index;
     while (nextIndex < text.length) {
       const char = text[nextIndex];
-      if (char === '`' || char === '*' || char === '_' || char === '\\' || (getFootnoteId && char === '[' && text.startsWith('[^', nextIndex))) {
+      if (char === '$' || char === '`' || char === '*' || char === '_' || char === '\\' || (getFootnoteId && char === '[' && text.startsWith('[^', nextIndex))) {
         break;
       }
       nextIndex++;
@@ -189,9 +287,12 @@ interface RunOptions {
   italics?: boolean;
 }
 
-function createRunsFromText(text: string, getFootnoteId?: (k: string) => number, opts?: RunOptions): (TextRun | FootnoteReferenceRun)[] {
+function createRunsFromText(text: string, getFootnoteId?: (k: string) => number, opts?: RunOptions): (TextRun | FootnoteReferenceRun | any)[] {
   const tokens = tokenizeInline(text, getFootnoteId);
   return tokens.map(token => {
+    if (token.math) {
+      return new OmmlMathComponent(token.text, token.display) as any;
+    }
     if (token.footnoteId) {
       return new FootnoteReferenceRun(token.footnoteId);
     }
@@ -254,6 +355,54 @@ function parseMarkdownTable(tableLines: string[], getFootnoteId?: (k: string) =>
   });
 }
 
+function parseHtmlTable(html: string, getFootnoteId?: (k: string) => number): Table {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(html, 'text/html');
+  const tableEl = doc.querySelector('table');
+  if (!tableEl) throw new Error("No table found");
+
+  const parsedRows: TableRow[] = [];
+  const rows = Array.from(tableEl.querySelectorAll('tr'));
+
+  for (let rIndex = 0; rIndex < rows.length; rIndex++) {
+    const rowEl = rows[rIndex];
+    const cellsEl = Array.from(rowEl.querySelectorAll('td, th'));
+
+    const cells = cellsEl.map(cellEl => {
+      let text = cellEl.textContent || '';
+      
+      return new TableCell({
+        children: [
+          new Paragraph({
+            children: createRunsFromText(text.trim(), getFootnoteId),
+            spacing: { before: 80, after: 80 },
+          }),
+        ],
+        shading: cellEl.tagName.toLowerCase() === 'th' || rIndex === 0 ? { fill: "F2F5F9" } : undefined,
+        verticalAlign: VerticalAlign.CENTER,
+      });
+    });
+
+    parsedRows.push(new TableRow({ children: cells }));
+  }
+
+  return new Table({
+    width: {
+      size: 100,
+      type: WidthType.PERCENTAGE,
+    },
+    borders: {
+      top: { style: BorderStyle.SINGLE, size: 8, color: "D1D5DB" },
+      bottom: { style: BorderStyle.SINGLE, size: 8, color: "D1D5DB" },
+      left: { style: BorderStyle.SINGLE, size: 8, color: "D1D5DB" },
+      right: { style: BorderStyle.SINGLE, size: 8, color: "D1D5DB" },
+      insideHorizontal: { style: BorderStyle.SINGLE, size: 4, color: "E5E7EB" },
+      insideVertical: { style: BorderStyle.SINGLE, size: 4, color: "E5E7EB" },
+    },
+    rows: parsedRows,
+  });
+}
+
 function getImageDimensions(dataUrl: string): Promise<{ width: number; height: number }> {
   if (typeof window === 'undefined' || typeof Image === 'undefined') {
     return Promise.resolve({ width: 400, height: 300 });
@@ -275,6 +424,12 @@ export class DocxExporter {
     // Strip ONLY internal Markdown links (but not images) and internal HTML links before processing
     let cleanedContent = markdownContent.replace(/(^|[^!])\[([^\]]+)\]\(#[^)]*\)/g, '$1$2');
     cleanedContent = cleanedContent.replace(/<a\b[^>]*href=["']#[^"']*["'][^>]*>(.*?)<\/a>/gi, '$1');
+
+    const htmlTables: string[] = [];
+    cleanedContent = cleanedContent.replace(/<table[\s\S]*?<\/table>/gi, (match) => {
+      htmlTables.push(match);
+      return `\n\n___HTML_TABLE_${htmlTables.length - 1}___\n\n`;
+    });
 
     const activeImages: Record<string, { dataUrl: string; width: number; height: number }> = {};
     if (images) {
@@ -387,6 +542,18 @@ export class DocxExporter {
       }
 
       if (trimmedLine === '') {
+        idx++;
+        continue;
+      }
+
+      const htmlTableMatch = trimmedLine.match(/^___HTML_TABLE_(\d+)___$/);
+      if (htmlTableMatch) {
+        const tableIdx = parseInt(htmlTableMatch[1], 10);
+        try {
+          children.push(parseHtmlTable(htmlTables[tableIdx], getFootnoteId));
+        } catch (e) {
+          console.error("Error parsing HTML table", e);
+        }
         idx++;
         continue;
       }
