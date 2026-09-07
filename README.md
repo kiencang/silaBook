@@ -143,18 +143,18 @@ silaBook cũng như người phát triển nó không đưa ra bất kỳ bảo 
 Ứng dụng được phát triển tối ưu hoàn toàn ở phía Client-side (Trình duyệt). Một số thư viện quan trọng mà ứng dụng này dùng:
 
 ### 1. Khung phát triển chính
-*   **[Angular](https://angular.dev/)**: Lỗi chính của ứng dụng.
+*   **[Angular](https://angular.dev/)**: Lõi chính của ứng dụng.
 
 ### 2. Giao diện
-*   **[Tailwind CSS](https://tailwindcss.com/)**: Xấy dựng giao diện chính cho ứng dụng.
+*   **[Tailwind CSS](https://tailwindcss.com/)**: Xây dựng giao diện chính cho ứng dụng.
 *   **[Angular Material Icons](https://material.angular.io/)**: Cung cấp hệ thống icon.
 
 ### 3. Xử lý & xuất bản
 *   **[docx](https://docx.js.org/)**: Thư viện chuyên dụng tạo cấu trúc tài liệu Word (`.docx`), hoạt động hoàn toàn phía client.
-*   **[pdf-lib](https://pdf-lib.js.org/)**: Dùng để chia tách PDF thành các chunk (đoạn) để dễ xử lý hơn.
+*   **[pdf-lib](https://pdf-lib.js.org/)**: Dùng để chia tách file PDF lớn thành các chunk (đoạn) để dễ xử lý hơn.
 *   **[JSZip](https://stuk.github.io/jszip/)**: Công cụ nén và đóng gói thư mục sách điện tử EPUB (`.epub`) ngay trên trình duyệt.
 *   **[Marked & marked-footnote](https://marked.js.org/)**: Chuyển Markdown sang cấu trúc HTML, có hỗ trợ ghi chú chân trang (footnotes).
-*   **[Turndown](https://github.com/mixmark-io/turndown)**: Chuyển đổi ngược các định dạng HTML thành cú pháp Markdown (với trường hợp người dùng tải lên file HTML, công cụ cần dùng thư viện này để chuyển nó về markdown).
+*   **[Turndown](https://github.com/mixmark-io/turndown)**: Chuyển đổi ngược các định dạng HTML thành cú pháp Markdown (với trường hợp người dùng tải lên file HTML, công cụ cần dùng thư viện này để chuyển nó về Markdown rồi mới xử lý).
 
 ### 4. Hiển thị công thức toán
 *   **[KaTeX](https://katex.org/)**: Thư viện xử lý và hiển thị công thức toán do **Khan Academy** phát triển, ưu điểm là tốc độ cao. Đóng vai trò là engine chuyển đổi các công thức toán học LaTeX (có thể xuất hiện trong tài liệu) sang định dạng XML chuẩn `MathML` để hiển thị ở giao diện web (HTML).
