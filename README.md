@@ -15,7 +15,7 @@ Một số tính năng quan trọng khác:
 - Có các phase phân tích đại từ, thuật ngữ (từ khó) và tóm tắt chương trước để việc dịch được chuẩn xác hơn;
 - Có khả năng xử lý được các cuốn sách lớn có độ dày lên đến 500 - 700 trang;
 
-Chương trình sử dụng SI & Prompt từ dự án này: https://github.com/kiencang/SI-Prompt-Book-EV-Translate (**v1.0.36**).
+Chương trình sử dụng SI & Prompt từ dự án này: https://github.com/kiencang/SI-Prompt-Book-EV-Translate (**v1.0.37**).
 
 ## Hướng dẫn sử dụng nhanh
 
