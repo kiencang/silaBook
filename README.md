@@ -142,25 +142,25 @@ silaBook cũng như người phát triển nó không đưa ra bất kỳ bảo 
 
 Ứng dụng được phát triển tối ưu hoàn toàn ở phía Client-side (Trình duyệt). Một số thư viện quan trọng mà ứng dụng này dùng:
 
-### 1. Khung Phát Triển Chính (Core Engine)
-*   **[Angular](https://angular.dev/)**: Khung ứng dụng web đơn trang (SPA).
+### 1. Khung phát triển chính
+*   **[Angular](https://angular.dev/)**: Lỗi chính của ứng dụng.
 
-### 2. Giao Diện
-*   **[Tailwind CSS](https://tailwindcss.com/)**: Framework utility-first CSS hỗ trợ xây dựng giao diện.
+### 2. Giao diện
+*   **[Tailwind CSS](https://tailwindcss.com/)**: Xấy dựng giao diện chính cho ứng dụng.
 *   **[Angular Material Icons](https://material.angular.io/)**: Cung cấp hệ thống icon.
 
-### 3. Xử Lý & Xuất Bản Tài Liệu (Document Processing)
+### 3. Xử lý & xuất bản
 *   **[docx](https://docx.js.org/)**: Thư viện chuyên dụng tạo cấu trúc tài liệu Word (`.docx`), hoạt động hoàn toàn phía client.
 *   **[pdf-lib](https://pdf-lib.js.org/)**: Dùng để chia tách PDF thành các chunk (đoạn) để dễ xử lý hơn.
 *   **[JSZip](https://stuk.github.io/jszip/)**: Công cụ nén và đóng gói thư mục sách điện tử EPUB (`.epub`) ngay trên trình duyệt.
 *   **[Marked & marked-footnote](https://marked.js.org/)**: Chuyển Markdown sang cấu trúc HTML, có hỗ trợ ghi chú chân trang (footnotes).
-*   **[Turndown](https://github.com/mixmark-io/turndown)**: Chuyển đổi ngược các định dạng HTML thành cú pháp Markdown.
+*   **[Turndown](https://github.com/mixmark-io/turndown)**: Chuyển đổi ngược các định dạng HTML thành cú pháp Markdown (với trường hợp người dùng tải lên file HTML, công cụ cần dùng thư viện này để chuyển nó về markdown).
 
-### 4. Hiển Thị Công Thức Toán
+### 4. Hiển thị công thức toán
 *   **[KaTeX](https://katex.org/)**: Thư viện xử lý và hiển thị công thức toán do **Khan Academy** phát triển, ưu điểm là tốc độ cao. Đóng vai trò là engine chuyển đổi các công thức toán học LaTeX (có thể xuất hiện trong tài liệu) sang định dạng XML chuẩn `MathML` để hiển thị ở giao diện web (HTML).
 *   **[marked-katex-extension](https://github.com/UziTech/marked-katex-extension)**: Là tiện ích mở rộng cho thư viện marked đã tồn tại trước đó, phục vụ cho mục đích tìm kiếm LaTeX và gọi KaTeX để chuyển đổi thành MathML.
 *   **[mathml2omml](https://github.com/fiduswriter/mathml2omml)**: Thư viện JS dùng để chuyển `MathML` thành chuẩn công thức toán chuẩn (`OMML`) cho định dạng DOCX.
 
-### 5. Lưu Trữ Nội Bộ (Local Database & Storage)
+### 5. Lưu trữ nội bộ
 *   **[idb (IndexedDB Wrapper)](https://github.com/jakearchibald/idb)**: Thư viện wrap IndexedDB, hỗ trợ xử lý các tác vụ liên quan đến IndexedDB tốt hơn. Toàn bộ dữ liệu sách được lưu cục bộ tại trình duyệt là thông qua IndexedDB.
 
