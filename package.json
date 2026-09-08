@@ -22,7 +22,6 @@
     "@google/genai": "^1.27.0",
     "@tailwindcss/typography": "^0.5.19",
     "@types/jsdom": "^30.0.0",
-    "@xmldom/xmldom": "^0.9.12",
     "docx": "^9.7.1",
     "idb": "^8.0.3",
     "jszip": "^3.10.1",
