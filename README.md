@@ -117,13 +117,17 @@ Hướng dẫn sử dụng:
   </a>
 </p>
 
-Với cách trên ảnh sẽ vẫn hiển thị bình thường khi bạn đọc trực tiếp trên ứng dụng hoặc tải về bản PDF hoặc HTML. Nhưng vì ảnh là dạng link nên không hiển thị được ở định dạng EPUB và DOCX.
-
-Trường hợp bạn bắt buộc cần định dạng DOCX chứa ảnh, mà định dạng gốc lại là file PDF thì thay vì dùng PaddleOCR làm công cụ trung gian bạn nên sử dụng công cụ pdf-2-epub-docx này: https://aistudio.google.com/apps/9a11586a-e712-4c10-a1b6-751ab78fc10b?showAssistant=true&showCode=true
-
-Nó sẽ chuyển thành dạng EPUB có chứa ảnh gốc, bạn tải định dạng EPUB này về và up lên công cụ dịch là được.
+Với cách trên ảnh sẽ vẫn hiển thị bình thường khi bạn đọc trực tiếp trên ứng dụng hoặc tải về bản PDF hoặc HTML.
 
 **Ghi chú thêm**: Một công cụ khác để OCR chuyển PDF thành markdown rất mạnh & rất đẹp là MinerU, các bạn có thể truy cập ở đường dẫn này: https://mineru.net/
+
+MinerU có 2 phiên bản:
+- Phiên bản trực tuyến, cần đăng nhập và có nhiều nét giống PaddleOCR;
+- Phiên bản offline (tải phần mềm về dùng), hoạt động với tốc độ cao và ổn định hơn;
+
+Đối với phiên bản offline, công cụ sẽ tạo file ảnh và tải về máy tính của bạn, nếu bạn dịch markdown (tải về bản chuyển đổi markdown), và muốn hiển thị lại ảnh, bạn phải đưa bản dịch HTML vào cùng thư mục chứa ảnh.
+
+MinerU còn cho phép tải về nhiều định dạng sau khi chuyển đổi từ PDF, ngoài markdown còn có HMTL, nếu tải về HTML (bản chuyển đổi của bản gốc), ảnh trong file PDF sẽ được nhúng trực tiếp trong HTML, và file dịch lúc này không cần đặt lại vào thư mục chứa ảnh. Trường hợp bạn cần hiển thị ảnh ở nhiều định dạng của bản dịch (EPUB, DOCX, HTML) thì nên tải về bản chuyển đổi HTML để dịch.
 
 ## Thử nghiệm thêm để có thể kết nối với bất cứ AI nào
 
