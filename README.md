@@ -20,14 +20,14 @@ Chương trình sử dụng SI & Prompt từ dự án này: https://github.com/k
 ## Hướng dẫn sử dụng nhanh
 
 <p align="center">
-  <img src="images/h1-tao-du-an.png" alt="Bước 1">
+  <img src="images/h1-tao-du-an-v1.0.111.png" alt="Bước 1">
    <br><em>Bước 1: Tạo dự án: Ở đây các bạn cần nhập chính xác tên sách & tác giả. Thông tin này quan trọng, vì sách (nhất là kinh điển) thường có thông tin rất đầy đủ trên mạng, cung cấp chính xác thông tin giúp công cụ dịch tốt hơn.</em>
 </p>
 
 Lưu ý: Khi bạn tạo dự án, toàn bộ dữ liệu dịch của bạn sẽ được lưu cục bộ tại trình duyệt của bạn. Việc xóa dữ liệu trình duyệt có thể làm mất dữ liệu này. Luôn sử dụng tính năng xuất dự án nếu bạn muốn bảo vệ dữ liệu lâu dài.
 
 <p align="center">
-  <img src="images/h2-tai-sach-len.png" alt="Bước 2">
+  <img src="images/h2-tai-sach-len-v1.0.111.png" alt="Bước 2">
    <br><em>Bước 2: Tải sách lên: Bạn tải sách gốc tiếng Anh lên. Hiện công cụ hỗ trợ 5 định dạng là EPUB, HTML, PDF, TXT & Markdown.</em>
 </p>
 
@@ -68,7 +68,7 @@ Bạn chỉ việc nhấn button, công cụ sẽ tự quét toàn bộ cuốn s
 Model chọn để phân tích lý tưởng nhất vẫn là model cao nhất (Pro). Tuy nhiên sách rất tốn dữ liệu nên người dùng miễn phí để không bị gián đoạn phân tích nên dùng model tầm trung (Flash) để làm.  
 
 <p align="center">
-  <img src="images/h7-dich.png" alt="Bước 6">
+  <img src="images/h7-dich-v1.0.111.png" alt="Bước 6">
    <br><em>Bước 6: Dịch: Tiến hành dịch chính thức.</em>
 </p>
 
