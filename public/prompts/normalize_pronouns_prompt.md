@@ -19,4 +19,3 @@ Vui lòng trả về kết quả là một bảng Markdown định dạng đúng
 
 | Nhân vật (Original) | Giới tính | Ước lượng độ tuổi | Đặc điểm & Vai trò | Xưng hô / Tước vị (Dịch) | Ngôi thứ 3 (Narrator) | Xưng - Hô (Với người khác) | Lý do | Ghi chú |
 |---|---|---|---|---|---|---|---|---|
-...
