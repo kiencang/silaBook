@@ -5,6 +5,10 @@ Tất cả những thay đổi đáng chú ý của dự án kiencang/Book-silaT
 Định dạng dựa trên [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 và dự án này tuân thủ [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.0.112]- 2026-09-14
+### Fixed
+- Chỉnh sửa nhỏ các SI/Prompt phụ trợ;
+
 ## [v1.0.111]- 2026-09-08
 ### Fixed
 - Giảm hiển thị lỗi công thức toán trong DOCX và EPUB, mặc dù chưa hoàn thiện hẳn;
