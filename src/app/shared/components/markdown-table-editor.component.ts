@@ -175,6 +175,8 @@ export class MarkdownTableEditorComponent {
   value = model<string>('');
   disabled = input<boolean>(false);
   placeholder = input<string>('Ví dụ:\n| Từ | Nghĩa |\n| --- | --- |');
+  exportFileName = input<string>('danh_sach_thuat_ngu.xlsx');
+  exportSheetName = input<string>('Thuật ngữ');
 
   mode = signal<'table' | 'raw'>('table');
   tableData = signal<string[][]>([]);
@@ -187,8 +189,8 @@ export class MarkdownTableEditorComponent {
 
     const ws = XLSX.utils.aoa_to_sheet(data);
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Thuật ngữ');
-    XLSX.writeFile(wb, 'danh_sach_thuat_ngu.xlsx');
+    XLSX.utils.book_append_sheet(wb, ws, this.exportSheetName());
+    XLSX.writeFile(wb, this.exportFileName());
   }
 
   // Flag to prevent recursive updates

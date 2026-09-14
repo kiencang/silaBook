@@ -112,6 +112,8 @@ import { hasSecureApiKey } from '../../core/crypto-storage.util';
           <div class="w-full">
             <app-markdown-table-editor
               #editor
+              [exportFileName]="'V' + (activeVersion()?.versionNumber || 1) + '_danh_sach_thuat_ngu.xlsx'"
+              [exportSheetName]="'Thuật ngữ V' + (activeVersion()?.versionNumber || 1)"
               [value]="draftTable()"
               (valueChange)="onTableChange($event)"
               [disabled]="isGenerating()"

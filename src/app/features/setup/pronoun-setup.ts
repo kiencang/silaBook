@@ -88,6 +88,8 @@ import { hasSecureApiKey } from '../../core/crypto-storage.util';
           <div class="w-full">
             <app-markdown-table-editor
               #editor
+              [exportFileName]="'V' + (activeVersion()?.versionNumber || 1) + '_bang_dai_tu.xlsx'"
+              [exportSheetName]="'Đại từ V' + (activeVersion()?.versionNumber || 1)"
               [value]="draftPronounTable()"
               (valueChange)="onTableChange($event)"
               [disabled]="isGeneratingPronouns()"
