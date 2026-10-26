@@ -114,7 +114,7 @@ import { DatePipe } from '@angular/common';
                         </div>
                       } @else {
                         <button (click)="exportProjectData(p, $event)" class="px-4 py-2 w-full bg-purple-50 hover:bg-purple-100 text-purple-700 rounded-lg text-sm font-medium transition-colors border border-purple-200 shadow-sm text-center flex items-center justify-center gap-1.5" title="Xuất toàn bộ dữ liệu dự án (JSON).&#10;Cho mục đích lưu trữ hoặc nhập vào tài khoản khác dịch tiếp.">
-                          <span class="material-icons text-[18px]">save_alt</span> Sao lưu dự án
+                          <span class="material-icons text-[18px]">save_alt</span> Xuất dự án
                         </button>
                         <button (click)="loadProject(p.id)" class="px-4 py-2 w-full bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg text-sm font-medium transition-colors border border-indigo-200 shadow-sm text-center flex items-center justify-center gap-1.5">
                           <span class="material-icons text-[18px]">folder_open</span> Mở dự án

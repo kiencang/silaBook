@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter, signal, inject } from '@angular/core';
+import { Component, Output, EventEmitter, signal, computed, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { ToastService } from '../../core/toast.service';
@@ -13,8 +13,13 @@ import { getSecureApiKey, saveSecureApiKey, removeSecureApiKey, hasSecureApiKey 
         <!-- Header -->
         <div class="p-6 border-b border-zinc-100 flex justify-between items-center bg-white">
           <div class="flex items-center space-x-2.5">
-            <div class="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600">
-              <mat-icon>vpn_key</mat-icon>
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300"
+                 [class.bg-indigo-50]="hasKeyEntered()"
+                 [class.text-indigo-600]="hasKeyEntered()"
+                 [class.bg-zinc-100]="!hasKeyEntered()"
+                 [class.text-zinc-400]="!hasKeyEntered()">
+              <mat-icon class="transition-transform duration-300 transform origin-center"
+                        [style.transform]="hasKeyEntered() ? 'rotate(-30deg)' : 'rotate(30deg)'">vpn_key</mat-icon>
             </div>
             <div>
               <h3 class="text-lg font-bold text-zinc-900 tracking-tight">Cấu hình Gemini API Key</h3>
@@ -28,11 +33,11 @@ import { getSecureApiKey, saveSecureApiKey, removeSecureApiKey, hasSecureApiKey 
         <!-- Content -->
         <div class="p-6 space-y-5 overflow-y-auto bg-white">
           <p class="text-sm text-zinc-600 leading-relaxed">
-            Để sử dụng công cụ dịch sách này bạn cần khóa API Key của Gemini. Bạn hãy vào link "Nơi lấy API Key Gemini" để thao tác. Key miễn phí chỉ có hiệu lực nếu bạn dùng <a href="https://aistudio.google.com/apps/d25924ff-35f1-42f7-9543-f142ecfe037a?showAssistant=true&showPreview=true" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:text-indigo-750 hover:underline">ứng dụng qua AI Studio</a>, với ai dùng trên silabook.wpsila.com, chỉ Key trả phí mới dùng được. Hãy remix ứng dụng trên AI Studio để dùng miễn phí.
+            Để sử dụng công cụ dịch sách này bạn cần khóa API Key của Gemini. Bạn hãy vào link "Nơi lấy Gemini API Key" để thao tác. Key miễn phí (Free tier) chỉ có hiệu lực nếu bạn dùng <a href="https://aistudio.google.com/apps/d25924ff-35f1-42f7-9543-f142ecfe037a?showAssistant=true&showPreview=true" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:text-indigo-750 hover:underline">ứng dụng trên AI Studio</a>, với ai dùng trên silabook.wpsila.com, chỉ Key trả phí mới dùng được. Hãy Remix ứng dụng trên AI Studio để dùng miễn phí.
           </p>
 
           <!-- Status badge/links -->
-          <div class="flex items-center space-x-2.5 text-xs text-zinc-500 bg-zinc-50 border border-zinc-100 p-2.5 rounded-xl">
+          <div class="flex items-center justify-between text-xs text-zinc-500 bg-zinc-50 border border-zinc-100 p-2.5 rounded-xl">
             @if (hasSavedKey()) {
               <span class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-100">
                 Đang dùng API Key của bạn
@@ -42,9 +47,9 @@ import { getSecureApiKey, saveSecureApiKey, removeSecureApiKey, hasSecureApiKey 
                 Bạn chưa nhập API Key cho ứng dụng
               </span>
             }
-            <span class="text-zinc-350">|</span>
-            <a href="https://aistudio.google.com/api-keys" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:text-indigo-750 font-bold hover:underline flex items-center cursor-pointer no-underline">
-              <mat-icon class="!text-[14px] !w-3.5 !h-3.5 mr-1 text-indigo-500">help_outline</mat-icon>Nơi lấy API Key Gemini
+            <a href="https://aistudio.google.com/api-keys" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:text-indigo-750 font-bold hover:underline inline-flex items-center gap-1 cursor-pointer no-underline ml-auto">
+              <span>Nơi lấy Gemini API Key</span>
+              <mat-icon class="!text-[14px] !w-3.5 !h-3.5 text-indigo-500">open_in_new</mat-icon>
             </a>
           </div>
 
@@ -108,6 +113,7 @@ export class ApiKeyModal {
   showKey = signal(false);
   apiKey = signal('');
   hasSavedKey = signal(false);
+  hasKeyEntered = computed(() => !!this.apiKey().trim());
 
   constructor() {
     this.checkSavedKey();

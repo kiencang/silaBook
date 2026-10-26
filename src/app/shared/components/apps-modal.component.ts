@@ -40,11 +40,11 @@ import { MatIconModule } from '@angular/material/icon';
               </div>
               <div class="flex-1 min-w-0">
                 <div class="flex items-center justify-between mb-1">
-                  <h4 class="text-base font-semibold text-zinc-900 group-hover:text-indigo-600 transition-colors">Dịch PDF ngắn chuyên ngành</h4>
+                  <h4 class="text-base font-semibold text-zinc-900 group-hover:text-indigo-600 transition-colors">Dịch file PDF ngắn, chuyên ngành</h4>
                   <span class="text-[10px] font-bold uppercase tracking-wider text-amber-600 bg-amber-50/80 px-2 py-0.5 rounded-md border border-amber-100/50">PDF</span>
                 </div>
                 <p class="text-xs text-zinc-500 leading-relaxed">
-                  Cố gắng bảo toàn định dạng gốc, giữ lại công thức toán học, tối ưu cho tài liệu học thuật dưới 30 trang.
+                  Cố gắng bảo toàn định dạng gốc, giữ lại công thức toán học, tối ưu cho tài liệu học thuật dưới 40 trang.
                 </p>
                 <div class="mt-3 flex justify-end">
                   <div class="inline-flex items-center justify-center px-3 py-1.5 text-xs font-medium text-indigo-600 bg-indigo-50 border border-indigo-100 rounded-lg group-hover:bg-indigo-100 transition-colors">
@@ -65,7 +65,7 @@ import { MatIconModule } from '@angular/material/icon';
               </div>
               <div class="flex-1 min-w-0">
                 <div class="flex items-center justify-between mb-1">
-                  <h4 class="text-base font-semibold text-zinc-900 group-hover:text-indigo-600 transition-colors">Dịch phụ đề YouTube</h4>
+                  <h4 class="text-base font-semibold text-zinc-900 group-hover:text-indigo-600 transition-colors">Dịch phụ đề video trên YouTube</h4>
                   <span class="text-[10px] font-bold uppercase tracking-wider text-red-600 bg-red-50/80 px-2 py-0.5 rounded-md border border-red-100/50">YouTube</span>
                 </div>
                 <p class="text-xs text-zinc-500 leading-relaxed">

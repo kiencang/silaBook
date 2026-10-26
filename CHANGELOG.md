@@ -5,6 +5,10 @@ Tất cả những thay đổi đáng chú ý của dự án kiencang/Book-silaT
 Định dạng dựa trên [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 và dự án này tuân thủ [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.0.114]- 2026-10-26
+### Fixed
+- Điều chỉnh nhỏ thiết kế của modal `Cấu hình Gemini API Key` cùng một số văn bản khác;
+
 ## [v1.0.113]- 2026-09-14
 ### Fixed
 - Điều chỉnh cách đặt tên file khi tải file xlsx từ Bảng đại từ hoặc Bảng thuật ngữ cho phù hợp hơn (theo phiên bản & theo loại bảng);
