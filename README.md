@@ -168,3 +168,10 @@ silaBook cũng như người phát triển nó không đưa ra bất kỳ bảo 
 ### 5. Lưu trữ nội bộ
 *   **[idb (IndexedDB Wrapper)](https://github.com/jakearchibald/idb)**: Thư viện wrap IndexedDB, hỗ trợ xử lý các tác vụ liên quan đến IndexedDB tốt hơn. Toàn bộ dữ liệu sách được lưu cục bộ tại trình duyệt là thông qua IndexedDB.
 
+## Câu hỏi cuối: Nên hay không nên dịch sách bằng AI?
+Làm ra công cụ silaBook, không đồng nghĩa với việc tôi cho rằng dịch sách bằng AI là điều nên làm với mọi cuốn sách cần dịch.
+
+Người dịch có chuyên môn tốt sẽ luôn cho bản dịch đáng đọc hơn so với AI dịch. Hãy chỉ sử dụng công cụ này nếu bạn không thể tìm được bản dịch do con người tiến hành.
+
+Hãy thử đọc bài này để xem phản biện về việc dùng AI dịch sách: https://marginalia.substack.com/p/on-ai-translation
+
