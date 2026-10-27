@@ -1,11 +1,24 @@
 # silaBook
-Công cụ dịch sách từ tiếng Anh sang tiếng Việt bằng Gemini. Tận dụng được ngưỡng API miễn phí khi dùng app qua AI Studio.
+Công cụ dịch sách từ tiếng Anh sang tiếng Việt bằng Gemini. Tận dụng được ngưỡng **API miễn phí** khi dùng app qua AI Studio.
 
-- **Link app trên AI Studio**: https://aistudio.google.com/apps/d25924ff-35f1-42f7-9543-f142ecfe037a?showPreview=true&showAssistant=true&fullscreenApplet=true (Key miễn phí dùng được).
+- **Link app trên AI Studio**: https://aistudio.google.com/apps/d25924ff-35f1-42f7-9543-f142ecfe037a?showPreview=true&showAssistant=true&fullscreenApplet=true (**Key miễn phí** dùng được).
 - Link web: https://silabook.wpsila.com (chỉ Key trả phí mới dùng được).
 
 2 bản trên là một, và có chất lượng như nhau.
 
+## Tôi có một cuốn sách dài, làm sao tiết kiệm chi phí tối đa?
+silaBook hiện tận dụng ngưỡng miễn phí hàng ngày khá rộng của AI Studio, tầm được 100 - 150 trang sách dịch/ngày/tài khoản.
+
+Nếu bạn có một cuốn sách lớn cần dịch ngay, bạn có thể sử dụng tính năng `Xuất dự án` để tải về dự án đang dịch dở, rồi đăng nhập tài khoản Google khác để sử dụng ngưỡng miễn phí cho tài khoản đó, rồi `Nhập dự án` và dịch tiếp.
+
+<p align="center">
+  <img src="images/h10-xuat-nhap-du-an.png" alt="Xuất nhập dự án">
+   <br><em>Bạn vào mục `Quản lý dự án` (nút phía trên ngoài cùng bên phải) để Xuất, Nhập dự án.</em>
+</p>
+
+Nếu không quá vội, bạn dịch đến đâu, đọc đến đó cũng ổn, một ngày đọc được 100 - 150 trang cũng tốt rồi.
+
+## Tính năng
 Mọi người có thể xem hướng dẫn đầy đủ và cập nhật ở đây: https://silabook-intro.wpsila.com
 
 Một số tính năng quan trọng khác:
