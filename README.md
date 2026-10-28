@@ -1,22 +1,11 @@
 # silaBook
-Công cụ dịch sách từ tiếng Anh sang tiếng Việt bằng Gemini. Tận dụng được ngưỡng **API miễn phí** khi dùng app qua AI Studio.
+Công cụ dịch sách từ tiếng Anh sang tiếng Việt bằng Gemini.
 
-- **Link app trên AI Studio**: https://aistudio.google.com/apps/d25924ff-35f1-42f7-9543-f142ecfe037a?showPreview=true&showAssistant=true&fullscreenApplet=true (**Key miễn phí** dùng được).
-- Link web: https://silabook.wpsila.com (chỉ Key trả phí mới dùng được).
+- Link web: https://silabook.wpsila.com 
 
 2 bản trên là một, và có chất lượng như nhau.
 
-## Tôi có một cuốn sách dài, làm sao tiết kiệm chi phí tối đa?
-silaBook hiện tận dụng ngưỡng miễn phí hàng ngày khá rộng của AI Studio, tầm được 100 - 150 trang sách dịch/ngày/tài khoản.
-
-Nếu bạn có một cuốn sách lớn cần dịch ngay, bạn có thể sử dụng tính năng `Xuất dự án` để tải về dự án đang dịch dở, rồi đăng nhập tài khoản Google khác để sử dụng ngưỡng miễn phí cho tài khoản đó, rồi `Nhập dự án` và dịch tiếp.
-
-<p align="center">
-  <img src="images/h10-xuat-nhap-du-an.png" alt="Xuất nhập dự án">
-   <br><em>Bạn vào mục `Quản lý dự án` (nút phía trên ngoài cùng bên phải) để Xuất, Nhập dự án.</em>
-</p>
-
-Nếu không quá vội, bạn dịch đến đâu, đọc đến đó cũng ổn, một ngày đọc được 100 - 150 trang cũng tốt rồi.
+**Lưu ý**: Từ ngày 28/10/2026, việc sử dụng API Key miễn phí trên AI Studio không được thoải mái như trước đây, thường gặp giới hạn (thông báo dạng `model AI đang có nhu cầu sử dụng cao, vui lòng thử lại sau`). Hiện chỉ Key trả phí là tiện dùng ứng dụng được ngay.
 
 ## Tính năng
 Mọi người có thể xem hướng dẫn đầy đủ và cập nhật ở đây: https://silabook-intro.wpsila.com
@@ -78,7 +67,7 @@ Bạn chỉ việc nhấn button, công cụ sẽ tự quét toàn bộ cuốn s
    <br><em>Bước 5: Tạo danh sách từ khó/thuật ngữ: hầu hết các sách đều có những từ khó dịch, nên bước này bạn nên làm với bất kỳ thể loại sách nào.</em>
 </p>
 
-Model chọn để phân tích lý tưởng nhất vẫn là model cao nhất (Pro). Tuy nhiên sách rất tốn dữ liệu nên người dùng miễn phí để không bị gián đoạn phân tích nên dùng model tầm trung (Flash) để làm.  
+Model chọn để phân tích lý tưởng nhất vẫn là model cao nhất (Pro). Tuy nhiên sách rất tốn dữ liệu nên nếu muốn tiết kiệm chi phí nên dùng model tầm trung (Flash) để làm.  
 
 <p align="center">
   <img src="images/h7-dich-v1.0.111.png" alt="Bước 6">
@@ -144,9 +133,7 @@ MinerU còn cho phép tải về nhiều định dạng sau khi chuyển đổi 
 
 ## Thử nghiệm thêm để có thể kết nối với bất cứ AI nào
 
-Nhìn chung tôi hài lòng với Gemini, nó có chất lượng tốt và có gói miễn phí hàng ngày tương đối rộng rãi.
-
-Tuy nhiên vẫn có nhu cầu sử dụng các model AI khác để dịch. Và tôi đang triển khai một công cụ tương tự dựa trên công cụ này, nó sẽ kết hợp với OpenRouter- vốn là cổng trung gian có thể kết nối với hầu hết các AI quan trọng nhất. Điều đó giúp bạn có khả năng sử dụng bất cứ AI nào bạn muốn để dịch!
+Tôi đang triển khai một công cụ tương tự dựa trên công cụ này, nó sẽ kết hợp với OpenRouter- vốn là cổng trung gian có thể kết nối với hầu hết các AI quan trọng nhất. Điều đó giúp bạn có khả năng sử dụng bất cứ AI nào bạn muốn để dịch!
 
 Bạn có thể tham khảo repo đó ở đây: https://github.com/kiencang/silaBook-openSky
 
