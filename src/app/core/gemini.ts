@@ -64,9 +64,93 @@ export class GeminiClient {
     return '';
   }
 
+  private isStaticHosting(): boolean {
+    if (typeof window === 'undefined') return false;
+    const host = window.location.hostname;
+    return !host.includes('localhost') && !host.includes('run.app') && !host.includes('127.0.0.1');
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private async directGenerateContent(model: string, contents: any[], config: any, apiKey: string): Promise<{ text?: string; promptFeedback?: any }> {
+    const cleanModel = model.replace(/^models\//, '');
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${cleanModel}:generateContent?key=${encodeURIComponent(apiKey)}`;
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const bodyPayload: any = { contents };
+
+    if (config?.systemInstruction) {
+      const siText = typeof config.systemInstruction === 'string' ? config.systemInstruction : (config.systemInstruction.text || '');
+      if (siText) {
+        bodyPayload.systemInstruction = {
+          parts: [{ text: siText }]
+        };
+      }
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const genConfig: any = {};
+    if (config?.thinkingConfig) genConfig.thinkingConfig = config.thinkingConfig;
+    if (config?.responseMimeType) genConfig.responseMimeType = config.responseMimeType;
+    if (config?.responseSchema) genConfig.responseSchema = config.responseSchema;
+    if (config?.temperature !== undefined) genConfig.temperature = config.temperature;
+    if (config?.maxOutputTokens !== undefined) genConfig.maxOutputTokens = config.maxOutputTokens;
+    if (Object.keys(genConfig).length > 0) bodyPayload.generationConfig = genConfig;
+
+    if (config?.safetySettings) {
+      bodyPayload.safetySettings = config.safetySettings;
+    }
+
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(bodyPayload)
+    });
+
+    const data = await res.json();
+    if (!res.ok) {
+      const errMsg = data?.error?.message || `Lỗi từ Google API (${res.status})`;
+      throw new Error(errMsg);
+    }
+
+    const parts = data?.candidates?.[0]?.content?.parts;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const text = Array.isArray(parts) ? parts.map((p: any) => p.text || '').join('') : '';
+
+    return {
+      text,
+      promptFeedback: data?.promptFeedback || null
+    };
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private async directCountTokens(model: string, contents: any[], apiKey: string): Promise<number> {
+    const cleanModel = model.replace(/^models\//, '');
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${cleanModel}:countTokens?key=${encodeURIComponent(apiKey)}`;
+
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ contents })
+    });
+
+    if (!res.ok) return 0;
+    const data = await res.json();
+    return data.totalTokens || 0;
+  }
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private async callGenerateContent(model: string, contents: any[], config: any): Promise<{ text?: string; promptFeedback?: any }> {
     const apiKey = await this.getApiKey();
+
+    // If deployed on static hosting (silabook.wpsila.com / Cloudflare Pages), call Google API directly
+    if (this.isStaticHosting()) {
+      if (!apiKey) {
+        throw new Error('Chưa có Gemini API Key. Vui lòng cấu hình API Key trong ứng dụng để tiếp tục.');
+      }
+      return await this.directGenerateContent(model, contents, config, apiKey);
+    }
+
+    // Inside AI Studio preview/dev, route through Express backend
     const headers: Record<string, string> = {
       'Content-Type': 'application/json'
     };
@@ -74,29 +158,45 @@ export class GeminiClient {
       headers['x-gemini-api-key'] = apiKey.trim();
     }
 
-    const res = await fetch('/api/gemini/generate', {
-      method: 'POST',
-      headers,
-      body: JSON.stringify({ model, contents, config })
-    });
+    try {
+      const res = await fetch('/api/gemini/generate', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ model, contents, config })
+      });
 
-    if (!res.ok) {
-      let errMsg = `Lỗi máy chủ (${res.status})`;
-      try {
-        const errJson = await res.json();
-        if (errJson?.error) errMsg = errJson.error;
-      } catch {
-        // ignore
+      if (!res.ok) {
+        if (res.status === 404 && apiKey) {
+          return await this.directGenerateContent(model, contents, config, apiKey);
+        }
+        let errMsg = `Lỗi máy chủ (${res.status})`;
+        try {
+          const errJson = await res.json();
+          if (errJson?.error) errMsg = errJson.error;
+        } catch {
+          // ignore
+        }
+        throw new Error(errMsg);
       }
-      throw new Error(errMsg);
-    }
 
-    return await res.json();
+      return await res.json();
+    } catch (err: unknown) {
+      if (apiKey) {
+        return await this.directGenerateContent(model, contents, config, apiKey);
+      }
+      throw err;
+    }
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private async callCountTokens(model: string, contents: any[]): Promise<number> {
     const apiKey = await this.getApiKey();
+
+    if (this.isStaticHosting()) {
+      if (!apiKey) return 0;
+      return await this.directCountTokens(model, contents, apiKey);
+    }
+
     const headers: Record<string, string> = {
       'Content-Type': 'application/json'
     };
@@ -104,25 +204,28 @@ export class GeminiClient {
       headers['x-gemini-api-key'] = apiKey.trim();
     }
 
-    const res = await fetch('/api/gemini/count-tokens', {
-      method: 'POST',
-      headers,
-      body: JSON.stringify({ model, contents })
-    });
+    try {
+      const res = await fetch('/api/gemini/count-tokens', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ model, contents })
+      });
 
-    if (!res.ok) {
-      let errMsg = `Lỗi đếm token (${res.status})`;
-      try {
-        const errJson = await res.json();
-        if (errJson?.error) errMsg = errJson.error;
-      } catch {
-        // ignore
+      if (!res.ok) {
+        if (res.status === 404 && apiKey) {
+          return await this.directCountTokens(model, contents, apiKey);
+        }
+        return 0;
       }
-      throw new Error(errMsg);
-    }
 
-    const data = await res.json();
-    return data.totalTokens || 0;
+      const data = await res.json();
+      return data.totalTokens || 0;
+    } catch {
+      if (apiKey) {
+        return await this.directCountTokens(model, contents, apiKey);
+      }
+      return 0;
+    }
   }
 
   private async loadPromptText(url: string): Promise<string | null> {
