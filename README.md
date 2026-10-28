@@ -1,4 +1,5 @@
 # silaBook
+
 Công cụ dịch sách từ tiếng Anh sang tiếng Việt bằng Gemini.
 
 - Link web: https://silabook.wpsila.com 
@@ -6,6 +7,7 @@ Công cụ dịch sách từ tiếng Anh sang tiếng Việt bằng Gemini.
 **Lưu ý**: Từ ngày 28/10/2026, việc sử dụng API Key miễn phí trên AI Studio không được thoải mái như trước đây, thường gặp giới hạn (thông báo dạng `model AI đang có nhu cầu sử dụng cao, vui lòng thử lại sau`). Hiện chỉ Key trả phí là tiện dùng ứng dụng được ngay.
 
 ## Tính năng
+
 Mọi người có thể xem hướng dẫn đầy đủ và cập nhật ở đây: https://silabook-intro.wpsila.com
 
 Một số tính năng quan trọng khác:
@@ -136,6 +138,7 @@ Tôi đang triển khai một công cụ tương tự dựa trên công cụ nà
 Bạn có thể tham khảo repo đó ở đây: https://github.com/kiencang/silaBook-openSky
 
 ## Tuyên bố từ chối trách nhiệm
+
 Công cụ này có thể được sử dụng cho mục đích nghiên cứu và học tập cá nhân.
 
 silaBook cũng như người phát triển nó không đưa ra bất kỳ bảo đảm rõ ràng hay ngụ ý nào, cũng như không tuyên bố rằng công cụ sẽ vận hành hoàn hảo, chính xác hoặc cập nhật. Người phát triển sẽ không chịu trách nhiệm cho bất kỳ tổn thất hay thiệt hại nào phát sinh trực tiếp hoặc gián tiếp liên quan đến hoặc phát sinh từ việc sử dụng công cụ này.
