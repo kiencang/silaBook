@@ -3,8 +3,6 @@ Công cụ dịch sách từ tiếng Anh sang tiếng Việt bằng Gemini.
 
 - Link web: https://silabook.wpsila.com 
 
-2 bản trên là một, và có chất lượng như nhau.
-
 **Lưu ý**: Từ ngày 28/10/2026, việc sử dụng API Key miễn phí trên AI Studio không được thoải mái như trước đây, thường gặp giới hạn (thông báo dạng `model AI đang có nhu cầu sử dụng cao, vui lòng thử lại sau`). Hiện chỉ Key trả phí là tiện dùng ứng dụng được ngay.
 
 ## Tính năng
