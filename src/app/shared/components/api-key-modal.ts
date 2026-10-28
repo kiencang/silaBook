@@ -33,7 +33,7 @@ import { getSecureApiKey, saveSecureApiKey, removeSecureApiKey, hasSecureApiKey 
         <!-- Content -->
         <div class="p-6 space-y-5 overflow-y-auto bg-white">
           <p class="text-sm text-zinc-600 leading-relaxed">
-            Để sử dụng công cụ dịch sách này bạn cần khóa API Key của Gemini. Bạn hãy vào link "Nơi lấy Gemini API Key" để thao tác. Key miễn phí (Free tier) chỉ có hiệu lực nếu bạn dùng <a href="https://aistudio.google.com/apps/d25924ff-35f1-42f7-9543-f142ecfe037a?showAssistant=true&showPreview=true" target="_blank" rel="noopener noreferrer" class="text-indigo-600 hover:text-indigo-750 hover:underline">ứng dụng trên AI Studio</a>, với ai dùng trên silabook.wpsila.com, chỉ Key trả phí mới dùng được. Hãy Remix ứng dụng trên AI Studio để dùng miễn phí.
+            Để sử dụng công cụ dịch sách này bạn cần khóa API Key của Gemini. Bạn hãy vào link "Nơi lấy Gemini API Key" để thao tác. Key miễn phí (Free tier) hiện bị giới hạn (limit) khá nhiều. Chỉ Key trả phí mới sử dụng được ngay.
           </p>
 
           <!-- Status badge/links -->

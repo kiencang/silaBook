@@ -22,11 +22,15 @@
             "define": {
               "GEMINI_API_KEY": "'YOUR_GEMINI_API_KEY'"
             },
+            "server": "src/main.server.ts",
+            "outputMode": "server",
+            "ssr": {
+              "entry": "src/server.ts"
+            },
             "browser": "src/main.ts",
             "tsConfig": "tsconfig.app.json",
             "outputPath": {
-              "base": "dist",
-              "browser": ""
+              "base": "dist"
             },
             "assets": [
               {
@@ -63,6 +67,9 @@
               "outputHashing": "all"
             },
             "development": {
+              "externalDependencies": [
+                "@google/genai"
+              ],
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true

@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { GoogleGenAI, Type } from '@google/genai';
 import { getSecureApiKey } from './crypto-storage.util';
 
 export function isQuotaError(e: unknown): boolean {
@@ -62,19 +61,68 @@ export class GeminiClient {
         return userKey.trim();
       }
     }
-    return GEMINI_API_KEY;
+    return '';
   }
 
-  private async getAi(): Promise<GoogleGenAI> {
-    const key = await this.getApiKey();
-    return new GoogleGenAI({ 
-      apiKey: key,
-      httpOptions: {
-        headers: {
-          'User-Agent': 'aistudio-build'
-        }
-      }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private async callGenerateContent(model: string, contents: any[], config: any): Promise<{ text?: string; promptFeedback?: any }> {
+    const apiKey = await this.getApiKey();
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json'
+    };
+    if (apiKey && apiKey.trim()) {
+      headers['x-gemini-api-key'] = apiKey.trim();
+    }
+
+    const res = await fetch('/api/gemini/generate', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ model, contents, config })
     });
+
+    if (!res.ok) {
+      let errMsg = `Lỗi máy chủ (${res.status})`;
+      try {
+        const errJson = await res.json();
+        if (errJson?.error) errMsg = errJson.error;
+      } catch {
+        // ignore
+      }
+      throw new Error(errMsg);
+    }
+
+    return await res.json();
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private async callCountTokens(model: string, contents: any[]): Promise<number> {
+    const apiKey = await this.getApiKey();
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json'
+    };
+    if (apiKey && apiKey.trim()) {
+      headers['x-gemini-api-key'] = apiKey.trim();
+    }
+
+    const res = await fetch('/api/gemini/count-tokens', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ model, contents })
+    });
+
+    if (!res.ok) {
+      let errMsg = `Lỗi đếm token (${res.status})`;
+      try {
+        const errJson = await res.json();
+        if (errJson?.error) errMsg = errJson.error;
+      } catch {
+        // ignore
+      }
+      throw new Error(errMsg);
+    }
+
+    const data = await res.json();
+    return data.totalTokens || 0;
   }
 
   private async loadPromptText(url: string): Promise<string | null> {
@@ -97,14 +145,9 @@ export class GeminiClient {
 
   async countTokens(base64Data: string, mimeType = 'application/pdf', model = 'gemini-flash-lite-latest'): Promise<number> {
     try {
-      const ai = await this.getAi();
-      const response = await ai.models.countTokens({
-        model: model,
-        contents: [
-          { inlineData: { data: base64Data, mimeType } }
-        ]
-      });
-      return response.totalTokens || 0;
+      return await this.callCountTokens(model, [
+        { inlineData: { data: base64Data, mimeType } }
+      ]);
     } catch (e) {
       console.error('Failed to count tokens', e);
       return 0;
@@ -127,14 +170,14 @@ export class GeminiClient {
       configArgs.systemInstruction = pdfSI;
     }
 
-    const response = await (await this.getAi()).models.generateContent({
-      model: model,
-      config: configArgs,
-      contents: [
+    const response = await this.callGenerateContent(
+      model,
+      [
         { text: textPrompt },
         { inlineData: { data: base64Data, mimeType: 'application/pdf' } }
-      ]
-    });
+      ],
+      configArgs
+    );
     
     let result = response.text || '';
     if (result.startsWith('```markdown')) {
@@ -187,23 +230,23 @@ export class GeminiClient {
         safetySettings: DEFAULT_SAFETY_SETTINGS,
         responseMimeType: 'application/json',
         responseSchema: {
-          type: Type.ARRAY,
+          type: 'ARRAY',
           items: {
-            type: Type.OBJECT,
+            type: 'OBJECT',
             properties: {
-              english: { type: Type.STRING },
-              pos: { type: Type.STRING }
+              english: { type: 'STRING' },
+              pos: { type: 'STRING' }
             },
             required: ["english", "pos"]
           }
         }
       };
 
-      const response = await (await this.getAi()).models.generateContent({
-        model: 'gemini-flash-lite-latest',
-        contents: [ { text: prompt } ],
-        config: filterConfig
-      });
+      const response = await this.callGenerateContent(
+        'gemini-flash-lite-latest',
+        [ { text: prompt } ],
+        filterConfig
+      );
       
       const resultText = response.text || '[]';
       const matchedItems = JSON.parse(resultText);
@@ -252,11 +295,11 @@ export class GeminiClient {
         safetySettings: DEFAULT_SAFETY_SETTINGS,
       };
 
-      const response = await (await this.getAi()).models.generateContent({
-        model: model,
-        contents: [ { text: prompt } ],
-        config: filterConfig
-      });
+      const response = await this.callGenerateContent(
+        model,
+        [ { text: prompt } ],
+        filterConfig
+      );
       
       let result = response.text || '';
       if (result.startsWith('```markdown')) {
@@ -350,13 +393,13 @@ export class GeminiClient {
       configArgs.systemInstruction = systemInstruction;
     }
 
-    const response = await (await this.getAi()).models.generateContent({
-      model: model,
-      contents: [
+    const response = await this.callGenerateContent(
+      model,
+      [
         { text: finalPrompt }
       ],
-      config: configArgs
-    });
+      configArgs
+    );
     
     let result = response.text || '';
     
@@ -390,11 +433,11 @@ export class GeminiClient {
        configArgs.systemInstruction = psi;
     }
 
-    const response = await (await this.getAi()).models.generateContent({
-      model: model,
-      contents: [{ text: finalPrompt }],
-      config: configArgs
-    });
+    const response = await this.callGenerateContent(
+      model,
+      [{ text: finalPrompt }],
+      configArgs
+    );
 
     if (response.promptFeedback?.blockReason) {
       throw new Error(`Nội dung bị chặn bởi bộ lọc an toàn của Google: ${response.promptFeedback.blockReason}`);
@@ -454,11 +497,11 @@ export class GeminiClient {
        configArgs.systemInstruction = gsi;
     }
 
-    const response = await (await this.getAi()).models.generateContent({
-      model: model,
-      contents: [{ text: finalPrompt }],
-      config: configArgs
-    });
+    const response = await this.callGenerateContent(
+      model,
+      [{ text: finalPrompt }],
+      configArgs
+    );
 
     if (response.promptFeedback?.blockReason) {
       throw new Error(`Nội dung bị chặn bởi bộ lọc an toàn của Google: ${response.promptFeedback.blockReason}`);
@@ -518,11 +561,11 @@ export class GeminiClient {
        configArgs.systemInstruction = si;
     }
 
-    const response = await (await this.getAi()).models.generateContent({
-      model: model,
-      contents: [{ text: finalPrompt }],
-      config: configArgs
-    });
+    const response = await this.callGenerateContent(
+      model,
+      [{ text: finalPrompt }],
+      configArgs
+    );
 
     let result = response.text || '';
     if (result.startsWith('```json')) {
@@ -564,11 +607,11 @@ export class GeminiClient {
         safetySettings: DEFAULT_SAFETY_SETTINGS,
       };
 
-      const response = await (await this.getAi()).models.generateContent({
-        model: model,
-        contents: [ { text: finalPrompt } ],
-        config: configArgs
-      });
+      const response = await this.callGenerateContent(
+        model,
+        [ { text: finalPrompt } ],
+        configArgs
+      );
       
       return (response.text || '').trim();
     } catch (e) {
