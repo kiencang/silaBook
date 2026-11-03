@@ -5,6 +5,11 @@ Tất cả những thay đổi đáng chú ý của dự án kiencang/Book-silaT
 Định dạng dựa trên [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 và dự án này tuân thủ [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.0.115]- 2026-11-03
+### Fixed
+- Điều chỉnh đường link các app khác sang GitHub để ổn định hơn so với các link AI Studio;
+- Sửa lỗi hiệu năng trong chapter-item.ts: Gọi hàm parseMarkdown(...) trực tiếp trong HTML Template! Lỗi này gây ra việc ứng dụng bị chậm hơn và khó copy text;
+
 ## [v1.0.114]- 2026-10-26
 ### Fixed
 - Điều chỉnh nhỏ thiết kế của modal `Cấu hình Gemini API Key` cùng một số văn bản khác;

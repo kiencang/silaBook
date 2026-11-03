@@ -31,7 +31,7 @@ import { MatIconModule } from '@angular/material/icon';
           
           <div class="grid grid-cols-1 gap-4">
             <!-- App 1: Dịch PDF chuyên ngành -->
-            <a href="https://aistudio.google.com/apps/bb5c61b7-e110-49aa-933c-04c4ccd18e16?showPreview=true&showAssistant=true&fullscreenApplet=true" 
+            <a href="https://github.com/kiencang/PDF-silaTranslator" 
                target="_blank" 
                rel="noopener noreferrer" 
                class="group flex items-start p-4 bg-zinc-50/50 hover:bg-zinc-50 border border-zinc-200 hover:border-indigo-300 hover:shadow-md rounded-2xl transition-all duration-250 text-left cursor-pointer no-underline">
@@ -56,7 +56,7 @@ import { MatIconModule } from '@angular/material/icon';
             </a>
 
             <!-- App 2: Dịch phụ đề YouTube -->
-            <a href="https://aistudio.google.com/apps/b98324ac-cdef-4887-961c-dbcc2c50a6c7?fullscreenApplet=true&showPreview=true&showAssistant=true" 
+            <a href="https://github.com/kiencang/silaSub" 
                target="_blank" 
                rel="noopener noreferrer" 
                class="group flex items-start p-4 bg-zinc-50/50 hover:bg-zinc-50 border border-zinc-200 hover:border-indigo-300 hover:shadow-md rounded-2xl transition-all duration-250 text-left cursor-pointer no-underline">
@@ -81,7 +81,7 @@ import { MatIconModule } from '@angular/material/icon';
             </a>
 
             <!-- App 3: Dịch website -->
-            <a href="https://aistudio.google.com/apps/4cc7e19e-46dd-4d38-8617-ba38ef1c80c3?fullscreenApplet=true&showPreview=true&showAssistant=true" 
+            <a href="https://github.com/kiencang/3W-silaTranslator" 
                target="_blank" 
                rel="noopener noreferrer" 
                class="group flex items-start p-4 bg-zinc-50/50 hover:bg-zinc-50 border border-zinc-200 hover:border-indigo-300 hover:shadow-md rounded-2xl transition-all duration-250 text-left cursor-pointer no-underline">
