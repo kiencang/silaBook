@@ -384,7 +384,35 @@ export class GeminiClient {
     const configArgs: any = {
       thinkingConfig: { thinkingLevel: 'HIGH' },
       safetySettings: DEFAULT_SAFETY_SETTINGS,
-      responseMimeType: 'application/json'
+      responseMimeType: 'application/json',
+      responseSchema: {
+        type: Type.ARRAY,
+        items: {
+          type: Type.OBJECT,
+          properties: {
+            originalName: { type: Type.STRING },
+            gender: { type: Type.STRING },
+            ageGroup: { type: Type.STRING },
+            role: { type: Type.STRING },
+            translatedTitles: { type: Type.STRING },
+            narratorPronoun: { type: Type.STRING },
+            dialoguePronouns: { type: Type.STRING },
+            reasoning: { type: Type.STRING },
+            notes: { type: Type.STRING }
+          },
+          required: [
+            'originalName',
+            'gender',
+            'ageGroup',
+            'role',
+            'translatedTitles',
+            'narratorPronoun',
+            'dialoguePronouns',
+            'reasoning',
+            'notes'
+          ]
+        }
+      }
     };
     if (psi) {
        configArgs.systemInstruction = psi;
@@ -447,7 +475,20 @@ export class GeminiClient {
     const configArgs: any = {
       thinkingConfig: { thinkingLevel: 'HIGH' },
       safetySettings: DEFAULT_SAFETY_SETTINGS,
-      responseMimeType: 'application/json'
+      responseMimeType: 'application/json',
+      responseSchema: {
+        type: Type.ARRAY,
+        items: {
+          type: Type.OBJECT,
+          properties: {
+            english: { type: Type.STRING },
+            vietnamese: { type: Type.STRING },
+            pos: { type: Type.STRING },
+            contextNotes: { type: Type.STRING }
+          },
+          required: ['english', 'vietnamese', 'pos', 'contextNotes']
+        }
+      }
     };
 
     if (gsi) {
@@ -511,7 +552,26 @@ export class GeminiClient {
     const configArgs: any = {
       thinkingConfig: { thinkingLevel: 'HIGH' },
       safetySettings: DEFAULT_SAFETY_SETTINGS,
-      responseMimeType: 'application/json'
+      responseMimeType: 'application/json',
+      responseSchema: {
+        type: Type.OBJECT,
+        properties: {
+          splitOptions: {
+            type: Type.OBJECT,
+            properties: {
+              recommendedOption: { type: Type.STRING },
+              recommendedKeywords: {
+                type: Type.ARRAY,
+                items: { type: Type.STRING }
+              },
+              recommendedRegex: { type: Type.STRING },
+              reason: { type: Type.STRING }
+            },
+            required: ['recommendedOption', 'recommendedKeywords', 'recommendedRegex', 'reason']
+          }
+        },
+        required: ['splitOptions']
+      }
     };
 
     if (si) {

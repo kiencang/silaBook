@@ -5,6 +5,10 @@ Tất cả những thay đổi đáng chú ý của dự án kiencang/Book-silaT
 Định dạng dựa trên [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 và dự án này tuân thủ [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.0.117]- 2026-11-03
+### Fixed
+- Bổ sung responseSchema cho 3 hàm JSON (generatePronounsRaw, generateGlossaryRaw, analyzeBook) để tăng tính ổn định của ứng dụng;
+
 ## [v1.0.116]- 2026-11-03
 ### Fixed
 - Điều chỉnh thông tin API Key miễn phí (hiện Gemini siết chặt, hầu như không dùng được);
