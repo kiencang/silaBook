@@ -5,6 +5,10 @@ Tất cả những thay đổi đáng chú ý của dự án kiencang/Book-silaT
 Định dạng dựa trên [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 và dự án này tuân thủ [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.0.118]- 2026-11-03
+### Fixed
+- Điều chỉnh nhỏ SI dịch tiểu thuyết, truyện ngắn để tăng sự thống nhất trên toàn SI;
+
 ## [v1.0.117]- 2026-11-03
 ### Fixed
 - Bổ sung responseSchema cho 3 hàm JSON (generatePronounsRaw, generateGlossaryRaw, analyzeBook) để tăng tính ổn định của ứng dụng;
