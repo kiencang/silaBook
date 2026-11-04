@@ -30,7 +30,7 @@ import { hasSecureApiKey } from '../../core/crypto-storage.util';
         <button 
           (click)="downloadMarkdown()"
           class="shrink-0 whitespace-nowrap flex items-center space-x-2 bg-white border border-zinc-300 hover:bg-zinc-50 text-zinc-700 px-4 py-2 rounded-lg font-medium transition-colors shadow-sm"
-          title="Tải về file markdown đã được trích xuất"
+          title="Tải về file Markdown của cuốn sách."
         >
           <mat-icon class="!w-5 !h-5 !text-xl !flex !items-center !justify-center text-zinc-500">download</mat-icon>
           <span class="hidden sm:inline">Tải file Markdown</span>
@@ -39,9 +39,9 @@ import { hasSecureApiKey } from '../../core/crypto-storage.util';
 
       @if (store.hasAnyTranslation()) {
         <div class="bg-amber-50 border-l-4 border-amber-500 p-4 mb-8 rounded-r-xl shadow-sm">
-          <div class="flex">
-            <div class="flex-shrink-0 mt-0.5">
-              <mat-icon class="text-amber-500 !text-xl !w-5 !h-5">warning</mat-icon>
+          <div class="flex items-center">
+            <div class="flex-shrink-0 flex items-center justify-center">
+              <mat-icon class="text-amber-500 !text-xl !w-5 !h-5 !flex !items-center !justify-center">warning</mat-icon>
             </div>
             <div class="ml-3">
               <p class="text-sm text-amber-800 font-medium">

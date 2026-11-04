@@ -14,7 +14,8 @@ import { MatIconModule } from '@angular/material/icon';
         </h4>
         <div class="text-xs text-indigo-700 leading-relaxed mb-3 space-y-1.5">
           <p>AI sẽ quét mã nguồn sách để chọn phương án chia khối chuẩn nhất, giúp việc dịch thuật sau này được liền mạch và không bị gián đoạn.</p>
-          <p>Hữu ích nếu bạn không rõ cách phân chia thế nào cho hợp lý. Trường hợp đã nắm rõ, bạn nên thực hiện việc phân chia thủ công trong mục "Điều chỉnh cách phân chia" bằng các tùy chọn bên dưới, điều đó sẽ giúp tiết kiệm một khoản token miễn phí dùng để phân tích. Ngay cả khi bạn đã phân tích tự động, bạn vẫn có quyền điều chỉnh lại cách chia bằng thao tác thủ công.</p>
+          <p>Hữu ích nếu bạn không rõ cách phân chia thế nào cho hợp lý. Trường hợp đã nắm rõ, bạn nên thực hiện việc phân chia thủ công trong mục "Điều chỉnh cách phân chia" bằng các tùy chọn bên dưới, điều đó sẽ giúp tiết kiệm một khoản token dùng để phân tích.</p>
+          <p>Nếu sách của bạn lớn có thể lấy mẫu 25% cuốn sách, mặc định công cụ lấy mẫu 50% độ dài của cuốn sách. Ngay cả khi bạn đã phân tích tự động, bạn vẫn có quyền điều chỉnh lại cách chia bằng thao tác thủ công.</p>
         </div>
         <div class="flex items-center gap-4 text-xs font-medium text-indigo-800">
           <div class="flex items-center gap-1.5 bg-white/60 px-2.5 py-1 rounded-md border border-indigo-100">

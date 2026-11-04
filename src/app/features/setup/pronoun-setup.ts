@@ -19,8 +19,8 @@ import { hasSecureApiKey } from '../../core/crypto-storage.util';
         <div>
           <h2 class="text-2xl font-bold text-zinc-900">Thiết lập Bảng Đại từ Nhân xưng (Tùy chọn)</h2>
           <p class="text-zinc-500 mt-1">Sử dụng mô hình AI mạnh để phân tích nội dung sách giúp xây dựng bảng đại từ nhân xưng hoàn chỉnh, nhằm đảm bảo nhất quán khi dịch & phù hợp hơn với văn hóa người Việt. Đặc biệt cần thiết cho thể loại tiểu thuyết, truyện ngắn. Các loại sách khác có thể không cần thiết (click vào button "Bỏ qua phần này" ở góc dưới bên trái).</p>
-          <p class="text-zinc-500 mt-2">Nếu có thể, hãy chọn <strong>model Pro</strong> để phân tích, vì đây là mục rất quan trọng, cần độ chính xác cao nhất. Tuy nhiên với các tài khoản miễn phí, có thể có hạn chế với lượt sử dụng <strong>model Pro</strong>, khi đó dùng model Flash phân tích cũng vẫn cho chất lượng đủ tốt.</p>
-          <p class="text-zinc-500 mt-2">Trong quá trình phân tích nếu hết ngưỡng miễn phí, gây gián đoạn, hãy phân tích lại vào ngày hôm sau (khi ngưỡng miễn phí ngày được khôi phục lại), hoặc xuất dự án, rồi đẩy nó vào tài khoản khác vẫn còn ngưỡng miễn phí để phân tích tiếp.</p>
+          <p class="text-zinc-500 mt-2">Nếu có thể, hãy chọn <strong>model Pro</strong> để phân tích, vì đây là mục rất quan trọng, cần độ chính xác cao nhất. Tuy nhiên nếu chi phí là vấn đề, khi đó dùng model Flash phân tích cũng vẫn cho chất lượng đủ tốt.</p>
+          <p class="text-zinc-500 mt-2">Trong quá trình phân tích nếu bị gián đoạn do sự cố mạng, công cụ có button tiếp tục thay vì phải phân tích lại từ đầu.</p>
         </div>
       </div>
 

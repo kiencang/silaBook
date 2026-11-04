@@ -213,11 +213,13 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
           <div class="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-zinc-100">
             <div class="p-6">
-              <h5 class="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-4">Bản gốc (Markdown)</h5>
+              <div class="flex items-center min-h-[28px] mb-4">
+                <h5 class="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Bản gốc (Markdown)</h5>
+              </div>
               <div class="prose prose-sm max-w-none text-zinc-700" [innerHTML]="parsedOriginalText()"></div>
             </div>
             <div class="p-6 bg-zinc-50 relative">
-              <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center justify-between min-h-[28px] mb-4">
                 <h5 class="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Bản dịch</h5>
                 @if (chapter().translatedText) {
                   <div class="flex items-center gap-2">

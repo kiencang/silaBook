@@ -5,6 +5,11 @@ Tất cả những thay đổi đáng chú ý của dự án kiencang/Book-silaT
 Định dạng dựa trên [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 và dự án này tuân thủ [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.0.120]- 2026-11-04
+### Fixed
+- Điều chỉnh nhỏ các thông báo trong các phase dịch, loại bỏ các yếu tố liên quan đến `miễn phí` trước đây do hiện tại Gemini đã siết chặt;
+- Điều chỉnh nhỏ một số thiết kế, chẳng hạn chỉnh cân đối hơn tiêu đề 2 cột bản gốc và bản dịch ở phase 5;
+
 ## [v1.0.119]- 2026-11-03
 ### Fixed
 - Cập nhật SI/Prompt dịch tài liệu khoa học;
