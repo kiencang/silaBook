@@ -30,13 +30,6 @@ import { hasSecureApiKey } from '../../core/crypto-storage.util';
 
         <span class="text-zinc-200 hidden sm:inline">|</span>
 
-        <button (click)="!isDisabled() && openRemixModal.emit()" [disabled]="isDisabled()" class="flex items-center font-medium text-zinc-600 hover:text-indigo-700 hover:bg-zinc-50 transition-colors bg-transparent border-none py-1 px-1.5 cursor-pointer outline-none rounded-md disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:text-zinc-600 disabled:hover:bg-transparent">
-          <mat-icon class="!text-[18px] !w-[18px] !h-[18px] mr-1.5 inline-flex items-center justify-center" [class.text-indigo-400]="!isDisabled()" [class.text-zinc-400]="isDisabled()">content_copy</mat-icon>
-          <span>Cách remix app</span>
-        </button>
-
-        <span class="text-zinc-200 hidden sm:inline">|</span>
-
         <button (click)="!isDisabled() && openAppsModal.emit()" [disabled]="isDisabled()" class="flex items-center font-medium text-zinc-600 hover:text-indigo-700 hover:bg-zinc-50 transition-colors bg-transparent border-none py-1 px-1.5 cursor-pointer outline-none rounded-md disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:text-zinc-600 disabled:hover:bg-transparent">
           <mat-icon class="!text-[18px] !w-[18px] !h-[18px] mr-1.5 inline-flex items-center justify-center" [class.text-indigo-400]="!isDisabled()" [class.text-zinc-400]="isDisabled()">apps</mat-icon>
           <span>Các app khác</span>
@@ -44,7 +37,7 @@ import { hasSecureApiKey } from '../../core/crypto-storage.util';
       </div>
 
       <div class="flex items-center flex-wrap justify-center gap-x-2 gap-y-1">
-        <span class="font-medium text-zinc-600">v1.0.121</span>
+        <span class="font-medium text-zinc-600">v1.0.122</span>
         <span class="text-zinc-300">•</span>
         <a href="https://github.com/kiencang/silaBook" target="_blank" rel="noopener noreferrer" class="hover:text-indigo-600 transition-colors">GitHub</a>
         <span class="text-zinc-300">•</span>
@@ -63,7 +56,6 @@ export class FooterComponent {
   isDisabled = input<boolean>(false);
   hasUserApiKey = signal<boolean>(false);
   openApiKeyModal = output<void>();
-  openRemixModal = output<void>();
   openAppsModal = output<void>();
 
   constructor() {

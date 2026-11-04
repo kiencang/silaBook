@@ -5,6 +5,10 @@ Tất cả những thay đổi đáng chú ý của dự án kiencang/Book-silaT
 Định dạng dựa trên [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 và dự án này tuân thủ [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.0.122]- 2026-11-04
+### Fixed
+- Loại bỏ modal Remix dư thừa (trước để thông báo tận dụng ngưỡng miễn phí ngày của Gemini, giờ Gemini đã siết chặt);
+
 ## [v1.0.121]- 2026-11-04
 ### Fixed
 - Bảo vệ khóa API Key tốt hơn (chống XSS);
