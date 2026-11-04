@@ -9,6 +9,75 @@ declare global {
   }
 }
 
+const DANGEROUS_TAGS = [
+  'script', 'iframe', 'object', 'embed', 'applet', 'form',
+  'meta', 'base', 'link', 'style', 'frame', 'frameset',
+  'marquee', 'foreignobject', 'set', 'animate', 'animatetransform', 'animatemotion'
+];
+
+export function sanitizeHtml(html: string): string {
+  if (!html || typeof DOMParser === 'undefined') return html || '';
+
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(html, 'text/html');
+
+  // 1. Remove dangerous executable elements
+  const dangerousSelector = DANGEROUS_TAGS.join(',');
+  doc.querySelectorAll(dangerousSelector).forEach(el => el.remove());
+
+  // 2. Inspect all remaining elements and strip dangerous attributes
+  const allElements = doc.body.querySelectorAll('*');
+  allElements.forEach(el => {
+    const attrs = Array.from(el.attributes);
+    for (const attr of attrs) {
+      const name = attr.name.toLowerCase();
+      const val = attr.value;
+      const normalizedVal = Array.from(val)
+        .filter(ch => ch.charCodeAt(0) > 32)
+        .join('')
+        .toLowerCase();
+
+      // Remove all event handlers (onerror, onload, onclick, etc.) and srcdoc
+      if (name.startsWith('on') || name === 'srcdoc') {
+        el.removeAttribute(attr.name);
+        continue;
+      }
+
+      // Check URL attributes for executable schemes
+      if (name === 'href' || name === 'xlink:href' || name === 'action' || name === 'formaction') {
+        if (
+          normalizedVal.startsWith('javascript:') ||
+          normalizedVal.startsWith('vbscript:') ||
+          normalizedVal.startsWith('data:')
+        ) {
+          el.removeAttribute(attr.name);
+          continue;
+        }
+      }
+
+      if (name === 'src' || name === 'data' || name === 'poster') {
+        if (
+          normalizedVal.startsWith('javascript:') ||
+          normalizedVal.startsWith('vbscript:') ||
+          (normalizedVal.startsWith('data:') && !normalizedVal.startsWith('data:image/'))
+        ) {
+          el.removeAttribute(attr.name);
+          continue;
+        }
+      }
+
+      // Sanitize inline style against legacy expression() or javascript: URLs
+      if (name === 'style') {
+        if (/expression\s*\(|javascript\s*:|vbscript\s*:|-moz-binding/i.test(val)) {
+          el.removeAttribute(attr.name);
+        }
+      }
+    }
+  });
+
+  return doc.body.innerHTML;
+}
+
 let isConfigured = false;
 
 export function getConfiguredMarked() {
@@ -21,21 +90,21 @@ export function getConfiguredMarked() {
     }));
     
     marked.use({
-      walkTokens(token: any) {
-        if (token.type === 'html') {
+      walkTokens(token: { type?: string; text?: string }) {
+        if (token.type === 'html' && typeof token.text === 'string') {
           // Process block equations $$...$$ inside HTML
           token.text = token.text.replace(/\$\$(.*?)\$\$/gs, (match: string, p1: string) => {
             try {
               return katex.renderToString(p1, { displayMode: true, output: 'mathml', throwOnError: false });
-            } catch (e) {
+            } catch {
               return match;
             }
           });
           // Process inline equations $...$ inside HTML
-          token.text = token.text.replace(/\$([^\$\n]+?)\$/g, (match: string, p1: string) => {
+          token.text = token.text.replace(/\$([^$\n]+?)\$/g, (match: string, p1: string) => {
             try {
               return katex.renderToString(p1, { displayMode: false, output: 'mathml', throwOnError: false });
-            } catch (e) {
+            } catch {
               return match;
             }
           });
@@ -78,6 +147,16 @@ export function getConfiguredMarked() {
         }
       }
     });
+
+    const originalParse = marked.parse.bind(marked);
+    marked.parse = ((src: string, options?: Parameters<typeof marked.parse>[1]) => {
+      const result = originalParse(src, options);
+      if (typeof result === 'string') {
+        return sanitizeHtml(result);
+      }
+      return result.then((html: string) => sanitizeHtml(html));
+    }) as typeof marked.parse;
+
     isConfigured = true;
   }
   return marked;
