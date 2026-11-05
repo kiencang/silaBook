@@ -17,6 +17,7 @@ import {
 } from 'docx';
 import katex from 'katex';
 import { mml2omml } from 'mathml2omml';
+import { matchInlineMathAt } from './marked-setup';
 
 class OmmlMathComponent extends XmlComponent {
   private xmlObj: any;
@@ -108,6 +109,26 @@ export function tokenizeInline(text: string, getFootnoteId?: (k: string) => numb
   let index = 0;
 
   while (index < text.length) {
+    if (
+      text[index] === '$' ||
+      (text[index] === '\\' && (text[index + 1] === '(' || text[index + 1] === '['))
+    ) {
+      const prevChar = index === 0 ? '' : text[index - 1];
+      const matchedMath = matchInlineMathAt(text.slice(index), prevChar);
+      if (matchedMath) {
+        parts.push({
+          text: matchedMath.text,
+          bold: false,
+          italic: false,
+          code: false,
+          math: true,
+          display: matchedMath.displayMode
+        });
+        index += matchedMath.raw.length;
+        continue;
+      }
+    }
+
     if (text.startsWith('\\', index)) {
       if (index + 1 < text.length) {
         parts.push({
@@ -117,38 +138,6 @@ export function tokenizeInline(text: string, getFootnoteId?: (k: string) => numb
           code: false
         });
         index += 2;
-        continue;
-      }
-    }
-
-    if (text.startsWith('$$', index)) {
-      const end = text.indexOf('$$', index + 2);
-      if (end !== -1) {
-        parts.push({
-          text: text.substring(index + 2, end),
-          bold: false,
-          italic: false,
-          code: false,
-          math: true,
-          display: true
-        });
-        index = end + 2;
-        continue;
-      }
-    }
-
-    if (text.startsWith('$', index)) {
-      const end = text.indexOf('$', index + 1);
-      if (end !== -1) {
-        parts.push({
-          text: text.substring(index + 1, end),
-          bold: false,
-          italic: false,
-          code: false,
-          math: true,
-          display: false
-        });
-        index = end + 1;
         continue;
       }
     }
@@ -546,6 +535,42 @@ export class DocxExporter {
       if (trimmedLine === '') {
         idx++;
         continue;
+      }
+
+      // Multi-line block math $$ ... $$ or \[ ... \]
+      if (
+        (trimmedLine.startsWith('$$') && !trimmedLine.slice(2).includes('$$')) ||
+        (trimmedLine.startsWith('\\[') && !trimmedLine.slice(2).includes('\\]'))
+      ) {
+        const closeDelim = trimmedLine.startsWith('$$') ? '$$' : '\\]';
+        const mathLines: string[] = [];
+        const firstLineRest = trimmedLine.slice(2).trim();
+        if (firstLineRest) mathLines.push(firstLineRest);
+        let searchIdx = idx + 1;
+        let foundClose = false;
+        while (searchIdx < lines.length) {
+          const cur = lines[searchIdx].trim();
+          const closePos = cur.indexOf(closeDelim);
+          if (closePos !== -1) {
+            const beforeClose = cur.slice(0, closePos).trim();
+            if (beforeClose) mathLines.push(beforeClose);
+            foundClose = true;
+            break;
+          }
+          mathLines.push(lines[searchIdx]);
+          searchIdx++;
+        }
+        if (foundClose && mathLines.join('\n').trim()) {
+          children.push(
+            new Paragraph({
+              children: [new OmmlMathComponent(mathLines.join('\n').trim(), true)],
+              alignment: AlignmentType.CENTER,
+              spacing: { before: 160, after: 160 },
+            })
+          );
+          idx = searchIdx + 1;
+          continue;
+        }
       }
 
       const htmlTableMatch = trimmedLine.match(/^___HTML_TABLE_(\d+)___$/);
