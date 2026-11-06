@@ -1,6 +1,5 @@
 # silaBook
-
-Công cụ dịch sách từ tiếng Anh sang tiếng Việt bằng Gemini.
+Công cụ dịch eBook từ tiếng Anh sang tiếng Việt bằng Gemini. Người dùng cuối không cần cài thêm bất cứ phần mềm nào, cũng không cần tạo hay đăng nhập tài khoản trên ứng dụng, chỉ cần khóa API Key (để tương tác với AI) là sử dụng được ngay.
 
 - Link web: https://silabook.wpsila.com 
 
@@ -13,20 +12,16 @@ Công cụ dịch sách từ tiếng Anh sang tiếng Việt bằng Gemini.
 - Tải sách về dịch từ các nguồn uy tín;
 
 ## Tính năng
-
-Mọi người có thể xem hướng dẫn đầy đủ và cập nhật ở đây: https://silabook-intro.wpsila.com
-
 Một số tính năng quan trọng khác:
 - Nhận nhiều định dạng sách: 5 định dạng đầu vào là EPUB, HTML, PDF, TXT, và Markdown;
 - Bảo toàn được ảnh trong bản dịch với một số định dạng nhất định (EPUB, HTML, Markdown);
 - Đối với định dạng PDF, nên chuyển đổi sang Markdown bằng các công cụ ngoài nếu muốn giữ được ảnh (công cụ có hướng dẫn đầy đủ);
-- Có các phase phân tích đại từ, thuật ngữ (từ khó) và tóm tắt chương trước để việc dịch được chuẩn xác hơn;
+- Có các phase phân tích đại từ, thuật ngữ (từ khó) và tóm tắt chương/khối trước để việc dịch phần kế tiếp được chuẩn xác hơn;
 - Có khả năng xử lý được các cuốn sách lớn có độ dày lên đến 500 - 700 trang;
 
 Chương trình sử dụng SI & Prompt từ dự án này: https://github.com/kiencang/SI-Prompt-Book-EV-Translate (**v1.0.44**).
 
 ## Hướng dẫn sử dụng nhanh
-
 <p align="center">
   <img src="images/h1-tao-du-an-v1.0.111.png" alt="Bước 1">
    <br><em>Bước 1: Tạo dự án: Ở đây các bạn cần nhập chính xác tên sách & tác giả. Thông tin này quan trọng, vì sách (nhất là kinh điển) thường có thông tin rất đầy đủ trên mạng, cung cấp chính xác thông tin giúp công cụ dịch tốt hơn.</em>
@@ -100,7 +95,6 @@ Thường để dịch nguyên một cuốn sách ứng dụng cần 1 - 2 tiế
 Bạn có thể vào dự án Gutenberg để tải các sách hết hạn bản quyền về dịch. Ví dụ 100 cuốn được tải về nhiều nhất trong tháng: https://www.gutenberg.org/browse/scores/top#books-last100
 
 ## Cách thức hoạt động
-
 Về cơ bản, ý tưởng của silaBook là `chia để trị`. Một cuốn sách lớn không bao giờ dịch trong một phiên là xong, ứng dụng chia cuốn sách thành nhiều phần để `xử lý dần dần`.
 
 Định dạng markdown đầu vào (EPUB, HTML đều sẽ được chuyển thành markdown trước khi phân tích) là một lợi thế lớn. Nó giúp công cụ ở nhiều khía cạnh:
@@ -111,8 +105,8 @@ Về cơ bản, ý tưởng của silaBook là `chia để trị`. Một cuốn 
 - Giảm lỗi sai. Các đầu vào chuẩn như EPUB, HTML được chuyển thành markdown có độ chính xác rất cao, và các ảnh được giữ nguyên vẹn 100%. Nếu phải xử lý các định dạng không thân thiện như PDF, rất khó công cụ nào chuyển thành markdown & giữ ảnh tuyệt đối chính xác;
 
 ## Cách sử dụng PaddleOCR để chuyển đổi PDF sang dạng Markdown
+Điều này giúp bản dịch giữ lại được ảnh trong bản gốc. Trước khi gửi lên silaBook, bạn có thể chuyển định dạng PDF sang markdown bằng công cụ dưới đây của Baidu.
 
-Điều này giúp bản dịch giữ lại được ảnh trong bản gốc. Trước khi gửi lên silaBook, bạn chuyển định dạng PDF sang markdown bằng công cụ dưới đây của Baidu.
 Link: https://aistudio.baidu.com/paddleocr
 
 Sau đó tải định dạng markdown đã được chuyển đổi rồi up lên silaBook để dịch.
@@ -127,7 +121,7 @@ Hướng dẫn sử dụng:
 
 Với cách trên ảnh sẽ vẫn hiển thị bình thường khi bạn đọc trực tiếp trên ứng dụng hoặc tải về bản PDF hoặc HTML.
 
-**Ghi chú thêm**: Một công cụ khác để OCR chuyển PDF thành markdown rất mạnh & rất đẹp là MinerU, các bạn có thể truy cập ở đường dẫn này: https://mineru.net/
+**Ghi chú thêm**: Một công cụ khác để OCR chuyển PDF thành markdown rất mạnh & rất đẹp là [MinerU](https://mineru.net/).
 
 MinerU có 2 phiên bản:
 - Phiên bản trực tuyến, cần đăng nhập và có nhiều nét giống PaddleOCR;
@@ -137,20 +131,19 @@ MinerU có 2 phiên bản:
 
 MinerU còn cho phép tải về nhiều định dạng sau khi chuyển đổi từ PDF, ngoài markdown còn có HMTL, nếu tải về HTML (bản chuyển đổi của bản gốc), ảnh trong file PDF sẽ được nhúng trực tiếp trong HTML, và file dịch lúc này không cần đặt lại vào thư mục chứa ảnh. Trường hợp bạn cần hiển thị ảnh ở nhiều định dạng của bản dịch (EPUB, DOCX, HTML) thì nên tải về bản chuyển đổi HTML để dịch.
 
-## Thử nghiệm thêm để có thể kết nối với bất cứ AI nào
+**Lưu ý khi dùng PaddleOCR hoặc MinerU**: Các ứng dụng chuyển đổi file miễn phí như thế này có thể thu thập dữ liệu của người dùng, do vậy đối với các tài liệu riêng tư hoặc có bản quyền nên cẩn trọng.
 
-Tôi đang triển khai một công cụ tương tự dựa trên công cụ này, nó sẽ kết hợp với OpenRouter- vốn là cổng trung gian có thể kết nối với hầu hết các AI quan trọng nhất. Điều đó giúp bạn có khả năng sử dụng bất cứ AI nào bạn muốn để dịch!
+## Thử nghiệm thêm để có thể kết nối với bất cứ AI nào
+Tôi đang triển khai một công cụ tương tự dựa trên công cụ này, nó sẽ kết hợp với OpenRouter- vốn là cổng trung gian có thể kết nối với hầu hết các AI quan trọng nhất. Điều đó giúp bạn có khả năng sử dụng bất cứ AI nào bạn muốn để dịch, chẳng hạn như OpenAI hoặc Claude.
 
 Bạn có thể tham khảo repo đó ở đây: https://github.com/kiencang/silaBook-openSky
 
 ## Tuyên bố từ chối trách nhiệm
-
 Công cụ này có thể được sử dụng cho mục đích nghiên cứu và học tập cá nhân.
 
 silaBook cũng như người phát triển nó không đưa ra bất kỳ bảo đảm rõ ràng hay ngụ ý nào, cũng như không tuyên bố rằng công cụ sẽ vận hành hoàn hảo, chính xác hoặc cập nhật. Người phát triển sẽ không chịu trách nhiệm cho bất kỳ tổn thất hay thiệt hại nào phát sinh trực tiếp hoặc gián tiếp liên quan đến hoặc phát sinh từ việc sử dụng công cụ này.
 
 ## Ghi công
-
 Ứng dụng được phát triển tối ưu hoàn toàn ở phía Client-side (Trình duyệt). Một số thư viện quan trọng mà ứng dụng này dùng:
 
 ### 1. Khung phát triển chính
