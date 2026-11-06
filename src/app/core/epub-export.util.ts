@@ -57,21 +57,14 @@ export class EpubExporter {
        window.__SILA_IMAGES__ = oldImages;
     }
 
-    // A simple HTML to XHTML cleanup
-    htmlContent = htmlContent.replace(/<img(.*?)>/g, (match) => {
-      if (!match.endsWith('/>')) return match.replace(/>$/, ' />');
-      return match;
-    });
-    htmlContent = htmlContent.replace(/<br>/g, '<br />');
-    htmlContent = htmlContent.replace(/<hr>/g, '<hr />');
-    
-    // Strip MathML annotation tags to prevent fallback text from showing up in old EPUB readers
-    htmlContent = htmlContent.replace(/<annotation[^>]*>[\s\S]*?<\/annotation>/gi, '');
+    const escapedTitle = this.escapeXml(title || 'Untitled');
+    htmlContent = this.toStrictXhtml(htmlContent);
 
     zip.file('OEBPS/section1.xhtml', `<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-  <title>${title}</title>
+  <title>${escapedTitle}</title>
   <link rel="stylesheet" type="text/css" href="stylesheet.css"/>
 </head>
 <body>
@@ -125,6 +118,7 @@ code {
 }`);
 
     zip.file('OEBPS/nav.xhtml', `<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops">
 <head>
   <title>Mục lục</title>
@@ -161,7 +155,7 @@ code {
     <dc:creator id="author_0">PDF-2-EPUB AI Converter</dc:creator>
     <meta property="file-as" refines="#author_0">PDF-2-EPUB AI Converter</meta>
     <meta property="role" refines="#author_0" scheme="marc:relators">aut</meta>
-    <dc:title>${title}</dc:title>
+    <dc:title>${escapedTitle}</dc:title>
     <dc:language>vi</dc:language>
     <meta property="dcterms:modified">${currentDate}</meta>
   </metadata>
@@ -169,7 +163,7 @@ code {
     <item id="ncx" href="toc.ncx" media-type="application/x-dtbncx+xml"/>
     <item id="nav" href="nav.xhtml" media-type="application/xhtml+xml" properties="nav"/>
     <item id="style" href="stylesheet.css" media-type="text/css"/>
-    <item id="section1" href="section1.xhtml" media-type="application/xhtml+xml" properties="math"/>
+    <item id="section1" href="section1.xhtml" media-type="application/xhtml+xml" properties="mathml"/>
 ${imageManifestItems}  </manifest>
   <spine toc="ncx">
     <itemref idref="nav"/>
@@ -183,7 +177,7 @@ ${imageManifestItems}  </manifest>
     <meta name="dtb:uid" content="urn:uuid:${uuid}"/>
     <meta name="dtb:depth" content="1"/>
   </head>
-  <docTitle><text>${title}</text></docTitle>
+  <docTitle><text>${escapedTitle}</text></docTitle>
   <navMap>
     <navPoint id="navpoint-1" playOrder="1">
       <navLabel><text>Mục lục</text></navLabel>
@@ -198,6 +192,49 @@ ${imageManifestItems}  </manifest>
 
     const blob = await zip.generateAsync({ type: 'blob', mimeType: 'application/epub+zip' });
     return blob;
+  }
+
+  private static escapeXml(str: string): string {
+    return this.stripInvalidXmlChars(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&apos;');
+  }
+
+  private static stripInvalidXmlChars(str: string): string {
+    return Array.from(str)
+      .filter((ch) => {
+        const code = ch.charCodeAt(0);
+        return code === 0x09 || code === 0x0a || code === 0x0d || code >= 0x20;
+      })
+      .join('');
+  }
+
+  private static toStrictXhtml(html: string): string {
+    const cleaned = this.stripInvalidXmlChars(html);
+    if (typeof DOMParser !== 'undefined' && typeof XMLSerializer !== 'undefined') {
+      try {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(`<!DOCTYPE html><html><body>${cleaned}</body></html>`, 'text/html');
+        const serializer = new XMLSerializer();
+        const bodyXml = serializer.serializeToString(doc.body);
+        return bodyXml
+          .replace(/^<body[^>]*>/i, '')
+          .replace(/<\/body>$/i, '')
+          .replace(/\s+xmlns="http:\/\/www\.w3\.org\/1999\/xhtml"/g, '');
+      } catch {
+        // Fallback to regex cleanup if DOM serialization fails
+      }
+    }
+
+    return cleaned
+      .replace(/<(img|br|hr|col|wbr|input|source|area|base|embed|link|meta|param|track)\b([^>]*?)>/gi, (match) => {
+        if (match.endsWith('/>')) return match;
+        return match.replace(/>$/, ' />');
+      })
+      .replace(/&nbsp;/gi, '&#160;');
   }
 
   private static generateUuid(): string {

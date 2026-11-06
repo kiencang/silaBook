@@ -7,7 +7,7 @@ Công cụ dịch eBook từ tiếng Anh sang tiếng Việt bằng Gemini. Ngư
 
 ## Một số lưu ý khi dùng với API Key trả phí
 - Không chia sẻ API Key trả phí với người dùng khác, vì bạn sẽ bị tốn chi phí;
-- Luôn thiết lập ngưỡng cho API Key bạn dùng để tránh chi tiêu quá mức, ví dụ thiết lập ngưỡng chi tiêu tối đa 300 ngàn đồng/tháng;
+- Luôn thiết lập ngưỡng cho API Key bạn dùng để tránh chi tiêu quá mức (có thể thiết lập thông tin đó tại https://aistudio.google.com/spend sau khi tạo API Key), ví dụ thiết lập ngưỡng chi tiêu tối đa 300 ngàn đồng/tháng;
 - Nên dùng ứng dụng này trên các trình duyệt đáng tin cậy, tốt nhất là Chrome, Firefox hoặc Edge. Ngoài ra nên hạn chế các addon cài trên trình duyệt;
 - Tải sách về dịch từ các nguồn uy tín;
 
@@ -18,6 +18,8 @@ Một số tính năng quan trọng khác:
 - Đối với định dạng PDF, nên chuyển đổi sang Markdown bằng các công cụ ngoài nếu muốn giữ được ảnh (công cụ có hướng dẫn đầy đủ);
 - Có các phase phân tích đại từ, thuật ngữ (từ khó) và tóm tắt chương/khối trước để việc dịch phần kế tiếp được chuẩn xác hơn;
 - Có khả năng xử lý được các cuốn sách lớn có độ dày lên đến 500 - 700 trang;
+
+Lưu ý nhỏ: Công thức toán, hóa học ở định dạng EPUB chỉ một số trình đọc hiển thị tốt, ví dụ như Thorium Reader (https://www.thoriumreader.com/en/), các trình đọc EPUB kiểu cũ như Aquile Reader sẽ hiển thị lỗi;
 
 Chương trình sử dụng SI & Prompt từ dự án này: https://github.com/kiencang/SI-Prompt-Book-EV-Translate (**v1.0.44**).
 

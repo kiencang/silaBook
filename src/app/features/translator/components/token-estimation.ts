@@ -38,6 +38,21 @@ import { BookStore } from '../../../core/book.store';
           @if (hasGutenbergSkipped()) {
             <div class="text-[11px] text-zinc-500 italic mt-1">Đã loại bỏ phần thông tin bản quyền Gutenberg vào tính toán, do phần này được giữ nguyên, không cần dịch.</div>
           }
+          <div class="mt-3 pt-3 border-t border-indigo-100 text-xs text-zinc-600 leading-relaxed space-y-2">
+            <p>
+              Các con số trên là chỉ tính riêng cho cuốn sách. Nếu bạn áp dụng tất cả các bước, bao gồm <code class="px-1.5 py-0.5 rounded bg-indigo-100/80 text-indigo-800 font-mono text-[11px]">Đại từ</code>, <code class="px-1.5 py-0.5 rounded bg-indigo-100/80 text-indigo-800 font-mono text-[11px]">Từ khó</code> và <code class="px-1.5 py-0.5 rounded bg-indigo-100/80 text-indigo-800 font-mono text-[11px]">Tạo bản tóm tắt cho khối dịch kế tiếp</code> thì tổng lượng token input/output thực tế được dùng sẽ cao hơn đáng kể.
+            </p>
+            <div>
+              <p class="font-medium text-zinc-700 mb-1">Ước tính:</p>
+              <ul class="list-disc pl-5 space-y-1">
+                <li>Token đầu vào sẽ gấp 6 tới 7 lần token của ước tính cho phần tiếng Anh;</li>
+                <li>Token đầu ra sẽ gấp 1,5 tới 2 lần token ước tính cho phần tiếng Việt;</li>
+              </ul>
+            </div>
+            <p>
+              Chi phí API thực tế có thể xem tại: <a href="https://aistudio.google.com/spend" target="_blank" rel="noopener noreferrer" class="font-medium text-indigo-600 hover:text-indigo-800 underline transition-colors">https://aistudio.google.com/spend</a> (khu vực này cũng được dùng để thiết lập chi tiêu tối đa hàng tháng để bạn tránh sử dụng API quá khả năng thanh toán).
+            </p>
+          </div>
         </div>
       }
     </div>

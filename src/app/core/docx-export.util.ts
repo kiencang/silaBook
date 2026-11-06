@@ -501,6 +501,8 @@ interface RunOptions {
   color?: string;
   size?: number;
   italics?: boolean;
+  bold?: boolean;
+  font?: string;
 }
 
 function createRunsFromText(text: string, getFootnoteId?: (k: string) => number, opts?: RunOptions): (TextRun | FootnoteReferenceRun | OmmlMathComponent)[] {
@@ -514,11 +516,11 @@ function createRunsFromText(text: string, getFootnoteId?: (k: string) => number,
     }
     return new TextRun({
       text: token.text,
-      bold: token.bold || undefined,
+      bold: opts?.bold ?? (token.bold || undefined),
       italics: opts?.italics ?? (token.italic || undefined),
       superScript: token.superScript || undefined,
       subScript: token.subScript || undefined,
-      font: token.code ? "Consolas" : "Calibri",
+      font: token.code ? "Consolas" : (opts?.font ?? "Calibri"),
       size: token.code ? 19 : (opts?.size ?? 22),
       color: token.code ? "A855F7" : (opts?.color ?? undefined),
     });
@@ -866,15 +868,12 @@ export class DocxExporter {
           children.push(
             new Paragraph({
               heading: headingLevel,
-              children: [
-                new TextRun({
-                  text: text,
-                  bold: true,
-                  size: fontSize,
-                  color: color,
-                  font: "Segoe UI",
-                }),
-              ],
+              children: createRunsFromText(text, getFootnoteId, {
+                bold: true,
+                size: fontSize,
+                color: color,
+                font: "Segoe UI",
+              }),
               spacing: { before: 240, after: 120 },
             })
           );
