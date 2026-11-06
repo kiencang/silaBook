@@ -474,7 +474,7 @@ export class GlossarySetup {
         const workbook = XLSX.read(data, { type: 'array' });
         const firstSheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[firstSheetName];
-        const json = XLSX.utils.sheet_to_json<any>(worksheet, { header: 1 });
+        const json = XLSX.utils.sheet_to_json<unknown[]>(worksheet, { header: 1 });
         
         if (json.length < 2) {
           this.toast.error('File Excel không có dữ liệu hoặc không đúng định dạng.');

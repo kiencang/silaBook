@@ -210,7 +210,7 @@ import { hasSecureApiKey } from '../../core/crypto-storage.util';
                     Giới hạn xử lý tối đa: <span class="font-medium text-zinc-500">1M Tokens</span> hoặc theo dung lượng file.
                   </p>
                   <p class="text-xs text-zinc-900 font-medium tracking-tight">Nên ưu tiên định dạng EPUB, HTML hoặc Markdown nếu có thể.</p>
-                  <div class="mt-3 p-3 bg-zinc-100/50 rounded-xl border border-zinc-200/60 max-w-xl w-full mx-auto cursor-default" (click)="$event.stopPropagation()">
+                  <div class="mt-3 p-3 bg-zinc-100/50 rounded-xl border border-zinc-200/60 max-w-xl w-full mx-auto cursor-default" tabindex="0" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
                     <p class="text-xs text-zinc-500 leading-relaxed mb-2.5">
                       Để giữ lại hình ảnh trong bản dịch, vui lòng sử dụng định dạng <strong>EPUB</strong>, <strong>HTML</strong> hoặc <strong>Markdown</strong>. Nếu bạn chỉ có file PDF, bạn có thể chuyển đổi nhanh chóng qua link Baidu bên dưới (chọn model PaddleOCR-VL-1.6 để có chất lượng chuyển đổi cao nhất), <button (click)="showVideo.set(true)" class="text-indigo-600 hover:text-indigo-700 hover:underline focus:outline-none">xem video hướng dẫn</button>:
                     </p>
@@ -235,8 +235,8 @@ import { hasSecureApiKey } from '../../core/crypto-storage.util';
     </div>
 
     @if (showVideo()) {
-      <div class="fixed inset-0 z-50 flex items-center justify-center bg-zinc-900/80 backdrop-blur-sm p-4" (click)="showVideo.set(false)">
-        <div class="relative w-full max-w-5xl aspect-video bg-black rounded-2xl overflow-hidden shadow-2xl ring-1 ring-white/10" (click)="$event.stopPropagation()">
+      <div class="fixed inset-0 z-50 flex items-center justify-center bg-zinc-900/80 backdrop-blur-sm p-4" tabindex="0" (click)="showVideo.set(false)" (keydown.escape)="showVideo.set(false)">
+        <div class="relative w-full max-w-5xl aspect-video bg-black rounded-2xl overflow-hidden shadow-2xl ring-1 ring-white/10" tabindex="0" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
           <button (click)="showVideo.set(false)" class="absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center bg-black/50 hover:bg-black/80 text-white rounded-full transition-colors backdrop-blur-md">
             <mat-icon class="!w-6 !h-6 !text-[24px]">close</mat-icon>
           </button>

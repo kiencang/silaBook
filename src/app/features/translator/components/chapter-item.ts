@@ -1,4 +1,4 @@
-import { Component, input, model, output, inject, signal, computed, effect, OnInit, OnDestroy } from '@angular/core';
+import { Component, input, model, output, inject, signal, computed, effect, OnDestroy } from '@angular/core';
 
 @Component({
   selector: 'app-translating-skeleton',
@@ -559,7 +559,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
     </div>
   `
 })
-export class ChapterItemComponent {
+export class ChapterItemComponent implements OnDestroy {
   store = inject(BookStore);
   toast = inject(ToastService);
   readerStore = inject(ReaderStore);

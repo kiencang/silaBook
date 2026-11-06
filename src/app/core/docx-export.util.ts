@@ -212,8 +212,10 @@ function normalizeOmmlDom(doc: XMLDocument): void {
   }
 }
 
+type XmlOutput = ReturnType<XmlComponent['prepForXml']>;
+
 class OmmlMathComponent extends XmlComponent {
-  private xmlObj: any;
+  private xmlObj: XmlOutput | null;
 
   constructor(latex: string, display = false) {
     super("");
@@ -221,7 +223,7 @@ class OmmlMathComponent extends XmlComponent {
     try {
       const rendered = katex.renderToString(latex, { output: 'mathml', throwOnError: false, displayMode: display });
       const match = rendered.match(/<math[^>]*>[\s\S]*<\/math>/);
-      mathml = match ? match[0] : "";
+      mathml = match ? match[0].replace(/<annotation(?:-xml)?[^>]*>[\s\S]*?<\/annotation(?:-xml)?>/gi, '') : "";
     } catch (e) {
       console.error("KaTeX error", e);
     }
@@ -241,38 +243,40 @@ class OmmlMathComponent extends XmlComponent {
       const parser = new DOMParser();
       const doc = parser.parseFromString(ommlStr, "application/xml");
       normalizeOmmlDom(doc);
-      this.xmlObj = this.buildXml(doc.documentElement);
+      const built = this.buildXml(doc.documentElement);
+      this.xmlObj = typeof built === 'object' ? built : null;
     } else {
       this.xmlObj = null;
     }
   }
 
-  private buildXml(node: any): any {
+  private buildXml(node: Node): XmlOutput | string | null {
     if (node.nodeType === 3) return node.textContent;
     if (node.nodeType === 1) {
-      const obj: any = {};
-      const children: any[] = [];
-      if (node.attributes && node.attributes.length > 0) {
-        const attr: any = {};
-        for (let i = 0; i < node.attributes.length; i++) {
-          attr[node.attributes[i].name] = node.attributes[i].value;
+      const el = node as Element;
+      const obj: Record<string, unknown> = {};
+      const children: unknown[] = [];
+      if (el.attributes && el.attributes.length > 0) {
+        const attr: Record<string, string> = {};
+        for (const a of Array.from(el.attributes)) {
+          attr[a.name] = a.value;
         }
         children.push({ _attr: attr });
       }
-      for (let i = 0; i < node.childNodes.length; i++) {
-        const childObj = this.buildXml(node.childNodes[i]);
+      for (const childNode of Array.from(el.childNodes)) {
+        const childObj = this.buildXml(childNode);
         if (childObj !== null && childObj !== undefined && childObj !== "") {
           children.push(childObj);
         }
       }
-      obj[node.nodeName] = children;
-      return obj;
+      obj[el.nodeName] = children;
+      return obj as XmlOutput;
     }
     return null;
   }
 
-  override prepForXml(context: any): any {
-    return this.xmlObj || { "m:oMath": [] };
+  override prepForXml(): XmlOutput {
+    return this.xmlObj || ({ "m:oMath": [] } as XmlOutput);
   }
 }
 
@@ -499,11 +503,11 @@ interface RunOptions {
   italics?: boolean;
 }
 
-function createRunsFromText(text: string, getFootnoteId?: (k: string) => number, opts?: RunOptions): (TextRun | FootnoteReferenceRun | any)[] {
+function createRunsFromText(text: string, getFootnoteId?: (k: string) => number, opts?: RunOptions): (TextRun | FootnoteReferenceRun | OmmlMathComponent)[] {
   const tokens = tokenizeInline(text, getFootnoteId);
   return tokens.map(token => {
     if (token.math) {
-      return new OmmlMathComponent(token.text, token.display) as any;
+      return new OmmlMathComponent(token.text, token.display);
     }
     if (token.footnoteId) {
       return new FootnoteReferenceRun(token.footnoteId);
@@ -583,7 +587,7 @@ function parseHtmlTable(html: string, getFootnoteId?: (k: string) => number): Ta
     const cellsEl = Array.from(rowEl.querySelectorAll('td, th'));
 
     const cells = cellsEl.map(cellEl => {
-      let text = cellEl.textContent || '';
+      const text = cellEl.textContent || '';
       
       return new TableCell({
         children: [
@@ -672,7 +676,7 @@ export class DocxExporter {
       return imgData || null;
     };
 
-    const children: any[] = [];
+    const children: (Paragraph | Table)[] = [];
     
     const linesRaw = cleanedContent.split('\n');
     const lines: string[] = [];
@@ -837,7 +841,7 @@ export class DocxExporter {
           
           text = text.replace(/\s*\{#[^}]+\}\s*$/, '');
           
-          let headingLevel: any = HeadingLevel.HEADING_1;
+          let headingLevel: (typeof HeadingLevel)[keyof typeof HeadingLevel] = HeadingLevel.HEADING_1;
           let fontSize = 36;
           let color = "1F497D";
 
@@ -942,7 +946,7 @@ export class DocxExporter {
         
         while ((match = robustImgRegex.exec(trimmedLine)) !== null) {
           const matchIndex = match.index;
-          let key = match[2] || match[4] || match[5] || match[6];
+          const key = match[2] || match[4] || match[5] || match[6];
 
 
           if (matchIndex > lastStop) {

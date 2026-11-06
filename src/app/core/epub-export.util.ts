@@ -40,7 +40,7 @@ export class EpubExporter {
 
     const marked = getConfiguredMarked();
     // Temporarily set window image dictionary so marked config can map URLs
-    let oldImages: any;
+    let oldImages: Record<string, string> | undefined;
     if (typeof window !== 'undefined') {
        oldImages = window.__SILA_IMAGES__;
        const mappedImages: Record<string, string> = {};

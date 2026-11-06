@@ -5,6 +5,11 @@ Tất cả những thay đổi đáng chú ý của dự án silaBook sẽ đư�
 Định dạng dựa trên [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 và dự án này tuân thủ [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.0.127]- 2026-11-06
+### Fixed
+- Loại bỏ thư viện `marked-katex-extension`, do đã dùng hàm tùy chỉnh phù hợp hơn để bắt công thức toán và gọi KaTex hiển thị;
+- Loại bỏ thẻ dư thừa `<annotation>` (trong công thức toán) trước khi chuyển cho DOCX (trước khi gọi hàm mml2omml);
+
 ## [v1.0.126]- 2026-11-06
 ### Fixed
 - Sửa lỗi hiển thị công thức toán trên .DOCX;

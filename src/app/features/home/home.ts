@@ -56,8 +56,8 @@ import { hasSecureApiKey } from '../../core/crypto-storage.util';
     </div>
 
     @if (showVideo()) {
-      <div class="fixed inset-0 z-50 flex items-center justify-center bg-zinc-900/80 backdrop-blur-sm p-4" (click)="showVideo.set(false)">
-        <div class="relative w-full max-w-5xl aspect-video bg-black rounded-2xl overflow-hidden shadow-2xl ring-1 ring-white/10" (click)="$event.stopPropagation()">
+      <div class="fixed inset-0 z-50 flex items-center justify-center bg-zinc-900/80 backdrop-blur-sm p-4" tabindex="0" (click)="showVideo.set(false)" (keydown.escape)="showVideo.set(false)">
+        <div class="relative w-full max-w-5xl aspect-video bg-black rounded-2xl overflow-hidden shadow-2xl ring-1 ring-white/10" tabindex="0" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
           <button (click)="showVideo.set(false)" class="absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center bg-black/50 hover:bg-black/80 text-white rounded-full transition-colors backdrop-blur-md">
             <mat-icon class="!w-6 !h-6 !text-[24px]">close</mat-icon>
           </button>

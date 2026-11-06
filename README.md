@@ -162,7 +162,7 @@ silaBook cũng như người phát triển nó không đưa ra bất kỳ bảo 
 
 ### 4. Hiển thị công thức toán
 *   **[KaTeX](https://katex.org/)**: Thư viện xử lý và hiển thị công thức toán do **Khan Academy** phát triển, ưu điểm là tốc độ cao. Đóng vai trò là engine chuyển đổi các công thức toán học LaTeX (có thể xuất hiện trong tài liệu) sang định dạng XML chuẩn `MathML` để hiển thị ở giao diện web (HTML).
-*   **[marked-katex-extension](https://github.com/UziTech/marked-katex-extension)**: Là tiện ích mở rộng cho thư viện marked đã tồn tại trước đó, phục vụ cho mục đích tìm kiếm LaTeX và gọi KaTeX để chuyển đổi thành MathML.
+*   **[marked-katex-extension](https://github.com/UziTech/marked-katex-extension)**: Là tiện ích mở rộng cho thư viện marked đã tồn tại trước đó, phục vụ cho mục đích tìm kiếm LaTeX và gọi KaTeX để chuyển đổi thành MathML. [Thư viện nhỏ này đã bị loại bỏ. Từ phiên bản 1.0.127 ứng dụng dùng hàm tùy chỉnh để bắt công thức toán được tốt hơn, đặc biệt là các công thức toán lẫn lộn trong thẻ HTML trong Markdown (có thể do OCR) hoặc công thức toán không quá chuẩn mực (nhưng vẫn đủ thông tin để hiển thị, phân tích)].
 *   **[mathml2omml](https://github.com/fiduswriter/mathml2omml)**: Thư viện JS dùng để chuyển `MathML` thành chuẩn công thức toán chuẩn (`OMML`) cho định dạng DOCX.
 
 ### 5. Lưu trữ nội bộ
