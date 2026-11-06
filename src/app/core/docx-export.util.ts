@@ -19,10 +19,203 @@ import katex from 'katex';
 import { mml2omml } from 'mathml2omml';
 import { matchInlineMathAt } from './marked-setup';
 
+const M_NS = 'http://schemas.openxmlformats.org/officeDocument/2006/math';
+
+function createMElement(doc: XMLDocument, tagName: string): Element {
+  return doc.createElementNS(M_NS, tagName);
+}
+
+function createOmmlTextRun(doc: XMLDocument, text: string, isNor: boolean): Element {
+  const r = createMElement(doc, 'm:r');
+  if (isNor) {
+    const rPr = createMElement(doc, 'm:rPr');
+    rPr.appendChild(createMElement(doc, 'm:nor'));
+    r.appendChild(rPr);
+  }
+  const t = createMElement(doc, 'm:t');
+  t.setAttribute('xml:space', 'preserve');
+  t.textContent = text;
+  r.appendChild(t);
+  return r;
+}
+
+function ensureNorOnRun(doc: XMLDocument, rEl: Element): void {
+  let rPr = Array.from(rEl.childNodes).find(
+    (n): n is Element => n.nodeType === 1 && n.nodeName === 'm:rPr'
+  );
+  if (!rPr) {
+    rPr = createMElement(doc, 'm:rPr');
+    rEl.insertBefore(rPr, rEl.firstChild);
+  } else if (rEl.firstChild !== rPr) {
+    rEl.insertBefore(rPr, rEl.firstChild);
+  }
+  const hasNor = Array.from(rPr.childNodes).some(
+    n => n.nodeType === 1 && n.nodeName === 'm:nor'
+  );
+  if (!hasNor) {
+    rPr.insertBefore(createMElement(doc, 'm:nor'), rPr.firstChild);
+  }
+  Array.from(rPr.childNodes).forEach(n => {
+    if (n.nodeType === 1 && n.nodeName === 'm:sty') {
+      rPr?.removeChild(n);
+    }
+  });
+}
+
+function normalizeOmmlDom(doc: XMLDocument): void {
+  const root = doc.documentElement;
+  if (!root) return;
+
+  // 1. Remove empty <w:rPr/> and ensure <m:rPr> is always the first child of <m:r>
+  const allRuns = Array.from(root.getElementsByTagName('*')).filter(el => el.nodeName === 'm:r');
+  for (const rEl of allRuns) {
+    const children = Array.from(rEl.childNodes).filter((n): n is Element => n.nodeType === 1);
+    for (const ch of children) {
+      if (ch.nodeName === 'w:rPr' && ch.childNodes.length === 0) {
+        rEl.removeChild(ch);
+      }
+    }
+    const mrPr = Array.from(rEl.childNodes).find(
+      (n): n is Element => n.nodeType === 1 && n.nodeName === 'm:rPr'
+    );
+    if (mrPr && rEl.firstChild !== mrPr) {
+      rEl.insertBefore(mrPr, rEl.firstChild);
+    }
+    if (mrPr) {
+      const hasNor = Array.from(mrPr.childNodes).some(n => n.nodeType === 1 && n.nodeName === 'm:nor');
+      if (hasNor) {
+        Array.from(mrPr.childNodes).forEach(n => {
+          if (n.nodeType === 1 && n.nodeName === 'm:sty') {
+            mrPr.removeChild(n);
+          }
+        });
+      }
+    }
+  }
+
+  // 2. Merge split chemical element symbols before <m:sSup>, <m:sSub>, <m:sSubSup> (e.g. "C" + "a^{2+}" -> "Ca^{2+}")
+  const scriptTags = new Set(['m:sSup', 'm:sSub', 'm:sSubSup']);
+  const allScriptEls = Array.from(root.getElementsByTagName('*')).filter(el => scriptTags.has(el.nodeName));
+  for (const scriptEl of allScriptEls) {
+    const prev = scriptEl.previousElementSibling;
+    if (!prev || prev.nodeName !== 'm:r') continue;
+    const eEl = Array.from(scriptEl.childNodes).find(
+      (n): n is Element => n.nodeType === 1 && n.nodeName === 'm:e'
+    );
+    if (!eEl) continue;
+    const firstEChild = Array.from(eEl.childNodes).find((n): n is Element => n.nodeType === 1);
+    if (!firstEChild || firstEChild.nodeName !== 'm:r') continue;
+
+    const prevT = Array.from(prev.childNodes).find(
+      (n): n is Element => n.nodeType === 1 && n.nodeName === 'm:t'
+    );
+    const eT = Array.from(firstEChild.childNodes).find(
+      (n): n is Element => n.nodeType === 1 && n.nodeName === 'm:t'
+    );
+    if (!prevT || !eT) continue;
+
+    const prevText = prevT.textContent || '';
+    const eText = eT.textContent || '';
+
+    const matchCap = prevText.match(/^(.*?)([A-Z])$/);
+    if (matchCap && /^[a-z]$/.test(eText)) {
+      const prefix = matchCap[1];
+      const capLetter = matchCap[2];
+      eT.textContent = capLetter + eText;
+      if (prefix) {
+        prevT.textContent = prefix;
+      } else if (prev.parentNode) {
+        prev.parentNode.removeChild(prev);
+      }
+    }
+  }
+
+  // 3. Fix empty <m:e/> in <m:nary> (move next sibling into <m:e>) and empty <m:e/> in scripts
+  const naryEls = Array.from(root.getElementsByTagName('*')).filter(el => el.nodeName === 'm:nary');
+  for (const nary of naryEls) {
+    const eEl = Array.from(nary.childNodes).find(
+      (n): n is Element => n.nodeType === 1 && n.nodeName === 'm:e'
+    );
+    if (eEl && eEl.childNodes.length === 0 && nary.nextElementSibling) {
+      eEl.appendChild(nary.nextElementSibling);
+    }
+  }
+
+  for (const scriptEl of allScriptEls) {
+    const eEl = Array.from(scriptEl.childNodes).find(
+      (n): n is Element => n.nodeType === 1 && n.nodeName === 'm:e'
+    );
+    if (eEl && eEl.childNodes.length === 0) {
+      eEl.appendChild(createOmmlTextRun(doc, ' ', true));
+    }
+  }
+
+  // 4. Protect operators inside <m:sup> and <m:sub> so StarMath/Word never treat trailing +, -, *, ′ as incomplete binary operators
+  const supSubEls = Array.from(root.getElementsByTagName('*')).filter(
+    el => el.nodeName === 'm:sup' || el.nodeName === 'm:sub'
+  );
+  const OP_REGEX = /([+\-−*∗=′/()<>]+)/g;
+  for (const supSub of supSubEls) {
+    const directRuns = Array.from(supSub.childNodes).filter(
+      (n): n is Element => n.nodeType === 1 && n.nodeName === 'm:r'
+    );
+    for (const rEl of directRuns) {
+      const tEl = Array.from(rEl.childNodes).find(
+        (n): n is Element => n.nodeType === 1 && n.nodeName === 'm:t'
+      );
+      if (!tEl) continue;
+      const txt = tEl.textContent || '';
+      if (!OP_REGEX.test(txt)) continue;
+      OP_REGEX.lastIndex = 0;
+
+      if (!/[a-zA-Z\u0370-\u03FF]/.test(txt)) {
+        ensureNorOnRun(doc, rEl);
+      } else {
+        const parts = txt.split(OP_REGEX).filter(Boolean);
+        if (parts.length > 1 && rEl.parentNode) {
+          for (const part of parts) {
+            const isOp = /^[+\-−*∗=′/()<>]+$/.test(part);
+            rEl.parentNode.insertBefore(createOmmlTextRun(doc, part, isOp), rEl);
+          }
+          rEl.parentNode.removeChild(rEl);
+        } else {
+          ensureNorOnRun(doc, rEl);
+        }
+      }
+    }
+  }
+
+  // 5. Protect unbalanced parentheses across the formula (e.g., OCR "$2),$") from causing StarMath syntax errors
+  const remainingRuns = Array.from(root.getElementsByTagName('*')).filter(el => el.nodeName === 'm:r');
+  let openParens = 0;
+  let closeParens = 0;
+  for (const rEl of remainingRuns) {
+    const tEl = Array.from(rEl.childNodes).find(
+      (n): n is Element => n.nodeType === 1 && n.nodeName === 'm:t'
+    );
+    const txt = tEl?.textContent || '';
+    for (const ch of txt) {
+      if (ch === '(') openParens++;
+      else if (ch === ')') closeParens++;
+    }
+  }
+  if (openParens !== closeParens) {
+    for (const rEl of remainingRuns) {
+      const tEl = Array.from(rEl.childNodes).find(
+        (n): n is Element => n.nodeType === 1 && n.nodeName === 'm:t'
+      );
+      const txt = tEl?.textContent || '';
+      if (txt.includes('(') || txt.includes(')')) {
+        ensureNorOnRun(doc, rEl);
+      }
+    }
+  }
+}
+
 class OmmlMathComponent extends XmlComponent {
   private xmlObj: any;
 
-  constructor(latex: string, display: boolean = false) {
+  constructor(latex: string, display = false) {
     super("");
     let mathml = "";
     try {
@@ -47,6 +240,7 @@ class OmmlMathComponent extends XmlComponent {
     if (ommlStr) {
       const parser = new DOMParser();
       const doc = parser.parseFromString(ommlStr, "application/xml");
+      normalizeOmmlDom(doc);
       this.xmlObj = this.buildXml(doc.documentElement);
     } else {
       this.xmlObj = null;
@@ -99,6 +293,8 @@ interface InlineToken {
   bold: boolean;
   italic: boolean;
   code: boolean;
+  superScript?: boolean;
+  subScript?: boolean;
   footnoteId?: number;
   math?: boolean;
   display?: boolean;
@@ -125,6 +321,23 @@ export function tokenizeInline(text: string, getFootnoteId?: (k: string) => numb
           display: matchedMath.displayMode
         });
         index += matchedMath.raw.length;
+        continue;
+      }
+    }
+
+    if (text[index] === '<') {
+      const supSubMatch = text.slice(index).match(/^<(sup|sub)>([\s\S]*?)<\/\1>/i);
+      if (supSubMatch) {
+        const tag = supSubMatch[1].toLowerCase();
+        parts.push({
+          text: supSubMatch[2],
+          bold: false,
+          italic: false,
+          code: false,
+          superScript: tag === 'sup',
+          subScript: tag === 'sub'
+        });
+        index += supSubMatch[0].length;
         continue;
       }
     }
@@ -244,7 +457,15 @@ export function tokenizeInline(text: string, getFootnoteId?: (k: string) => numb
     let nextIndex = index;
     while (nextIndex < text.length) {
       const char = text[nextIndex];
-      if (char === '$' || char === '`' || char === '*' || char === '_' || char === '\\' || (getFootnoteId && char === '[' && text.startsWith('[^', nextIndex))) {
+      if (
+        char === '$' ||
+        char === '`' ||
+        char === '*' ||
+        char === '_' ||
+        char === '\\' ||
+        (char === '<' && /^<(sup|sub)>/i.test(text.slice(nextIndex))) ||
+        (getFootnoteId && char === '[' && text.startsWith('[^', nextIndex))
+      ) {
         break;
       }
       nextIndex++;
@@ -291,6 +512,8 @@ function createRunsFromText(text: string, getFootnoteId?: (k: string) => number,
       text: token.text,
       bold: token.bold || undefined,
       italics: opts?.italics ?? (token.italic || undefined),
+      superScript: token.superScript || undefined,
+      subScript: token.subScript || undefined,
       font: token.code ? "Consolas" : "Calibri",
       size: token.code ? 19 : (opts?.size ?? 22),
       color: token.code ? "A855F7" : (opts?.color ?? undefined),

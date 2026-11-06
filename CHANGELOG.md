@@ -5,6 +5,11 @@ Tất cả những thay đổi đáng chú ý của dự án kiencang/Book-silaT
 Định dạng dựa trên [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 và dự án này tuân thủ [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.0.126]- 2026-11-06
+### Fixed
+- Sửa lỗi hiển thị công thức toán trên .DOCX;
+- Điều chỉnh thông tin thông báo khi tải file PDF lên (có thể sử dụng MinerU hoặc PaddleOCR nhưng nên chú ý vấn đề thu thập dữ liệu);
+
 ## [v1.0.125]- 2026-11-06
 ### Fixed
 - Cập nhật lại các gói thư viện cài trong dự án cho đúng chuẩn, không cài dư, cài trùng phiên bản (trong `package.json`);
