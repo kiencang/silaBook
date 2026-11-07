@@ -180,6 +180,13 @@ export function sanitizeHtml(html: string): string {
         }
       }
     }
+
+    if (el.tagName.toLowerCase() === 'img') {
+      const srcVal = el.getAttribute('src');
+      if (srcVal && typeof window !== 'undefined' && window.__SILA_IMAGES__ && window.__SILA_IMAGES__[srcVal]) {
+        el.setAttribute('src', window.__SILA_IMAGES__[srcVal]);
+      }
+    }
   });
 
   return doc.body.innerHTML;

@@ -5,6 +5,13 @@ Tất cả những thay đổi đáng chú ý của dự án silaBook sẽ đư�
 Định dạng dựa trên [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 và dự án này tuân thủ [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.0.129]- 2026-11-07
+### Fixed
+- Sửa lỗi không xử lý được ảnh bìa trong EPUB;
+- Thêm tính năng xử lý ảnh base64 nằm trong Markdown hoặc nằm trong chính EPUB, dù các trường hợp này hiếm, nhưng một số dạng sách chuyển đổi qua các công cụ có thể có;
+- Sửa toast khi tải EPUB hoặc DOCX phù hợp hơn, tránh người dùng hiểu nhầm tiến trình vẫn chưa xong;
+- Sửa lỗi "Chưa đồng bộ đuôi file vật lý và media-type khi xuất EPUB";
+
 ## [v1.0.128]- 2026-11-06
 ### Fixed
 - Thông tin đầy đủ hơn về phần Ước tính token đầu vào đầu ra ở Phase5;

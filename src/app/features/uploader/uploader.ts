@@ -7,7 +7,7 @@ import { GeminiClient, parseGeminiError, isQuotaError } from '../../core/gemini'
 import { MatIconModule } from '@angular/material/icon';
 import { PdfService } from './pdf.service';
 import { processEpubContent } from './epub.util';
-import { processHtmlContent, getTurndownService } from './html.util';
+import { processHtmlContent, processMarkdownContent, getTurndownService } from './html.util';
 import { hasSecureApiKey } from '../../core/crypto-storage.util';
 
 @Component({
@@ -502,7 +502,8 @@ export class Uploader {
 
       if (file.name.toLowerCase().endsWith('.txt') || file.name.toLowerCase().endsWith('.md')) {
         const text = await file.text();
-        this.store.setMarkdown(text, file.name);
+        const result = processMarkdownContent(text);
+        this.store.setMarkdown(result.markdown, file.name, result.images);
       } else if (file.name.toLowerCase().endsWith('.html') || file.name.toLowerCase().endsWith('.htm')) {
         const result = await processHtmlContent(file);
         this.store.setMarkdown(result.markdown, file.name, result.images);

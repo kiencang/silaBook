@@ -17,17 +17,33 @@ export class EpubExporter {
   </rootfiles>
 </container>`);
 
-    const allImages: { id: string, key: string, dataUrl: string, fileName: string }[] = [];
+    const allImages: { id: string, key: string, dataUrl: string, fileName: string, mediaType: string }[] = [];
     
     if (images) {
       Object.keys(images).forEach((key) => {
         const dataUrl = images[key];
         const safeKey = key.replace(/[^a-zA-Z0-9-_]/g, '');
+        let mediaType = 'image/png';
+        let ext = 'png';
+        if (dataUrl.startsWith('data:image/jpeg') || dataUrl.startsWith('data:image/jpg')) {
+          mediaType = 'image/jpeg';
+          ext = 'jpg';
+        } else if (dataUrl.startsWith('data:image/gif')) {
+          mediaType = 'image/gif';
+          ext = 'gif';
+        } else if (dataUrl.startsWith('data:image/webp')) {
+          mediaType = 'image/webp';
+          ext = 'webp';
+        } else if (dataUrl.startsWith('data:image/svg+xml')) {
+          mediaType = 'image/svg+xml';
+          ext = 'svg';
+        }
         allImages.push({
           id: `img-${safeKey.toLowerCase()}`,
           key: key,
           dataUrl: dataUrl,
-          fileName: `images/${safeKey}.png`
+          fileName: `images/${safeKey}.${ext}`,
+          mediaType: mediaType
         });
       });
     }
@@ -137,14 +153,7 @@ code {
     const uuid = this.generateUuid();
     let imageManifestItems = '';
     allImages.forEach(img => {
-      // Defaulting to image/png, but typically we could guess from img.dataUrl (data:image/jpeg;base64...)
-      let mediaType = 'image/png';
-      if (img.dataUrl.startsWith('data:image/jpeg')) mediaType = 'image/jpeg';
-      else if (img.dataUrl.startsWith('data:image/gif')) mediaType = 'image/gif';
-      else if (img.dataUrl.startsWith('data:image/webp')) mediaType = 'image/webp';
-      else if (img.dataUrl.startsWith('data:image/svg+xml')) mediaType = 'image/svg+xml';
-      
-      imageManifestItems += `    <item id="${img.id}" href="${img.fileName}" media-type="${mediaType}"/>\n`;
+      imageManifestItems += `    <item id="${img.id}" href="${img.fileName}" media-type="${img.mediaType}"/>\n`;
     });
 
     const currentDate = new Date().toISOString().split('.')[0] + 'Z';

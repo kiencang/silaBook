@@ -73,6 +73,49 @@ export async function processHtmlContent(file: File): Promise<{ markdown: string
   };
 }
 
+export function processMarkdownContent(text: string): { markdown: string, images?: Record<string, string> } {
+  const imagesStore: Record<string, string> = {};
+  let imgCounter = 0;
+
+  // 1. Extract base64 Data URLs in Markdown image syntax: ![alt](data:image/...;base64,... "optional title")
+  let processed = text.replace(
+    /(!\[[^\]]*\]\(\s*)(data:image\/[a-zA-Z0-9.+-]+;base64,[a-zA-Z0-9+/=\s]+)(\s*(?:["'][^"']*["'])?\s*\))/g,
+    (_match, prefix: string, dataUrl: string, suffix: string) => {
+      const cleanDataUrl = dataUrl.replace(/\s+/g, '');
+      const placeholderId = `SILA_IMG_MD_${imgCounter++}`;
+      imagesStore[placeholderId] = cleanDataUrl;
+      return `${prefix}${placeholderId}${suffix}`;
+    }
+  );
+
+  // 2. Extract base64 Data URLs in Markdown reference-style definitions: [ref]: data:image/...;base64,...
+  processed = processed.replace(
+    /^(\s*\[[^\]]+\]:\s*)(data:image\/[a-zA-Z0-9.+-]+;base64,[a-zA-Z0-9+/=\s]+)/gm,
+    (_match, prefix: string, dataUrl: string) => {
+      const cleanDataUrl = dataUrl.replace(/\s+/g, '');
+      const placeholderId = `SILA_IMG_MD_${imgCounter++}`;
+      imagesStore[placeholderId] = cleanDataUrl;
+      return `${prefix}${placeholderId}`;
+    }
+  );
+
+  // 3. Extract base64 Data URLs in inline HTML <img ... src="data:image/..." ...> tags
+  processed = processed.replace(
+    /(<img\b[^>]*?\bsrc=["'])(data:image\/[a-zA-Z0-9.+-]+;base64,[a-zA-Z0-9+/=\s]+)(["'][^>]*>)/gi,
+    (_match, prefix: string, dataUrl: string, suffix: string) => {
+      const cleanDataUrl = dataUrl.replace(/\s+/g, '');
+      const placeholderId = `SILA_IMG_MD_${imgCounter++}`;
+      imagesStore[placeholderId] = cleanDataUrl;
+      return `${prefix}${placeholderId}${suffix}`;
+    }
+  );
+
+  return {
+    markdown: processed,
+    images: Object.keys(imagesStore).length > 0 ? imagesStore : undefined
+  };
+}
+
 export function getTurndownService(): TurndownService {
   return turndownService;
 }

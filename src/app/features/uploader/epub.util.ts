@@ -131,12 +131,36 @@ export async function processEpubContent(file: File, turndownService: TurndownSe
         // Replace image src and rewrite internal links in HTML
         const pDoc = parser.parseFromString(processedHtml, 'text/html');
 
-        // Remove manual internal link generation, Turndown will strip them and keep text only.
+        // Convert <svg><image href/xlink:href="..."/></svg> (common for EPUB covers & illustrations) into <img>
+        const svgImages = Array.from(pDoc.getElementsByTagName('image'));
+        for (const svgImg of svgImages) {
+          const hrefAttr =
+            svgImg.getAttribute('xlink:href') ||
+            svgImg.getAttribute('href') ||
+            svgImg.getAttributeNS('http://www.w3.org/1999/xlink', 'href');
+          if (hrefAttr) {
+            const newImg = pDoc.createElement('img');
+            newImg.setAttribute('src', hrefAttr);
+            const parentSvg = svgImg.closest('svg');
+            if (parentSvg && parentSvg.parentNode) {
+              parentSvg.parentNode.replaceChild(newImg, parentSvg);
+            } else if (svgImg.parentNode) {
+              svgImg.parentNode.replaceChild(newImg, svgImg);
+            }
+          }
+        }
 
         const imgs = Array.from(pDoc.getElementsByTagName('img'));
         for (const img of imgs) {
            const src = img.getAttribute('src');
            if (src) {
+               if (src.startsWith('data:image/')) {
+                  const placeholderId = `SILA_IMG_${imgCounter++}`;
+                  imagesStore[placeholderId] = src;
+                  img.setAttribute('src', placeholderId);
+                  continue;
+               }
+
                const htmlDirPath = decodedHref.substring(0, decodedHref.lastIndexOf('/') + 1);
                const parts = (htmlDirPath + src).split('/');
                const finalParts: string[] = [];
