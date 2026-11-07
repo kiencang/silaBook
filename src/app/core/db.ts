@@ -281,8 +281,11 @@ export class DbService {
   async saveProjectMeta(meta: ProjectMeta): Promise<void> {
     try {
       const db = await this.getDB();
-      const existing = (await db.get('projects_meta', meta.id)) || {};
-      await db.put('projects_meta', { ...existing, ...meta } as ProjectMeta);
+      const tx = db.transaction('projects_meta', 'readwrite');
+      const store = tx.objectStore('projects_meta');
+      const existing = (await store.get(meta.id)) || {};
+      await store.put({ ...existing, ...meta } as ProjectMeta);
+      await tx.done;
     } catch (e) {
       console.error('saveProjectMeta error', e);
     }
@@ -388,7 +391,9 @@ export class DbService {
   async updateProjectStats(projectId: string, chapters: Chapter[]): Promise<void> {
     try {
       const db = await this.getDB();
-      const meta = await db.get('projects_meta', projectId);
+      const tx = db.transaction('projects_meta', 'readwrite');
+      const store = tx.objectStore('projects_meta');
+      const meta = await store.get(projectId);
       if (meta) {
         let totalWords = 0;
         let translatedWords = 0;
@@ -398,8 +403,9 @@ export class DbService {
         });
         meta.totalWords = totalWords;
         meta.translatedWords = translatedWords;
-        await db.put('projects_meta', meta);
+        await store.put(meta);
       }
+      await tx.done;
     } catch {
       // Ignored
     }

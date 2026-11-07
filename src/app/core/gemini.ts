@@ -177,8 +177,8 @@ export class GeminiClient {
         prompt = "Glossary Terms:\n{{danh sách thuật ngữ}}\n\nText Block:\n{{nội dung cần dịch}}";
       }
       
-      prompt = prompt.replace('{{danh sách thuật ngữ}}', JSON.stringify(compactList));
-      prompt = prompt.replace('{{nội dung cần dịch}}', text);
+      prompt = prompt.replace('{{danh sách thuật ngữ}}', () => JSON.stringify(compactList));
+      prompt = prompt.replace('{{nội dung cần dịch}}', () => text);
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const filterConfig: any = {
@@ -240,10 +240,10 @@ export class GeminiClient {
         prompt = "Raw Pronoun Table:\n{{bảng đại từ}}\n\nFull Book Content:\n{{nội dung}}\n\nPlease normalize it.";
       }
       
-      prompt = prompt.replace('{{tên sách}}', bookTitle || 'Không rõ');
-      prompt = prompt.replace('{{tên tác giả}}', author || 'Vô danh');
-      prompt = prompt.replace('{{bảng đại từ}}', rawPronounTable);
-      prompt = prompt.replace('{{nội dung}}', text);
+      prompt = prompt.replace('{{tên sách}}', () => bookTitle || 'Không rõ');
+      prompt = prompt.replace('{{tên tác giả}}', () => author || 'Vô danh');
+      prompt = prompt.replace('{{bảng đại từ}}', () => rawPronounTable);
+      prompt = prompt.replace('{{nội dung}}', () => text);
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const filterConfig: any = {
@@ -301,38 +301,38 @@ export class GeminiClient {
     let finalPrompt = await this.loadPromptText(promptFileName) || '';
     
     if (finalPrompt) {
-      finalPrompt = finalPrompt.replace('{{tên sách}}', bookTitle || 'Không rõ');
-      finalPrompt = finalPrompt.replace('{{tên tác giả}}', author || 'Vô danh');
+      finalPrompt = finalPrompt.replace('{{tên sách}}', () => bookTitle || 'Không rõ');
+      finalPrompt = finalPrompt.replace('{{tên tác giả}}', () => author || 'Vô danh');
       
       if (usePronouns && pronounTable) {
         const pronounBlock = `<pronouns_rules>\n**Bảng đại từ nhân xưng:**\n${pronounTable}\n\n*LƯU Ý: Ở trên là Bảng đại từ nhân xưng tham chiếu. Bạn BẮT BUỘC phải sử dụng cấu trúc xưng hô này cho cách người kể chuyện gọi nhân vật (ngôi thứ 3) và trong các cuộc hội thoại thông thường. TUY NHIÊN, bạn được phép điều chỉnh linh hoạt cách xưng hô (ngôi thứ 1 & 2) nếu bối cảnh cảm xúc của câu chuyện thực sự đòi hỏi sự chuyển đổi.*\n</pronouns_rules>`;
-        finalPrompt = finalPrompt.replace('{{đại từ nhân xưng}}', pronounBlock);
+        finalPrompt = finalPrompt.replace('{{đại từ nhân xưng}}', () => pronounBlock);
       } else {
         finalPrompt = finalPrompt.replace('{{đại từ nhân xưng}}', '');
       }
 
       if (activeGlossary) {
         const glossaryBlock = `<glossary_rules>\n**Bảng thuật ngữ / Từ khó:**\n${activeGlossary}\n\n*LƯU Ý: Bảng thuật ngữ trên đây là một DANH SÁCH THAM KHẢO quan trọng, NHƯNG bạn hãy áp dụng LINH HOẠT các thuật ngữ này vào bản dịch để đảm bảo tính thống nhất chuyên môn/từ ngữ toàn cục của cuốn sách. Điều cần ghi nhớ là đừng ép buộc áp dụng một cách cứng nhắc nếu ngữ cảnh cụ thể của đoạn văn hoàn toàn khác.*\n</glossary_rules>`;
-        finalPrompt = finalPrompt.replace('{{thuật ngữ}}', glossaryBlock);
+        finalPrompt = finalPrompt.replace('{{thuật ngữ}}', () => glossaryBlock);
       } else {
         finalPrompt = finalPrompt.replace('{{thuật ngữ}}', '');
       }
 
       if (contextSummary) {
          const contextBlock = `<previous_chunk_handoff>\n**Tóm tắt bối cảnh từ phần trước để tham khảo:**\n${contextSummary}\n\n*LƯU Ý: Đây là thông tin nối tiếp từ khối văn bản trước (diễn biến sự kiện, trạng thái nhân vật, hoặc luồng logic/lập luận, **cùng với sắc thái/giọng điệu chung**). Hãy dùng nó để nắm bắt ngữ cảnh nhằm đảm bảo tính liền mạch cho bản dịch, đặc biệt là duy trì đúng giọng điệu và cảm xúc. TUYỆT ĐỐI KHÔNG lặp lại nội dung tóm tắt này vào phần bản dịch.*\n</previous_chunk_handoff>`;
-         finalPrompt = finalPrompt.replace('{{tóm tắt bối cảnh}}', contextBlock);
+         finalPrompt = finalPrompt.replace('{{tóm tắt bối cảnh}}', () => contextBlock);
       } else {
          finalPrompt = finalPrompt.replace('{{tóm tắt bối cảnh}}', '');
       }
 
       if (customInstructions) {
          const instructionsBlock = `<custom_instructions>\n**Chỉ thị bổ sung khi dịch:**\n${customInstructions}\n</custom_instructions>`;
-         finalPrompt = finalPrompt.replace('{{chỉ thị bổ sung}}', instructionsBlock);
+         finalPrompt = finalPrompt.replace('{{chỉ thị bổ sung}}', () => instructionsBlock);
       } else {
          finalPrompt = finalPrompt.replace('{{chỉ thị bổ sung}}', '');
       }
 
-      finalPrompt = finalPrompt.replace('{{nội dung cần dịch}}', '\n' + text);
+      finalPrompt = finalPrompt.replace('{{nội dung cần dịch}}', () => '\n' + text);
       
       // Clean up multiple newlines that might arise from empty replacements
       finalPrompt = finalPrompt.replace(/\n\s*\n\s*\n/g, '\n\n');
@@ -376,9 +376,9 @@ export class GeminiClient {
 
     let finalPrompt = pp || `Hãy phân tích đoạn văn bản nguồn dưới đây và lập Bảng đại từ nhân xưng chuẩn xác nhất.\n\n<metadata>\n- Tên sách: {{tên sách}}\n- Tác giả: {{tên tác giả}}\n</metadata>\n\n<source_text>\n{{nội dung}}\n</source_text>`;
     
-    finalPrompt = finalPrompt.replace('{{tên sách}}', bookTitle || 'Không rõ');
-    finalPrompt = finalPrompt.replace('{{tên tác giả}}', author || 'Vô danh');
-    finalPrompt = finalPrompt.replace('{{nội dung}}', text);
+    finalPrompt = finalPrompt.replace('{{tên sách}}', () => bookTitle || 'Không rõ');
+    finalPrompt = finalPrompt.replace('{{tên tác giả}}', () => author || 'Vô danh');
+    finalPrompt = finalPrompt.replace('{{nội dung}}', () => text);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const configArgs: any = {
@@ -452,9 +452,10 @@ export class GeminiClient {
   async generatePronouns(text: string, model: string, bookTitle = '', author = ''): Promise<string> {
     const arr = await this.generatePronounsRaw(text, model, bookTitle, author);
     if (arr.length > 0) {
+      const cleanCell = (v?: string) => (v || '').replace(/\|/g, '/').replace(/\r?\n/g, '<br>');
       let md = '| Nhân vật (Original) | Giới tính | Ước lượng độ tuổi | Đặc điểm & Vai trò | Xưng hô / Tước vị (Dịch) | Ngôi thứ 3 (Narrator) | Xưng - Hô (Với người khác) | Lý do | Ghi chú |\n|---|---|---|---|---|---|---|---|---|\n';
       for (const pt of arr) {
-        md += `| ${pt.originalName || ''} | ${pt.gender || ''} | ${pt.ageGroup || ''} | ${pt.role || ''} | ${pt.translatedTitles || ''} | ${pt.narratorPronoun || ''} | ${pt.dialoguePronouns || ''} | ${pt.reasoning || ''} | ${pt.notes || ''} |\n`;
+        md += `| ${cleanCell(pt.originalName)} | ${cleanCell(pt.gender)} | ${cleanCell(pt.ageGroup)} | ${cleanCell(pt.role)} | ${cleanCell(pt.translatedTitles)} | ${cleanCell(pt.narratorPronoun)} | ${cleanCell(pt.dialoguePronouns)} | ${cleanCell(pt.reasoning)} | ${cleanCell(pt.notes)} |\n`;
       }
       return md;
     }
@@ -467,9 +468,9 @@ export class GeminiClient {
 
     let finalPrompt = gp || `Hãy phân tích nội dung và trích xuất Bảng thuật ngữ chuyên ngành/Từ khó dịch tiếng Anh - Việt.\n\n<metadata>\n- Tên sách: {{tên sách}}\n- Tác giả: {{tên tác giả}}\n</metadata>\n\n<source_text>\n{{nội dung}}\n</source_text>`;
     
-    finalPrompt = finalPrompt.replace('{{tên sách}}', bookTitle || 'Không rõ');
-    finalPrompt = finalPrompt.replace('{{tên tác giả}}', author || 'Vô danh');
-    finalPrompt = finalPrompt.replace('{{nội dung}}', text);
+    finalPrompt = finalPrompt.replace('{{tên sách}}', () => bookTitle || 'Không rõ');
+    finalPrompt = finalPrompt.replace('{{tên tác giả}}', () => author || 'Vô danh');
+    finalPrompt = finalPrompt.replace('{{nội dung}}', () => text);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const configArgs: any = {
@@ -529,9 +530,10 @@ export class GeminiClient {
   async generateGlossary(text: string, model: string, bookTitle = '', author = ''): Promise<string> {
     const arr = await this.generateGlossaryRaw(text, model, bookTitle, author);
     if (arr.length > 0) {
+      const cleanCell = (v?: string) => (v || '').replace(/\|/g, '/').replace(/\r?\n/g, '<br>');
       let md = '| Tiếng Anh | Từ loại | Tiếng Việt | Ghi chú văn cảnh |\n|---|---|---|---|\n';
       for (const pt of arr) {
-        md += `| ${pt.english || ''} | ${pt.pos || ''} | ${pt.vietnamese || ''} | ${pt.contextNotes || ''} |\n`;
+        md += `| ${cleanCell(pt.english)} | ${cleanCell(pt.pos)} | ${cleanCell(pt.vietnamese)} | ${cleanCell(pt.contextNotes)} |\n`;
       }
       return md;
     }
@@ -544,9 +546,9 @@ export class GeminiClient {
 
     let finalPrompt = p || `Phân tích văn bản và trả về JSON cấu hình theo yêu cầu.\n\n<source_text>\n{{nội dung}}\n</source_text>`;
     
-    finalPrompt = finalPrompt.replace('{{tên sách}}', bookTitle || 'Không rõ');
-    finalPrompt = finalPrompt.replace('{{tên tác giả}}', author || 'Vô danh');
-    finalPrompt = finalPrompt.replace('{{nội dung}}', text);
+    finalPrompt = finalPrompt.replace('{{tên sách}}', () => bookTitle || 'Không rõ');
+    finalPrompt = finalPrompt.replace('{{tên tác giả}}', () => author || 'Vô danh');
+    finalPrompt = finalPrompt.replace('{{nội dung}}', () => text);
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const configArgs: any = {
@@ -615,7 +617,7 @@ export class GeminiClient {
       const systemInstruction = si || fallbackSi;
       const promptTemplate = p || fallbackP;
       
-      const finalPrompt = promptTemplate.replace('{{nội dung}}', translatedText);
+      const finalPrompt = promptTemplate.replace('{{nội dung}}', () => translatedText);
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const configArgs: any = {

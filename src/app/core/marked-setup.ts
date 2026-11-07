@@ -181,10 +181,11 @@ export function sanitizeHtml(html: string): string {
       }
     }
 
-    if (el.tagName.toLowerCase() === 'img') {
+      if (el.tagName.toLowerCase() === 'img') {
       const srcVal = el.getAttribute('src');
-      if (srcVal && typeof window !== 'undefined' && window.__SILA_IMAGES__ && window.__SILA_IMAGES__[srcVal]) {
-        el.setAttribute('src', window.__SILA_IMAGES__[srcVal]);
+      const activeImages = getActiveImages();
+      if (srcVal && activeImages && activeImages[srcVal]) {
+        el.setAttribute('src', activeImages[srcVal]);
       }
     }
   });
@@ -200,6 +201,15 @@ interface KatexToken extends Tokens.Generic {
 }
 
 let isConfigured = false;
+let hasScopedImages = false;
+let scopedImages: Record<string, string> | undefined = undefined;
+
+function getActiveImages(): Record<string, string> | undefined {
+  if (hasScopedImages) {
+    return scopedImages;
+  }
+  return typeof window !== 'undefined' ? window.__SILA_IMAGES__ : undefined;
+}
 
 export function getConfiguredMarked() {
   if (!isConfigured) {
@@ -309,8 +319,9 @@ export function getConfiguredMarked() {
         },
         image(token) {
           let href = token.href;
-          if (typeof window !== 'undefined' && window.__SILA_IMAGES__ && window.__SILA_IMAGES__[href]) {
-            href = window.__SILA_IMAGES__[href];
+          const activeImages = getActiveImages();
+          if (activeImages && activeImages[href]) {
+            href = activeImages[href];
           }
           let out = `<img src="${href}" alt="${token.text}"`;
           if (token.title) {
@@ -334,4 +345,16 @@ export function getConfiguredMarked() {
     isConfigured = true;
   }
   return marked;
+}
+
+export function parseMarkdownWithImages(src: string, customImages?: Record<string, string>): string {
+  const m = getConfiguredMarked();
+  hasScopedImages = true;
+  scopedImages = customImages;
+  try {
+    return m.parse(src) as string;
+  } finally {
+    hasScopedImages = false;
+    scopedImages = undefined;
+  }
 }

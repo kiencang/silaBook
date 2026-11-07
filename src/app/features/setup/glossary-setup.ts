@@ -382,9 +382,10 @@ export class GlossarySetup {
 
         let result = '';
         if (deduplicatedGlossary.length > 0) {
+          const cleanCell = (v?: string) => (v || '').replace(/\|/g, '/').replace(/\r?\n/g, '<br>');
           result = '| Tiếng Anh | Từ loại | Tiếng Việt | Ghi chú văn cảnh |\n|---|---|---|---|\n';
           for (const pt of deduplicatedGlossary) {
-            result += `| ${pt.english || ''} | ${pt.pos || ''} | ${pt.vietnamese || ''} | ${pt.contextNotes || ''} |\n`;
+            result += `| ${cleanCell(pt.english)} | ${cleanCell(pt.pos)} | ${cleanCell(pt.vietnamese)} | ${cleanCell(pt.contextNotes)} |\n`;
           }
         }
 

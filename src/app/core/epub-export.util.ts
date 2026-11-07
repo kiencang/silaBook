@@ -1,4 +1,4 @@
-import { getConfiguredMarked } from './marked-setup';
+import { parseMarkdownWithImages } from './marked-setup';
 
 export class EpubExporter {
   /**
@@ -54,24 +54,12 @@ export class EpubExporter {
       zip.file(`OEBPS/${img.fileName}`, base64Clean || '', { base64: true });
     });
 
-    const marked = getConfiguredMarked();
-    // Temporarily set window image dictionary so marked config can map URLs
-    let oldImages: Record<string, string> | undefined;
-    if (typeof window !== 'undefined') {
-       oldImages = window.__SILA_IMAGES__;
-       const mappedImages: Record<string, string> = {};
-       allImages.forEach(img => {
-          mappedImages[img.key] = img.fileName; // map to local relative path
-       });
-       window.__SILA_IMAGES__ = mappedImages;
-    }
-    
-    let htmlContent = await marked.parse(markdownContent);
-    
-    // Restore
-    if (typeof window !== 'undefined') {
-       window.__SILA_IMAGES__ = oldImages;
-    }
+    const mappedImages: Record<string, string> = {};
+    allImages.forEach(img => {
+      mappedImages[img.key] = img.fileName; // map to local relative path
+    });
+
+    let htmlContent = parseMarkdownWithImages(markdownContent, mappedImages);
 
     const escapedTitle = this.escapeXml(title || 'Untitled');
     htmlContent = this.toStrictXhtml(htmlContent);

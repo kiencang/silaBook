@@ -338,9 +338,10 @@ export class PronounSetup {
         const allPronounItems = task.chunks.flatMap(c => Array.isArray(c.result) ? c.result : []);
         let rawResult = '';
         if (allPronounItems.length > 0) {
+          const cleanCell = (v?: string) => (v || '').replace(/\|/g, '/').replace(/\r?\n/g, '<br>');
           rawResult = '| Nhân vật (Original) | Giới tính | Ước lượng độ tuổi | Đặc điểm & Vai trò | Xưng hô / Tước vị (Dịch) | Ngôi thứ 3 (Narrator) | Xưng - Hô (Với người khác) | Lý do | Ghi chú |\n|---|---|---|---|---|---|---|---|---|\n';
           for (const pt of allPronounItems) {
-            rawResult += `| ${pt.originalName || ''} | ${pt.gender || ''} | ${pt.ageGroup || ''} | ${pt.role || ''} | ${pt.translatedTitles || ''} | ${pt.narratorPronoun || ''} | ${pt.dialoguePronouns || ''} | ${pt.reasoning || ''} | ${pt.notes || ''} |\n`;
+            rawResult += `| ${cleanCell(pt.originalName)} | ${cleanCell(pt.gender)} | ${cleanCell(pt.ageGroup)} | ${cleanCell(pt.role)} | ${cleanCell(pt.translatedTitles)} | ${cleanCell(pt.narratorPronoun)} | ${cleanCell(pt.dialoguePronouns)} | ${cleanCell(pt.reasoning)} | ${cleanCell(pt.notes)} |\n`;
           }
         }
 

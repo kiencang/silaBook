@@ -59,6 +59,14 @@ export async function processEpubContent(file: File, turndownService: TurndownSe
   const hrefToImgId = new Map<string, string>();
   let imgCounter = 0;
   
+  const safeDecode = (val: string): string => {
+    try {
+      return decodeURIComponent(val);
+    } catch {
+      return val;
+    }
+  };
+
   for (const item of manifestItems) {
     const id = item.getAttribute('id');
     const href = item.getAttribute('href');
@@ -68,8 +76,9 @@ export async function processEpubContent(file: File, turndownService: TurndownSe
     
     // Check if it's an image
     if (href && mediaType && mediaType.startsWith('image/')) {
-       const imgFilePath = opfBasePath + decodeURIComponent(href);
-       let imgFile = zip.file(imgFilePath);
+       const decodedImgHref = safeDecode(href);
+       const imgFilePath = opfBasePath + decodedImgHref;
+       let imgFile = zip.file(imgFilePath) || zip.file(opfBasePath + href);
        
        // Fallback 2: Trích xuất ảnh theo đường dẫn mờ (fuzzy)
        if (!imgFile) {
@@ -87,9 +96,13 @@ export async function processEpubContent(file: File, turndownService: TurndownSe
             const placeholderId = `SILA_IMG_${imgCounter++}`;
             imagesStore[placeholderId] = dataUrl;
             hrefToImgId.set(href, placeholderId);
-            // Lưu key phụ để tra cứu dễ hơn
+            hrefToImgId.set(decodedImgHref, placeholderId);
+            // Lưu key phụ để tra cứu dễ hơn (cả bản gốc và bản giải mã URL)
             const rawFilename = href.split('/').pop();
-            if (rawFilename) hrefToImgId.set(rawFilename, placeholderId);
+            if (rawFilename) {
+              hrefToImgId.set(rawFilename, placeholderId);
+              hrefToImgId.set(safeDecode(rawFilename), placeholderId);
+            }
           } catch (e) {
             console.warn(`Lỗi load ảnh: ${href}`, e);
           }
@@ -109,10 +122,10 @@ export async function processEpubContent(file: File, turndownService: TurndownSe
       const href = itemsMap.get(idref);
       if (!href) continue;
       
-      const decodedHref = decodeURIComponent(href);
+      const decodedHref = safeDecode(href);
       const filePath = opfBasePath + decodedHref;
       
-      let htmlFile = zip.file(filePath);
+      let htmlFile = zip.file(filePath) || zip.file(opfBasePath + href);
       
       // Fallback 3: Tìm fuzzy match file HTML nếu URL có lỗi
       if (!htmlFile) {
@@ -161,8 +174,11 @@ export async function processEpubContent(file: File, turndownService: TurndownSe
                   continue;
                }
 
+               const cleanSrc = src.split('#')[0].split('?')[0];
+               const decodedSrc = safeDecode(cleanSrc);
+
                const htmlDirPath = decodedHref.substring(0, decodedHref.lastIndexOf('/') + 1);
-               const parts = (htmlDirPath + src).split('/');
+               const parts = (htmlDirPath + decodedSrc).split('/');
                const finalParts: string[] = [];
                for (const p of parts) {
                    if (p === '..') finalParts.pop();
@@ -170,12 +186,14 @@ export async function processEpubContent(file: File, turndownService: TurndownSe
                }
                const finalHref = finalParts.join('/');
                
-               let placeholderId = hrefToImgId.get(finalHref);
+               let placeholderId = hrefToImgId.get(finalHref) || hrefToImgId.get(safeDecode(finalHref));
                
                // Fallback 4: Lấy trực tiếp từ tên file nếu sai path
                if (!placeholderId) {
-                   const bareFilename = src.split('/').pop();
-                   if (bareFilename) placeholderId = hrefToImgId.get(bareFilename);
+                   const bareFilename = cleanSrc.split('/').pop();
+                   if (bareFilename) {
+                     placeholderId = hrefToImgId.get(bareFilename) || hrefToImgId.get(safeDecode(bareFilename));
+                   }
                }
                
                if (placeholderId) {

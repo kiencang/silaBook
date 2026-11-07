@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, inject, signal, computed, OnInit, OnDestroy, Output, EventEmitter } from '@angular/core';
 import { DbService, Project } from '../../core/db';
 import { BookStore } from '../../core/book.store';
 import { ToastService } from '../../core/toast.service';
@@ -152,7 +152,7 @@ import { DatePipe } from '@angular/common';
     </div>
   `
 })
-export class ProjectModal implements OnInit {
+export class ProjectModal implements OnInit, OnDestroy {
   db = inject(DbService);
   store = inject(BookStore);
   toast = inject(ToastService);
@@ -183,6 +183,12 @@ export class ProjectModal implements OnInit {
 
   private projectWorker = new Worker(new URL('./project.worker', import.meta.url), { type: 'module' });
   private workerId = 0;
+
+  ngOnDestroy() {
+    if (this.projectWorker) {
+      this.projectWorker.terminate();
+    }
+  }
 
   private runProjectWorkerTask(type: string, payload: unknown): Promise<{ jsonStr?: string; project?: Project; error?: string; [key: string]: unknown }> {
     return new Promise((resolve, reject) => {

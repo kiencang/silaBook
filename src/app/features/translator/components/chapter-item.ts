@@ -1035,6 +1035,7 @@ ${htmlBody}
       const url = URL.createObjectURL(blob);
       
       const newWindow = window.open(url, '_blank');
+      setTimeout(() => URL.revokeObjectURL(url), 60000);
       if (!newWindow) {
         this.toast.error('Vui lòng cho phép popup để nhận PDF');
         return;
