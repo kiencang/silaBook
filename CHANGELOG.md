@@ -5,6 +5,13 @@ Tất cả những thay đổi đáng chú ý của dự án silaBook sẽ đư�
 Định dạng dựa trên [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 và dự án này tuân thủ [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.0.130]- 2026-11-07
+### Fixed
+- Sửa "Hiệu ứng `$` đặc biệt trong `String.prototype.replace()`" có thể khiến xuất hiện lỗi trong văn bản toán, hóa, lý;
+- Dự phòng rủi ro "Ký tự gạch đứng `|` hoặc xuống dòng trong dữ liệu JSON AI trả về" trong phần Đại từ & Từ khó (gây lỗi bảng markdown), dù rủi ro này không cao nhưng vẫn có thể xuất hiện;
+- Chỉnh sửa về hiệu suất liên quan đến modal Quản lý dự án và xuất file PDF (Memory Leak);
+- Loại bỏ khả năng Xung đột biến toàn cục `window.__SILA_IMAGES__` khi xuất Dự án khác;
+
 ## [v1.0.129]- 2026-11-07
 ### Fixed
 - Sửa lỗi không xử lý được ảnh bìa trong EPUB;
