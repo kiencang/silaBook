@@ -5,6 +5,10 @@ Tất cả những thay đổi đáng chú ý của dự án silaBook sẽ đư�
 Định dạng dựa trên [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 và dự án này tuân thủ [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.0.131]- 2026-11-08
+### Fixed
+- Sửa lỗi chuyển dự án nhưng `Chỉ thị bổ sung khi dịch (tùy chọn)` không cập nhật tương ứng;
+
 ## [v1.0.130]- 2026-11-07
 ### Fixed
 - Sửa "Hiệu ứng `$` đặc biệt trong `String.prototype.replace()`" có thể khiến xuất hiện lỗi trong văn bản toán, hóa, lý;

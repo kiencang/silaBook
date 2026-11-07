@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, effect } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { FormsModule } from '@angular/forms';
 import { BookStore } from '../../../core/book.store';
@@ -199,6 +199,24 @@ export class TranslatorConfigComponent {
   instructionText = signal(this.store.customInstructions() || '');
   displayedWordCount = signal(this.countWords(this.store.customInstructions() || ''));
   private countTimeout: ReturnType<typeof setTimeout> | undefined;
+  private lastProjectId: string | null = this.store.currentProjectId();
+
+  constructor() {
+    effect(() => {
+      const projectId = this.store.currentProjectId();
+      const customInst = this.store.customInstructions() || '';
+      if (projectId !== this.lastProjectId) {
+        this.lastProjectId = projectId;
+        clearTimeout(this.countTimeout);
+        this.instructionText.set(customInst);
+        this.displayedWordCount.set(this.countWords(customInst));
+        this.isCustomInstructionsExpanded.set(!!customInst);
+      } else if (customInst !== this.instructionText()) {
+        this.instructionText.set(customInst);
+        this.displayedWordCount.set(this.countWords(customInst));
+      }
+    });
+  }
 
   countWords(text: string): number {
     const clean = text.trim();
