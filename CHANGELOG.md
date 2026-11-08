@@ -5,6 +5,10 @@ Tất cả những thay đổi đáng chú ý của dự án silaBook sẽ đư�
 Định dạng dựa trên [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 và dự án này tuân thủ [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.0.132]- 2026-11-08
+### Fixed
+- Đồng bộ các phase khi chuyển dự án, tránh trường hợp thông tin từ dự án này ảnh hưởng đến dự án kia (có thể xuất hiện khi 2 dự án đang cùng phase);
+
 ## [v1.0.131]- 2026-11-08
 ### Fixed
 - Sửa lỗi chuyển dự án nhưng `Chỉ thị bổ sung khi dịch (tùy chọn)` không cập nhật tương ứng;

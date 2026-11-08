@@ -100,12 +100,14 @@ import {AppsModalComponent} from './shared/components/apps-modal.component';
           @if (store.phase() === 0) {
              <app-home />
           } @else {
-             @switch (store.phase()) {
-               @case (1) { <app-uploader /> }
-               @case (2) { <app-splitter /> }
-               @case (3) { <app-pronoun-setup /> }
-               @case (4) { <app-glossary-setup /> }
-               @case (5) { <app-translator /> }
+             @for (projectId of [store.currentProjectId()]; track projectId) {
+               @switch (store.phase()) {
+                 @case (1) { <app-uploader /> }
+                 @case (2) { <app-splitter /> }
+                 @case (3) { <app-pronoun-setup /> }
+                 @case (4) { <app-glossary-setup /> }
+                 @case (5) { <app-translator /> }
+               }
              }
           }
         </div>
