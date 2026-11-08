@@ -26,7 +26,7 @@ import { MatIconModule } from '@angular/material/icon';
         <!-- Content -->
         <div class="p-6 space-y-4 overflow-y-auto bg-white flex-1">
           <p class="text-sm text-zinc-650 leading-relaxed mb-4">
-            Ngoài dịch sách, chúng tôi còn cung cấp bộ giải pháp dịch thuật chuyên sâu bằng AI, miễn phí trên AI Studio. Hãy tham khảo ứng dụng bạn muốn sử dụng dưới đây:
+            Ngoài dịch sách, chúng tôi còn cung cấp bộ giải pháp dịch thuật chuyên sâu bằng AI. Hãy tham khảo ứng dụng bạn muốn sử dụng dưới đây:
           </p>
           
           <div class="grid grid-cols-1 gap-4">

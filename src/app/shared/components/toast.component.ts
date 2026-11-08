@@ -9,7 +9,7 @@ import { CommonModule } from '@angular/common';
   imports: [CommonModule, MatIconModule],
   template: `
     @if (toastService.currentToast(); as toast) {
-      <div class="fixed bottom-6 right-6 px-4 py-3 rounded-xl shadow-lg border text-sm font-medium flex items-center z-50 transition-all shadow-red-100 min-w-[300px] max-w-md"
+      <div class="fixed bottom-6 right-6 px-4 py-3 rounded-xl shadow-lg border text-sm font-medium flex items-center z-50 transition-all shadow-red-100 min-w-[280px] max-w-[calc(100vw-3rem)] sm:max-w-lg"
            [class.bg-red-50]="toast.type === 'error'"
            [class.text-red-700]="toast.type === 'error'"
            [class.border-red-200]="toast.type === 'error'"
@@ -22,11 +22,11 @@ import { CommonModule } from '@angular/common';
            [class.border-indigo-200]="toast.type === 'info'"
            [class.shadow-indigo-100]="toast.type === 'info'">
         
-        <mat-icon class="mr-3">
+        <mat-icon class="mr-3 shrink-0">
           {{ toast.type === 'error' ? 'error_outline' : toast.type === 'success' ? 'check_circle' : 'info' }}
         </mat-icon>
         
-        <span class="flex-1 leading-relaxed">{{ toast.message }}</span>
+        <span class="flex-1 leading-relaxed break-words line-clamp-3 min-w-0">{{ toast.message }}</span>
         
         <button (click)="toastService.close()" class="ml-4 opacity-50 hover:opacity-100 transition-opacity flex items-center justify-center w-7 h-7 rounded-full hover:bg-black/5 flex-shrink-0">
           <mat-icon class="!text-[20px] !w-5 !h-5 flex items-center justify-center leading-none">close</mat-icon>

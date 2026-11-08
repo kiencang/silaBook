@@ -99,28 +99,28 @@ import { DatePipe } from '@angular/common';
                       </div>
                     </div>
                     
-                    <div class="flex sm:flex-col gap-2 min-w-[120px] justify-center">
+                    <div class="flex sm:flex-col gap-2 min-w-[120px] sm:min-w-[150px] justify-center">
                       @if (confirmingDeleteId() === p.id) {
-                        <div class="flex flex-col gap-2 p-2 bg-red-50 rounded-lg border border-red-100 w-full animate-in fade-in duration-200">
-                          <span class="text-xs text-red-700 font-medium text-center">Xóa dự án này?</span>
-                          <div class="flex gap-2">
-                            <button (click)="deleteProject(p.id, $event)" class="flex-1 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-md text-xs font-semibold transition-colors text-center shadow-sm">
+                        <div class="flex flex-col gap-3 p-3 bg-red-50 rounded-xl border border-red-100 w-full animate-in fade-in duration-200">
+                          <span class="text-xs text-red-700 font-semibold text-center">Xóa dự án này?</span>
+                          <div class="flex gap-3.5">
+                            <button (click)="deleteProject(p.id, $event)" class="flex-1 py-2 px-3 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-semibold transition-colors text-center shadow-sm cursor-pointer">
                               Có
                             </button>
-                            <button (click)="cancelDelete($event)" class="flex-1 py-1.5 bg-zinc-200 hover:bg-zinc-300 text-zinc-800 rounded-md text-xs font-semibold transition-colors text-center shadow-sm">
+                            <button (click)="cancelDelete($event)" class="flex-1 py-2 px-3 bg-zinc-200 hover:bg-zinc-300 text-zinc-800 rounded-lg text-sm font-semibold transition-colors text-center shadow-sm cursor-pointer">
                               Không
                             </button>
                           </div>
                         </div>
                       } @else {
-                        <button (click)="exportProjectData(p, $event)" class="px-4 py-2 w-full bg-purple-50 hover:bg-purple-100 text-purple-700 rounded-lg text-sm font-medium transition-colors border border-purple-200 shadow-sm text-center flex items-center justify-center gap-1.5" title="Xuất toàn bộ dữ liệu dự án (JSON).&#10;Cho mục đích lưu trữ hoặc nhập vào tài khoản khác dịch tiếp.">
+                        <button (click)="exportProjectData(p, $event)" class="px-4 py-2 w-full bg-purple-50 hover:bg-purple-100 text-purple-700 rounded-lg text-sm font-medium transition-colors border border-purple-200 shadow-sm text-center flex items-center justify-center gap-1.5" title="Xuất toàn bộ dữ liệu dự án (định dạng JSON).&#10;Cho mục đích lưu trữ hoặc nhập vào thiết bị khác dịch tiếp.">
                           <span class="material-icons text-[18px]">save_alt</span> Xuất dự án
                         </button>
                         <button (click)="loadProject(p.id)" class="px-4 py-2 w-full bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg text-sm font-medium transition-colors border border-indigo-200 shadow-sm text-center flex items-center justify-center gap-1.5">
                           <span class="material-icons text-[18px]">folder_open</span> Mở dự án
                         </button>
                         <button (click)="initiateDelete(p.id, $event)" class="px-4 py-2 w-full bg-red-50 hover:bg-red-100 text-red-600 rounded-lg text-sm font-medium transition-colors border border-red-200 shadow-sm text-center flex items-center justify-center gap-1.5">
-                          <span class="material-icons text-[18px]">delete</span> Xóa bỏ
+                          <span class="material-icons text-[18px]">delete</span> Xóa dự án
                         </button>
                       }
                     </div>
@@ -372,8 +372,9 @@ export class ProjectModal implements OnInit, OnDestroy {
 
   async deleteProject(id: string, event: Event) {
     event.stopPropagation();
+    const deletedName = this.projects().find(p => p.id === id)?.name || '';
     await this.db.deleteProject(id);
-    this.toast.success(this.toast.Messages.PROJECT_DELETE_SUCCESS);
+    this.toast.success(this.toast.Messages.PROJECT_DELETE_SUCCESS(deletedName));
     if (this.store.currentProjectId() === id) {
        this.store.closeProject();
     }

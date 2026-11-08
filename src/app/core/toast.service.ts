@@ -40,7 +40,7 @@ export class ToastService {
     PROJECT_IMPORT_DRAFT_ERROR: 'File không hợp lệ hoặc dữ liệu bị lỗi.',
     PROJECT_IMPORT_ERROR: 'Có lỗi xảy ra khi đọc file dự án.',
     PROJECT_BACKUP_SUCCESS: 'Đã sao lưu dự án thành công!',
-    PROJECT_DELETE_SUCCESS: 'Đã xóa dự án thành công!',
+    PROJECT_DELETE_SUCCESS: (name: string) => `Đã xóa dự án [${name}] thành công!`,
 
     // -- Export --
     EXPORT_HTML_SUCCESS: 'Đã xuất file bản dịch HTML thành công!',
