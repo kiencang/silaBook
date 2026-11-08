@@ -21,7 +21,7 @@ Một số tính năng quan trọng khác:
 
 Lưu ý nhỏ: Công thức toán, hóa học ở định dạng EPUB chỉ một số trình đọc hiển thị tốt, ví dụ như Thorium Reader (https://www.thoriumreader.com/en/), các trình đọc EPUB kiểu cũ như Aquile Reader sẽ hiển thị lỗi;
 
-Chương trình sử dụng SI & Prompt từ dự án này: https://github.com/kiencang/SI-Prompt-Book-EV-Translate (**v1.0.44**).
+Chương trình sử dụng SI & Prompt từ dự án này: https://github.com/kiencang/SI-Prompt-Book-EV-Translate (**v1.0.45**).
 
 ## Hướng dẫn sử dụng nhanh
 <p align="center">
