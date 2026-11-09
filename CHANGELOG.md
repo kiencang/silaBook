@@ -5,6 +5,10 @@ Tất cả những thay đổi đáng chú ý của dự án silaBook sẽ đư�
 Định dạng dựa trên [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 và dự án này tuân thủ [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.0.135]- 2026-11-09
+### Fixed
+- Cập nhật SI, bổ sung các từ khóa tiếng Anh trong phần tái cấu trúc câu thuộc SI dịch tài liệu khoa học;
+
 ## [v1.0.134]- 2026-11-08
 ### Fixed
 - Cập nhật xử lý mơ hồ trong SI dịch tài liệu khoa học;
