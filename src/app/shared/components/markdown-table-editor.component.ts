@@ -1,4 +1,4 @@
-import { Component, input, model, signal, effect } from '@angular/core';
+import { Component, input, model, signal, computed, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
@@ -129,10 +129,11 @@ import * as XLSX from 'xlsx';
                     </tr>
                   </thead>
                   <tbody>
-                    @for (row of tableData().slice(1); track rowIndex; let rowIndex = $index) {
+                    @for (row of paginatedRows(); track rowIndex; let rowIndex = $index) {
+                      @let actualRowIdx = pageStartIndex() + rowIndex + 1;
                       <tr class="border-b border-zinc-100 last:border-0 hover:bg-zinc-50/50 group/row">
                         <td class="p-3 text-center text-zinc-400 font-mono text-xs bg-white group-hover/row:bg-zinc-50/50 sticky left-0 z-10 border-r border-zinc-200">
-                          {{ rowIndex + 1 }}
+                          {{ actualRowIdx }}
                         </td>
                         @for (cell of row; track colIndex; let colIndex = $index) {
                           <td class="p-0 border-r border-zinc-100 relative group/cell align-top">
@@ -140,7 +141,7 @@ import * as XLSX from 'xlsx';
                               <div class="invisible whitespace-pre-wrap col-start-1 row-start-1 p-3 text-base break-words pointer-events-none" aria-hidden="true">{{ cell + ' ' }}</div>
                               <textarea
                                   [value]="cell"
-                                  (input)="updateCell(rowIndex + 1, colIndex, $event)"
+                                  (input)="updateCell(actualRowIdx, colIndex, $event)"
                                   [disabled]="disabled()"
                                   rows="1"
                                   class="col-start-1 row-start-1 w-full h-full bg-transparent p-3 focus:outline-none focus:bg-white focus:ring-2 focus:ring-inset focus:ring-indigo-500 resize-none overflow-hidden block text-base break-words"
@@ -149,7 +150,7 @@ import * as XLSX from 'xlsx';
                           </td>
                         }
                         <td class="p-2 text-center align-middle border-r border-zinc-100">
-                          <button (click)="removeRow(rowIndex + 1)" [disabled]="disabled()" title="Xóa hàng" class="w-6 h-6 flex items-center justify-center rounded hover:bg-red-50 text-zinc-400 hover:text-red-600 opacity-0 group-hover/row:opacity-100 transition-all mx-auto disabled:opacity-0 disabled:pointer-events-none">
+                          <button (click)="removeRow(actualRowIdx)" [disabled]="disabled()" title="Xóa hàng" class="w-6 h-6 flex items-center justify-center rounded hover:bg-red-50 text-zinc-400 hover:text-red-600 opacity-0 group-hover/row:opacity-100 transition-all mx-auto disabled:opacity-0 disabled:pointer-events-none">
                             <mat-icon class="!w-4 !h-4 !text-[16px]">delete</mat-icon>
                           </button>
                         </td>
@@ -158,11 +159,37 @@ import * as XLSX from 'xlsx';
                   </tbody>
                 </table>
               </div>
-              <div class="px-4 py-3 border-t border-zinc-200 bg-zinc-50 flex items-center">
+              <div class="px-4 py-3 border-t border-zinc-200 bg-zinc-50 flex flex-wrap items-center justify-between gap-3">
                 <button (click)="addRow()" [disabled]="disabled()" class="flex items-center space-x-1.5 text-sm font-medium text-indigo-600 hover:text-indigo-700 bg-white border border-indigo-200 px-3 py-1.5 rounded-lg shadow-sm hover:bg-indigo-50 transition-colors disabled:opacity-50 disabled:pointer-events-none text-left">
                   <mat-icon class="!w-4 !h-4 !text-[16px]">add</mat-icon>
                   <span>Thêm hàng</span>
                 </button>
+                @if (totalPages() > 1) {
+                  <div class="flex items-center gap-3 text-xs text-zinc-600">
+                    <span>
+                      Dòng <strong class="font-semibold text-zinc-800">{{ pageStartIndex() + 1 }}–{{ pageEndIndex() }}</strong> / {{ totalDataRows() }}
+                    </span>
+                    <div class="flex items-center gap-1">
+                      <button
+                        type="button"
+                        (click)="goToPage(currentPage() - 1)"
+                        [disabled]="currentPage() <= 1"
+                        class="px-2 py-1 rounded border border-zinc-200 bg-white hover:bg-zinc-100 disabled:opacity-40 disabled:pointer-events-none flex items-center justify-center"
+                      >
+                        <mat-icon class="!w-4 !h-4 !text-[16px]">chevron_left</mat-icon>
+                      </button>
+                      <span class="px-2 font-medium text-zinc-700">Trang {{ currentPage() }} / {{ totalPages() }}</span>
+                      <button
+                        type="button"
+                        (click)="goToPage(currentPage() + 1)"
+                        [disabled]="currentPage() >= totalPages()"
+                        class="px-2 py-1 rounded border border-zinc-200 bg-white hover:bg-zinc-100 disabled:opacity-40 disabled:pointer-events-none flex items-center justify-center"
+                      >
+                        <mat-icon class="!w-4 !h-4 !text-[16px]">chevron_right</mat-icon>
+                      </button>
+                    </div>
+                  </div>
+                }
               </div>
             }
           </div>
@@ -178,10 +205,35 @@ export class MarkdownTableEditorComponent {
   exportFileName = input<string>('danh_sach_thuat_ngu.xlsx');
   exportSheetName = input<string>('Thuật ngữ');
 
+  readonly pageSize = 100;
+  currentPage = signal<number>(1);
   mode = signal<'table' | 'raw'>('table');
   tableData = signal<string[][]>([]);
   confirmDelete = signal<{type: 'row' | 'col', index: number} | null>(null);
   isClosingModal = signal<boolean>(false);
+
+  totalDataRows = computed(() => Math.max(0, this.tableData().length - 1));
+  totalPages = computed(() => Math.max(1, Math.ceil(this.totalDataRows() / this.pageSize)));
+  pageStartIndex = computed(() => (this.currentPage() - 1) * this.pageSize);
+  pageEndIndex = computed(() => Math.min(this.totalDataRows(), this.pageStartIndex() + this.pageSize));
+  paginatedRows = computed(() => {
+    const data = this.tableData();
+    if (data.length <= 1) return [];
+    const start = this.pageStartIndex() + 1;
+    return data.slice(start, start + this.pageSize);
+  });
+
+  goToPage(page: number) {
+    const clamped = Math.max(1, Math.min(this.totalPages(), page));
+    this.currentPage.set(clamped);
+  }
+
+  private clampCurrentPage() {
+    const maxPage = this.totalPages();
+    if (this.currentPage() > maxPage) {
+      this.currentPage.set(maxPage);
+    }
+  }
 
   exportToExcel() {
     const data = this.tableData();
@@ -234,7 +286,9 @@ export class MarkdownTableEditorComponent {
   updateCell(rowIndex: number, colIndex: number, event: Event) {
     const val = (event.target as HTMLInputElement | HTMLTextAreaElement).value;
     const currentData = [...this.tableData()];
-    currentData[rowIndex][colIndex] = val;
+    const updatedRow = [...currentData[rowIndex]];
+    updatedRow[colIndex] = val;
+    currentData[rowIndex] = updatedRow;
     this.tableData.set(currentData);
     this.debouncedSyncTableToMarkdown();
   }
@@ -245,6 +299,7 @@ export class MarkdownTableEditorComponent {
     const cols = currentData[0].length;
     currentData.push(new Array(cols).fill(''));
     this.tableData.set(currentData);
+    this.currentPage.set(this.totalPages());
     this.debouncedSyncTableToMarkdown();
   }
 
@@ -258,6 +313,7 @@ export class MarkdownTableEditorComponent {
       const currentData = [...this.tableData()];
       currentData.splice(rowIndex, 1);
       this.tableData.set(currentData);
+      this.clampCurrentPage();
       this.debouncedSyncTableToMarkdown();
     }
   }
@@ -307,6 +363,7 @@ export class MarkdownTableEditorComponent {
       const currentData = [...this.tableData()];
       currentData.splice(toDelete.index, 1);
       this.tableData.set(currentData);
+      this.clampCurrentPage();
       this.debouncedSyncTableToMarkdown();
     } else if (toDelete.type === 'col') {
       const currentData = this.tableData().map(row => {
@@ -347,6 +404,7 @@ export class MarkdownTableEditorComponent {
   private parseMarkdownToTable(markdown: string) {
     if (!markdown) {
       this.tableData.set([]);
+      this.currentPage.set(1);
       return;
     }
     
@@ -355,6 +413,7 @@ export class MarkdownTableEditorComponent {
     const lines = markdown.split('\n').map(l => l.trim()).filter(l => l.length > 0 && l.includes('|'));
     if (lines.length === 0) {
       this.tableData.set([]);
+      this.currentPage.set(1);
       return;
     }
     
@@ -380,6 +439,7 @@ export class MarkdownTableEditorComponent {
       }
     }
     this.tableData.set(parsedRows);
+    this.clampCurrentPage();
   }
 
   private syncTableToMarkdown() {

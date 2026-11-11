@@ -352,14 +352,22 @@ export class Translator {
       return;
     }
 
+    let lastAutoExpandedId: string | null = null;
     try {
       for (const chapter of toTranslate) {
         if (this.stopRequested()) {
           this.toast.info('Đã dừng dịch thuật hàng loạt theo yêu cầu.');
           break;
         }
+        if (lastAutoExpandedId && lastAutoExpandedId !== chapter.id) {
+          this.expanded[lastAutoExpandedId] = false;
+        }
+        const wasAlreadyExpanded = !!this.expanded[chapter.id];
         // Do it sequentially to avoid rate limiting
         const shouldContinue = await this.translateSingle(chapter);
+        if (!wasAlreadyExpanded) {
+          lastAutoExpandedId = chapter.id;
+        }
         if (!shouldContinue) {
           this.stopRequested.set(true);
           this.toast.error('Tiến trình dịch tự động đã dừng lại do lỗi nghiêm trọng (ví dụ: hết Quota miễn phí hoặc sai API Key).');

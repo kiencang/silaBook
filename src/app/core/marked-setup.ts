@@ -122,6 +122,17 @@ function renderMathInHtmlSegment(htmlText: string): string {
   return out;
 }
 
+function getNormalizedSchemePrefix(val: string): string {
+  let out = '';
+  for (let i = 0; i < val.length && out.length < 32; i++) {
+    const code = val.charCodeAt(i);
+    if (code > 32) {
+      out += val[i];
+    }
+  }
+  return out.toLowerCase();
+}
+
 export function sanitizeHtml(html: string): string {
   if (!html || typeof DOMParser === 'undefined') return html || '';
 
@@ -139,10 +150,6 @@ export function sanitizeHtml(html: string): string {
     for (const attr of attrs) {
       const name = attr.name.toLowerCase();
       const val = attr.value;
-      const normalizedVal = Array.from(val)
-        .filter(ch => ch.charCodeAt(0) > 32)
-        .join('')
-        .toLowerCase();
 
       // Remove all event handlers (onerror, onload, onclick, etc.) and srcdoc
       if (name.startsWith('on') || name === 'srcdoc') {
@@ -150,12 +157,13 @@ export function sanitizeHtml(html: string): string {
         continue;
       }
 
-      // Check URL attributes for executable schemes
+      // Check URL attributes for executable schemes using prefix inspection
       if (name === 'href' || name === 'xlink:href' || name === 'action' || name === 'formaction') {
+        const normalizedPrefix = getNormalizedSchemePrefix(val);
         if (
-          normalizedVal.startsWith('javascript:') ||
-          normalizedVal.startsWith('vbscript:') ||
-          normalizedVal.startsWith('data:')
+          normalizedPrefix.startsWith('javascript:') ||
+          normalizedPrefix.startsWith('vbscript:') ||
+          normalizedPrefix.startsWith('data:')
         ) {
           el.removeAttribute(attr.name);
           continue;
@@ -163,10 +171,11 @@ export function sanitizeHtml(html: string): string {
       }
 
       if (name === 'src' || name === 'data' || name === 'poster') {
+        const normalizedPrefix = getNormalizedSchemePrefix(val);
         if (
-          normalizedVal.startsWith('javascript:') ||
-          normalizedVal.startsWith('vbscript:') ||
-          (normalizedVal.startsWith('data:') && !normalizedVal.startsWith('data:image/'))
+          normalizedPrefix.startsWith('javascript:') ||
+          normalizedPrefix.startsWith('vbscript:') ||
+          (normalizedPrefix.startsWith('data:') && !normalizedPrefix.startsWith('data:image/'))
         ) {
           el.removeAttribute(attr.name);
           continue;
@@ -181,7 +190,7 @@ export function sanitizeHtml(html: string): string {
       }
     }
 
-      if (el.tagName.toLowerCase() === 'img') {
+    if (el.tagName.toLowerCase() === 'img') {
       const srcVal = el.getAttribute('src');
       const activeImages = getActiveImages();
       if (srcVal && activeImages && activeImages[srcVal]) {
@@ -318,12 +327,7 @@ export function getConfiguredMarked() {
           return `<h${token.depth} id="${id}">${parsedText}</h${token.depth}>\n`;
         },
         image(token) {
-          let href = token.href;
-          const activeImages = getActiveImages();
-          if (activeImages && activeImages[href]) {
-            href = activeImages[href];
-          }
-          let out = `<img src="${href}" alt="${token.text}"`;
+          let out = `<img src="${token.href}" alt="${token.text}"`;
           if (token.title) {
             out += ` title="${token.title}"`;
           }

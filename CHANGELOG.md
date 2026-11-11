@@ -5,6 +5,13 @@ Tất cả những thay đổi đáng chú ý của dự án silaBook sẽ đư�
 Định dạng dựa trên [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 và dự án này tuân thủ [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.0.137]- 2026-11-11
+### Fixed
+- Khắc phục các vấn đề về hiệu suất trên các cuốn sách lớn;
+    + Chia nhỏ bảng đại từ, thuật ngữ để hiển thị (100 dòng / bảng);
+	+ Sau khi dịch xong một chương thì tự động đóng chương lại (không mặc định bung ra khiến các cuốn hàng trăm chương gây đơ trình duyệt);
+	+ Lọc ảnh base64 thông minh hơn;
+
 ## [v1.0.136]- 2026-11-11
 ### Fixed
 - Điều chỉnh tooltip mặc định của trình duyệt thành tooltip Tailwind trên nhiều button để hiển thị đẹp hơn;
