@@ -36,12 +36,15 @@ import {AppsModalComponent} from './shared/components/apps-modal.component';
             <div class="text-xl font-semibold tracking-tight flex items-center">
               <span class="text-zinc-400 font-normal mx-2">/</span>
               <button 
-                  class="text-indigo-700 max-w-[150px] sm:max-w-xs hover:underline focus:outline-none focus:underline bg-transparent border-none p-0 cursor-pointer flex items-center group disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:no-underline" 
-                  [title]="'Sửa tên dự án: ' + store.currentProjectName()"
+                  class="relative text-indigo-700 max-w-[150px] sm:max-w-xs hover:underline focus:outline-none focus:underline bg-transparent border-none p-0 cursor-pointer flex items-center group disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:no-underline" 
                   [disabled]="store.isBusy()"
                   (click)="!store.isBusy() && showEditProjectModal.set(true)">
                 <span class="truncate">{{store.currentProjectName()}}</span>
                 <mat-icon class="!text-[16px] !w-4 !h-4 ml-1.5 opacity-30 group-hover:opacity-100 transition-opacity">edit</mat-icon>
+                <div class="pointer-events-none font-normal normal-case tracking-normal absolute top-full left-0 mt-2 w-max max-w-xs sm:max-w-md break-words opacity-0 transition-opacity duration-150 group-hover:opacity-100 z-[100] bg-zinc-900 text-zinc-100 text-xs rounded-lg py-1.5 px-3 shadow-lg text-left">
+                  Sửa tên dự án: {{ store.currentProjectName() }}
+                  <div class="absolute bottom-full left-4 border-4 border-transparent border-b-zinc-900"></div>
+                </div>
               </button>
             </div>
           }

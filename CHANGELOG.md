@@ -5,6 +5,12 @@ Tất cả những thay đổi đáng chú ý của dự án silaBook sẽ đư�
 Định dạng dựa trên [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 và dự án này tuân thủ [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.0.136]- 2026-11-11
+### Fixed
+- Điều chỉnh tooltip mặc định của trình duyệt thành tooltip Tailwind trên nhiều button để hiển thị đẹp hơn;
+- Bổ sung 2 button EPUB và DOCX cho từng khối dịch (trước đây 2 button này chỉ có khi dịch xong toàn bộ cuốn sách);
+- Định dạng dự án tải về chuyển từ JSON sang ZIP (JSON được nén lại thành ZIP), vừa giảm dung lượng, nhưng chủ yếu là để thân thiện hơn với người dùng cuối;
+
 ## [v1.0.135]- 2026-11-09
 ### Fixed
 - Cập nhật SI, bổ sung các từ khóa tiếng Anh trong phần tái cấu trúc câu thuộc SI dịch tài liệu khoa học;

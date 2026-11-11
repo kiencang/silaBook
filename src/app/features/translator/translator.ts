@@ -119,44 +119,56 @@ import { hasSecureApiKey } from '../../core/crypto-storage.util';
               [disabled]="store.isTranslatingAny()"
               [class.opacity-50]="store.isTranslatingAny()"
               [class.cursor-not-allowed]="store.isTranslatingAny()"
-              class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded-lg font-medium shadow-sm transition-colors flex items-center space-x-1.5 disabled:bg-indigo-400"
-              title="Tải về định dạng sách điện tử EPUB."
+              class="group relative bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded-lg font-medium shadow-sm transition-colors flex items-center space-x-1.5 disabled:bg-indigo-400"
             >
               <mat-icon>menu_book</mat-icon>
               <span>EPUB</span>
+              <div class="pointer-events-none font-normal normal-case absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max opacity-0 transition-opacity duration-150 group-hover:opacity-100 z-[100] bg-zinc-900 text-zinc-100 text-xs rounded-lg py-2 px-3 shadow-lg text-center whitespace-nowrap">
+                Tải về định dạng sách điện tử EPUB.
+                <div class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-zinc-900"></div>
+              </div>
             </button>
             <button 
               (click)="store.exportProjectToDocx()"
               [disabled]="store.isTranslatingAny()"
               [class.opacity-50]="store.isTranslatingAny()"
               [class.cursor-not-allowed]="store.isTranslatingAny()"
-              class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg font-medium shadow-sm transition-colors flex items-center space-x-1.5 disabled:bg-blue-400"
-              title="Tải về định dạng Word (DOCX)."
+              class="group relative bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg font-medium shadow-sm transition-colors flex items-center space-x-1.5 disabled:bg-blue-400"
             >
               <mat-icon>description</mat-icon>
               <span>DOCX</span>
+              <div class="pointer-events-none font-normal normal-case absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max opacity-0 transition-opacity duration-150 group-hover:opacity-100 z-[100] bg-zinc-900 text-zinc-100 text-xs rounded-lg py-2 px-3 shadow-lg text-center whitespace-nowrap">
+                Tải về định dạng Word (DOCX).
+                <div class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-zinc-900"></div>
+              </div>
             </button>
             <button 
               (click)="store.exportProjectToPdf()"
               [disabled]="store.isTranslatingAny()"
               [class.opacity-50]="store.isTranslatingAny()"
               [class.cursor-not-allowed]="store.isTranslatingAny()"
-              class="bg-rose-600 hover:bg-rose-700 text-white px-3 py-2 rounded-lg font-medium shadow-sm transition-colors flex items-center space-x-1.5 disabled:bg-rose-400"
-              title="Tải về định dạng PDF."
+              class="group relative bg-rose-600 hover:bg-rose-700 text-white px-3 py-2 rounded-lg font-medium shadow-sm transition-colors flex items-center space-x-1.5 disabled:bg-rose-400"
             >
               <mat-icon>picture_as_pdf</mat-icon>
               <span>PDF</span>
+              <div class="pointer-events-none font-normal normal-case absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max opacity-0 transition-opacity duration-150 group-hover:opacity-100 z-[100] bg-zinc-900 text-zinc-100 text-xs rounded-lg py-2 px-3 shadow-lg text-center whitespace-nowrap">
+                Tải về định dạng PDF.
+                <div class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-zinc-900"></div>
+              </div>
             </button>
             <button 
               (click)="store.exportProjectToHtml()"
               [disabled]="store.isTranslatingAny()"
               [class.opacity-50]="store.isTranslatingAny()"
               [class.cursor-not-allowed]="store.isTranslatingAny()"
-              class="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-lg font-medium shadow-sm transition-colors flex items-center space-x-1.5 disabled:bg-green-400"
-              title="Tải về định dạng trang web HTML (tối ưu cho khả năng đọc)."
+              class="group relative bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-lg font-medium shadow-sm transition-colors flex items-center space-x-1.5 disabled:bg-green-400"
             >
               <mat-icon>html</mat-icon>
               <span>HTML</span>
+              <div class="pointer-events-none font-normal normal-case absolute bottom-full right-0 mb-2 w-max opacity-0 transition-opacity duration-150 group-hover:opacity-100 z-[100] bg-zinc-900 text-zinc-100 text-xs rounded-lg py-2 px-3 shadow-lg text-center whitespace-nowrap">
+                Tải về định dạng trang web HTML (tối ưu cho khả năng đọc).
+                <div class="absolute top-full right-6 border-4 border-transparent border-t-zinc-900"></div>
+              </div>
             </button>
           </div>
         }

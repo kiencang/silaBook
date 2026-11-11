@@ -41,10 +41,12 @@ import { DatePipe } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { BookStore, Chapter, TranslationVersion } from '../../../core/book.store';
 import { ToastService } from '../../../core/toast.service';
-import { getConfiguredMarked } from '../../../core/marked-setup';
+import { getConfiguredMarked, parseMarkdownWithImages } from '../../../core/marked-setup';
 import { ReaderStore } from '../../../core/reader.store';
 import { GeminiClient } from '../../../core/gemini';
 import { OFFLINE_READER_SCRIPT, OFFLINE_READER_STYLES, OFFLINE_READER_TOOLBAR_HTML, PRINT_PDF_STYLES } from '../../../core/html-export.util';
+import { EpubExporter } from '../../../core/epub-export.util';
+import { DocxExporter } from '../../../core/docx-export.util';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 @Component({
@@ -94,7 +96,6 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
               [class.opacity-50]="store.isTranslatingAny() || chapter().excludeFromTranslation"
               [class.cursor-not-allowed]="store.isTranslatingAny() || chapter().excludeFromTranslation"
               class="px-3 py-1.5 bg-white text-indigo-500 hover:bg-indigo-50 border border-indigo-100 hover:border-indigo-200 rounded-lg transition-colors flex items-center space-x-1.5 shadow-sm disabled:hover:bg-white disabled:hover:border-indigo-100"
-              [title]="chapter().excludeFromTranslation ? 'Không thể dịch khối này' : (chapter().status === 'done' || chapter().status === 'error' ? 'Dịch lại riêng phần này' : 'Dịch riêng phần này')"
             >
               <mat-icon class="!w-4 !h-4 !text-base flex items-center justify-center">looks_one</mat-icon>
               <span class="text-sm font-medium">{{ chapter().status === 'done' || chapter().status === 'error' ? 'Dịch lại riêng phần này' : 'Dịch riêng phần này' }}</span>
@@ -222,18 +223,49 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
               <div class="flex items-center justify-between min-h-[28px] mb-4">
                 <h5 class="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Bản dịch</h5>
                 @if (chapter().translatedText) {
-                  <div class="flex items-center gap-2">
-                    <button (click)="downloadPdf()" class="tooltip-trigger flex items-center justify-center p-1.5 text-zinc-400 hover:text-rose-600 hover:bg-rose-50 rounded-md transition-colors" title="Tải xuống PDF">
+                  <div class="flex items-center gap-1.5">
+                    <button (click)="downloadEpub()" class="group relative flex items-center justify-center p-1.5 text-zinc-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-md transition-colors">
+                      <mat-icon class="!w-4 !h-4 !text-[16px]">menu_book</mat-icon>
+                      <div class="pointer-events-none font-normal normal-case absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max opacity-0 transition-opacity group-hover:opacity-100 z-[100] bg-zinc-900 text-zinc-100 text-xs rounded-lg py-1.5 px-2.5 shadow-lg text-center whitespace-nowrap">
+                        Tải xuống EPUB
+                        <div class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-zinc-900"></div>
+                      </div>
+                    </button>
+                    <button (click)="downloadDocx()" class="group relative flex items-center justify-center p-1.5 text-zinc-400 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors">
+                      <mat-icon class="!w-4 !h-4 !text-[16px]">description</mat-icon>
+                      <div class="pointer-events-none font-normal normal-case absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max opacity-0 transition-opacity group-hover:opacity-100 z-[100] bg-zinc-900 text-zinc-100 text-xs rounded-lg py-1.5 px-2.5 shadow-lg text-center whitespace-nowrap">
+                        Tải xuống DOCX
+                        <div class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-zinc-900"></div>
+                      </div>
+                    </button>
+                    <button (click)="downloadPdf()" class="group relative flex items-center justify-center p-1.5 text-zinc-400 hover:text-rose-600 hover:bg-rose-50 rounded-md transition-colors">
                       <mat-icon class="!w-4 !h-4 !text-[16px]">picture_as_pdf</mat-icon>
+                      <div class="pointer-events-none font-normal normal-case absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max opacity-0 transition-opacity group-hover:opacity-100 z-[100] bg-zinc-900 text-zinc-100 text-xs rounded-lg py-1.5 px-2.5 shadow-lg text-center whitespace-nowrap">
+                        Tải xuống PDF
+                        <div class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-zinc-900"></div>
+                      </div>
                     </button>
-                    <button (click)="downloadHtml()" class="tooltip-trigger flex items-center justify-center p-1.5 text-zinc-400 hover:text-green-600 hover:bg-green-50 rounded-md transition-colors" title="Tải xuống HTML">
+                    <button (click)="downloadHtml()" class="group relative flex items-center justify-center p-1.5 text-zinc-400 hover:text-green-600 hover:bg-green-50 rounded-md transition-colors">
                       <mat-icon class="!w-4 !h-4 !text-[16px]">html</mat-icon>
+                      <div class="pointer-events-none font-normal normal-case absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max opacity-0 transition-opacity group-hover:opacity-100 z-[100] bg-zinc-900 text-zinc-100 text-xs rounded-lg py-1.5 px-2.5 shadow-lg text-center whitespace-nowrap">
+                        Tải xuống HTML
+                        <div class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-zinc-900"></div>
+                      </div>
                     </button>
-                    <button (click)="openBilingualFullscreen()" class="tooltip-trigger flex items-center justify-center p-1.5 text-zinc-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-md transition-colors" title="Đọc song ngữ">
+                    <span class="w-[1px] h-4 bg-zinc-200 mx-0.5"></span>
+                    <button (click)="openBilingualFullscreen()" class="group relative flex items-center justify-center p-1.5 text-zinc-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-md transition-colors">
                       <mat-icon class="!w-4 !h-4 !text-[16px]">vertical_split</mat-icon>
+                      <div class="pointer-events-none font-normal normal-case absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max opacity-0 transition-opacity group-hover:opacity-100 z-[100] bg-zinc-900 text-zinc-100 text-xs rounded-lg py-1.5 px-2.5 shadow-lg text-center whitespace-nowrap">
+                        Đọc song ngữ
+                        <div class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-zinc-900"></div>
+                      </div>
                     </button>
-                    <button (click)="openFullscreen()" class="tooltip-trigger flex items-center justify-center p-1.5 text-zinc-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-md transition-colors" title="Đọc toàn màn hình">
+                    <button (click)="openFullscreen()" class="group relative flex items-center justify-center p-1.5 text-zinc-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-md transition-colors">
                       <mat-icon class="!w-4 !h-4 !text-[16px]">fullscreen</mat-icon>
+                      <div class="pointer-events-none font-normal normal-case absolute bottom-full right-0 mb-2 w-max opacity-0 transition-opacity group-hover:opacity-100 z-[100] bg-zinc-900 text-zinc-100 text-xs rounded-lg py-1.5 px-2.5 shadow-lg text-center whitespace-nowrap">
+                        Đọc toàn màn hình
+                        <div class="absolute top-full right-2 border-4 border-transparent border-t-zinc-900"></div>
+                      </div>
                     </button>
                   </div>
                 }
@@ -997,6 +1029,78 @@ export class ChapterItemComponent implements OnDestroy {
     }
   }
 
+  private getChapterImages(markdown: string): Record<string, string> | undefined {
+    const allImages = this.store.images();
+    if (!allImages) return undefined;
+    const lowerMarkdown = markdown.toLowerCase();
+    const filtered: Record<string, string> = {};
+    for (const [key, dataUrl] of Object.entries(allImages)) {
+      const cleanKey = key.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+      if (lowerMarkdown.includes(key.toLowerCase()) || (cleanKey && lowerMarkdown.includes(cleanKey))) {
+        filtered[key] = dataUrl;
+      }
+    }
+    return filtered;
+  }
+
+  async downloadEpub() {
+    const text = this.chapter().translatedText;
+    if (!text) return;
+
+    this.toast.info('Đang khởi tạo file EPUB...');
+    await new Promise(resolve => setTimeout(resolve, 20));
+    try {
+      const prefix = 'c' + this.index() + '-t';
+      const processed = text.replace(/\[\^([^\]]+)\]/g, `[^${prefix}-$1]`);
+      const title = this.chapter().title || `Phần ${this.index() + 1}`;
+      const fullTitle = `${this.store.currentProjectName()}_${title}`;
+      const chapterImages = this.getChapterImages(processed);
+
+      const blob = await EpubExporter.generateEpub(fullTitle, processed, chapterImages);
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${this.store.currentProjectName()}_${title}_silaBook_vi.epub`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      this.toast.success('Đã tải xuống file EPUB.');
+    } catch (e: unknown) {
+      console.error('Error exporting chapter to EPUB:', e);
+      this.toast.error('Có lỗi xảy ra khi tải xuống EPUB.');
+    }
+  }
+
+  async downloadDocx() {
+    const text = this.chapter().translatedText;
+    if (!text) return;
+
+    this.toast.info('Đang khởi tạo file DOCX...');
+    await new Promise(resolve => setTimeout(resolve, 20));
+    try {
+      const prefix = 'c' + this.index() + '-t';
+      const processed = text.replace(/\[\^([^\]]+)\]/g, `[^${prefix}-$1]`);
+      const title = this.chapter().title || `Phần ${this.index() + 1}`;
+      const fullTitle = `${this.store.currentProjectName()}_${title}`;
+      const chapterImages = this.getChapterImages(processed);
+
+      const blob = await DocxExporter.generateDocx(fullTitle, processed, chapterImages);
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${this.store.currentProjectName()}_${title}_silaBook_vi.docx`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      this.toast.success('Đã tải xuống file DOCX.');
+    } catch (e: unknown) {
+      console.error('Error exporting chapter to DOCX:', e);
+      this.toast.error('Có lỗi xảy ra khi tải xuống DOCX.');
+    }
+  }
+
   downloadPdf() {
     const text = this.chapter().translatedText;
     if (!text) return;
@@ -1004,7 +1108,7 @@ export class ChapterItemComponent implements OnDestroy {
     try {
       const prefix = 'c' + this.index() + '-t';
       const processed = text.replace(/\[\^([^\]]+)\]/g, `[^${prefix}-$1]`);
-      const htmlBody = getConfiguredMarked().parse(processed);
+      const htmlBody = parseMarkdownWithImages(processed, this.store.images());
       const title = this.chapter().title || `Phần ${this.index() + 1}`;
       const htmlDoc = `<!DOCTYPE html>
 <html lang="vi">
@@ -1054,7 +1158,7 @@ ${htmlBody}
     try {
       const prefix = 'c' + this.index() + '-t';
       const processed = text.replace(/\[\^([^\]]+)\]/g, `[^${prefix}-$1]`);
-      const htmlBody = getConfiguredMarked().parse(processed);
+      const htmlBody = parseMarkdownWithImages(processed, this.store.images());
       const title = this.chapter().title || `Phần ${this.index() + 1}`;
       const htmlDoc = `<!DOCTYPE html>
 <html lang="vi">

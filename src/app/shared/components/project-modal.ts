@@ -14,13 +14,17 @@ import { DatePipe } from '@angular/common';
         <div class="px-6 py-4 border-b border-zinc-200 flex justify-between items-center bg-zinc-50/80">
           <h2 class="text-xl font-bold text-zinc-900">Quản lý dự án</h2>
           <div class="flex items-center gap-2">
-            <button (click)="toggleSort()" class="text-sm px-2 py-1.5 bg-zinc-50 text-zinc-600 hover:bg-zinc-100 border border-zinc-200 rounded-lg font-medium transition-colors flex items-center justify-center" [title]="sortBy() === 'time' ? 'Đang sắp xếp theo thời gian' : 'Đang sắp xếp theo tên (A-Z)'">
+            <button (click)="toggleSort()" class="group relative text-sm px-2 py-1.5 bg-zinc-50 text-zinc-600 hover:bg-zinc-100 border border-zinc-200 rounded-lg font-medium transition-colors flex items-center justify-center">
               <span class="material-icons text-[18px]">{{ sortBy() === 'time' ? 'schedule' : 'sort_by_alpha' }}</span>
+              <div class="pointer-events-none font-normal normal-case absolute top-full left-1/2 -translate-x-1/2 mt-2 w-max opacity-0 transition-opacity duration-150 group-hover:opacity-100 z-[100] bg-zinc-900 text-zinc-100 text-xs rounded-lg py-1.5 px-2.5 shadow-lg text-center whitespace-nowrap">
+                {{ sortBy() === 'time' ? 'Đang sắp xếp theo thời gian' : 'Đang sắp xếp theo tên (A-Z)' }}
+                <div class="absolute bottom-full left-1/2 -translate-x-1/2 border-4 border-transparent border-b-zinc-900"></div>
+              </div>
             </button>
             <button (click)="fileInput.click()" class="text-sm px-3 py-1.5 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 rounded-lg font-medium transition-colors flex items-center gap-1">
               <span class="material-icons text-[18px]">file_upload</span> Nhập dự án
             </button>
-            <input #fileInput type="file" accept=".json" class="hidden" (change)="importProject($event)" />
+            <input #fileInput type="file" accept=".zip,.json" class="hidden" (change)="importProject($event)" />
             <button (click)="triggerClose()" class="text-zinc-400 hover:text-zinc-700 w-8 h-8 rounded-full hover:bg-zinc-200 transition-colors flex items-center justify-center">
               <span class="material-icons !text-[20px] !w-5 !h-5 !flex !items-center !justify-center leading-none">close</span>
             </button>
@@ -47,11 +51,11 @@ import { DatePipe } from '@angular/common';
           } @else {
             <div class="grid gap-4">
               @for (p of sortedProjects(); track p.id) {
-                <div class="border border-zinc-200 rounded-xl p-4 hover:border-indigo-300 hover:shadow-md transition-all group flex flex-col gap-4 bg-white relative overflow-hidden"
+                <div class="border border-zinc-200 rounded-xl p-4 hover:border-indigo-300 hover:shadow-md transition-all group flex flex-col gap-4 bg-white relative"
                      [class.ring-2]="store.currentProjectId() === p.id" [class.ring-indigo-500]="store.currentProjectId() === p.id">
                   
                   @if (store.currentProjectId() === p.id) {
-                    <div class="absolute left-0 top-0 bottom-0 w-1 bg-indigo-500"></div>
+                    <div class="absolute left-0 top-0 bottom-0 w-1 bg-indigo-500 rounded-l-xl"></div>
                     <div class="absolute left-1 top-0 bg-indigo-500 text-white text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-b-md shadow-sm z-10">
                       Đang mở
                     </div>
@@ -66,9 +70,21 @@ import { DatePipe } from '@angular/common';
                       </div>
                       <div class="flex flex-col gap-2 w-full mt-2">
                         <div class="flex flex-wrap items-center text-sm text-zinc-500 gap-x-4 gap-y-2">
-                          <span class="flex items-center" title="Ngày tạo ban đầu."><span class="material-icons text-[16px] mr-1 opacity-70">add_circle_outline</span> {{p.createdAt | date:'dd/MM/yy HH:mm'}}</span>
+                          <span class="group/created relative flex items-center">
+                            <span class="material-icons text-[16px] mr-1 opacity-70">add_circle_outline</span> {{p.createdAt | date:'dd/MM/yy HH:mm'}}
+                            <span class="pointer-events-none font-normal normal-case absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 w-max opacity-0 transition-opacity duration-150 group-hover/created:opacity-100 z-[100] bg-zinc-900 text-zinc-100 text-xs rounded-lg py-1.5 px-2.5 shadow-lg text-center whitespace-nowrap">
+                              Ngày tạo ban đầu.
+                              <span class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-zinc-900"></span>
+                            </span>
+                          </span>
                           @if (p.importedAt) {
-                            <span class="flex items-center text-indigo-600 font-medium" title="Ngày nhập vào máy."><span class="material-icons text-[16px] mr-1">publish</span> {{p.importedAt | date:'dd/MM/yy HH:mm'}}</span>
+                            <span class="group/imported relative flex items-center text-indigo-600 font-medium">
+                              <span class="material-icons text-[16px] mr-1">publish</span> {{p.importedAt | date:'dd/MM/yy HH:mm'}}
+                              <span class="pointer-events-none font-normal normal-case absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 w-max opacity-0 transition-opacity duration-150 group-hover/imported:opacity-100 z-[100] bg-zinc-900 text-zinc-100 text-xs rounded-lg py-1.5 px-2.5 shadow-lg text-center whitespace-nowrap">
+                                Ngày nhập vào máy.
+                                <span class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-zinc-900"></span>
+                              </span>
+                            </span>
                           }
                         </div>
                         <div class="flex flex-wrap items-center text-sm text-zinc-500 gap-x-4 gap-y-2">
@@ -113,8 +129,12 @@ import { DatePipe } from '@angular/common';
                           </div>
                         </div>
                       } @else {
-                        <button (click)="exportProjectData(p, $event)" class="px-4 py-2 w-full bg-purple-50 hover:bg-purple-100 text-purple-700 rounded-lg text-sm font-medium transition-colors border border-purple-200 shadow-sm text-center flex items-center justify-center gap-1.5" title="Xuất toàn bộ dữ liệu dự án (định dạng JSON).&#10;Cho mục đích lưu trữ hoặc nhập vào thiết bị khác dịch tiếp.">
+                        <button (click)="exportProjectData(p, $event)" class="group/export relative px-4 py-2 w-full bg-purple-50 hover:bg-purple-100 text-purple-700 rounded-lg text-sm font-medium transition-colors border border-purple-200 shadow-sm text-center flex items-center justify-center gap-1.5">
                           <span class="material-icons text-[18px]">save_alt</span> Xuất dự án
+                          <div class="pointer-events-none font-normal normal-case absolute top-full right-0 mt-2 w-max max-w-[calc(100vw-4rem)] sm:max-w-md opacity-0 transition-opacity duration-150 group-hover/export:opacity-100 z-[100] bg-zinc-900 text-zinc-100 text-xs leading-relaxed rounded-lg py-2 px-3 shadow-lg text-left">
+                            Xuất toàn bộ dữ liệu dự án (định dạng ZIP).<br>Cho mục đích lưu trữ hoặc nhập vào thiết bị khác dịch tiếp.
+                            <div class="absolute bottom-full right-6 border-4 border-transparent border-b-zinc-900"></div>
+                          </div>
                         </button>
                         <button (click)="loadProject(p.id)" class="px-4 py-2 w-full bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg text-sm font-medium transition-colors border border-indigo-200 shadow-sm text-center flex items-center justify-center gap-1.5">
                           <span class="material-icons text-[18px]">folder_open</span> Mở dự án
@@ -129,17 +149,33 @@ import { DatePipe } from '@angular/common';
                   @if (getProgress(p)?.percentage === 100) {
                     <div class="flex flex-wrap items-center gap-2 mt-1 pt-3 border-t border-dashed border-zinc-200" tabindex="0" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
                       <span class="text-xs font-medium text-zinc-500 mr-1">Download</span>
-                      <button (click)="exportProjectToEpub(p, $event)" class="px-2 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded text-xs font-semibold transition-colors border border-indigo-200 shadow-sm flex items-center gap-1" title="Tải về định dạng sách điện tử EPUB.">
+                      <button (click)="exportProjectToEpub(p, $event)" class="group/epub relative px-2 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded text-xs font-semibold transition-colors border border-indigo-200 shadow-sm flex items-center gap-1">
                         <span class="material-icons text-[13px]">menu_book</span>EPUB
+                        <div class="pointer-events-none font-normal normal-case absolute bottom-full left-0 mb-2 w-max opacity-0 transition-opacity duration-150 group-hover/epub:opacity-100 z-[100] bg-zinc-900 text-zinc-100 text-xs rounded-lg py-1.5 px-2.5 shadow-lg text-center whitespace-nowrap">
+                          Tải về định dạng sách điện tử EPUB.
+                          <div class="absolute top-full left-5 border-4 border-transparent border-t-zinc-900"></div>
+                        </div>
                       </button>
-                      <button (click)="exportProjectToDocx(p, $event)" class="px-2 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded text-xs font-semibold transition-colors border border-blue-200 shadow-sm flex items-center gap-1" title="Tải về định dạng Word (DOCX).">
+                      <button (click)="exportProjectToDocx(p, $event)" class="group/docx relative px-2 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded text-xs font-semibold transition-colors border border-blue-200 shadow-sm flex items-center gap-1">
                         <span class="material-icons text-[13px]">description</span>DOCX
+                        <div class="pointer-events-none font-normal normal-case absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max opacity-0 transition-opacity duration-150 group-hover/docx:opacity-100 z-[100] bg-zinc-900 text-zinc-100 text-xs rounded-lg py-1.5 px-2.5 shadow-lg text-center whitespace-nowrap">
+                          Tải về định dạng Word (DOCX).
+                          <div class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-zinc-900"></div>
+                        </div>
                       </button>
-                      <button (click)="exportProjectToPdf(p, $event)" class="px-2 py-1 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded text-xs font-semibold transition-colors border border-rose-200 shadow-sm flex items-center gap-1" title="Tải về định dạng PDF.">
+                      <button (click)="exportProjectToPdf(p, $event)" class="group/pdf relative px-2 py-1 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded text-xs font-semibold transition-colors border border-rose-200 shadow-sm flex items-center gap-1">
                         <span class="material-icons text-[13px]">picture_as_pdf</span>PDF
+                        <div class="pointer-events-none font-normal normal-case absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max opacity-0 transition-opacity duration-150 group-hover/pdf:opacity-100 z-[100] bg-zinc-900 text-zinc-100 text-xs rounded-lg py-1.5 px-2.5 shadow-lg text-center whitespace-nowrap">
+                          Tải về định dạng PDF.
+                          <div class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-zinc-900"></div>
+                        </div>
                       </button>
-                      <button (click)="exportProjectToHtml(p, $event)" class="px-2 py-1 bg-green-50 hover:bg-green-100 text-green-700 rounded text-xs font-semibold transition-colors border border-green-200 shadow-sm flex items-center gap-1" title="Tải về định dạng trang web HTML (tối ưu cho khả năng đọc).">
+                      <button (click)="exportProjectToHtml(p, $event)" class="group/html relative px-2 py-1 bg-green-50 hover:bg-green-100 text-green-700 rounded text-xs font-semibold transition-colors border border-green-200 shadow-sm flex items-center gap-1">
                         <span class="material-icons text-[13px]">html</span>HTML
+                        <div class="pointer-events-none font-normal normal-case absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max opacity-0 transition-opacity duration-150 group-hover/html:opacity-100 z-[100] bg-zinc-900 text-zinc-100 text-xs rounded-lg py-1.5 px-2.5 shadow-lg text-center whitespace-nowrap">
+                          Tải về định dạng trang web HTML (tối ưu cho khả năng đọc).
+                          <div class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-zinc-900"></div>
+                        </div>
                       </button>
                     </div>
                   }
@@ -299,20 +335,29 @@ export class ProjectModal implements OnInit, OnDestroy {
     
     this.toast.info('Đang chuẩn bị dữ liệu xuất bản... Xin vui lòng chờ');
     
-    let dataStr: string;
+    const baseFileName = `SilaProject_${p.name.replace(/\s+/g, '_')}_${p.id}`;
+    let blob: Blob;
     try {
       const result = await this.runProjectWorkerTask('EXPORT_PROJECT', fullProject);
-      dataStr = result.jsonStr || '';
+      const dataStr = result.jsonStr || '';
+      const JSZip = (await import('jszip')).default;
+      const zip = new JSZip();
+      zip.file(`${baseFileName}.json`, dataStr);
+      blob = await zip.generateAsync({
+        type: 'blob',
+        mimeType: 'application/zip',
+        compression: 'DEFLATE',
+        compressionOptions: { level: 6 }
+      });
     } catch (e: unknown) {
       this.toast.error('Lỗi khi xuất dữ liệu: ' + (e instanceof Error ? e.message : 'Unknown error'));
       return;
     }
 
-    const blob = new Blob([dataStr], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `SilaProject_${p.name.replace(/\s+/g, '_')}_${p.id}.json`;
+    a.download = `${baseFileName}.zip`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -327,7 +372,22 @@ export class ProjectModal implements OnInit, OnDestroy {
     
     try {
       this.toast.info('Đang nhập dữ liệu... Xin vui lòng chờ');
-      const text = await file.text();
+      let text = '';
+      const isZip = file.name.toLowerCase().endsWith('.zip') || file.type === 'application/zip' || file.type === 'application/x-zip-compressed';
+      if (isZip) {
+        const JSZip = (await import('jszip')).default;
+        const zip = await JSZip.loadAsync(file);
+        const jsonEntry = Object.values(zip.files).find(
+          entry => !entry.dir && entry.name.toLowerCase().endsWith('.json') && !entry.name.includes('__MACOSX')
+        );
+        if (!jsonEntry) {
+          this.toast.error(this.toast.Messages.PROJECT_IMPORT_DRAFT_ERROR);
+          return;
+        }
+        text = await jsonEntry.async('string');
+      } else {
+        text = await file.text();
+      }
       
       const result = await this.runProjectWorkerTask('IMPORT_PROJECT', { text });
       const proj = result.project as Project;
@@ -373,11 +433,11 @@ export class ProjectModal implements OnInit, OnDestroy {
   async deleteProject(id: string, event: Event) {
     event.stopPropagation();
     const deletedName = this.projects().find(p => p.id === id)?.name || '';
-    await this.db.deleteProject(id);
-    this.toast.success(this.toast.Messages.PROJECT_DELETE_SUCCESS(deletedName));
     if (this.store.currentProjectId() === id) {
        this.store.closeProject();
     }
+    await this.db.deleteProject(id);
+    this.toast.success(this.toast.Messages.PROJECT_DELETE_SUCCESS(deletedName));
     this.confirmingDeleteId.set(null);
     await this.loadProjects();
   }
