@@ -7,7 +7,7 @@ và dự án này tuân thủ [Semantic Versioning](https://semver.org/spec/v2.0
 
 ## [v1.0.139]- 2026-11-12
 ### Fixed
-- Khóa chặt giao thức data: chỉ dành riêng cho <img src="...">
+- Khóa chặt giao thức data: chỉ dành riêng cho `<img src="...">`
 
 ## [v1.0.138]- 2026-11-12
 ### Fixed
