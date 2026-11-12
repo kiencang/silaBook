@@ -122,6 +122,21 @@ function renderMathInHtmlSegment(htmlText: string): string {
   return out;
 }
 
+const ALLOWED_DATA_IMAGE_PREFIXES = [
+  'data:image/png;',
+  'data:image/png,',
+  'data:image/jpeg;',
+  'data:image/jpeg,',
+  'data:image/jpg;',
+  'data:image/jpg,',
+  'data:image/gif;',
+  'data:image/gif,',
+  'data:image/webp;',
+  'data:image/webp,',
+  'data:image/svg+xml;',
+  'data:image/svg+xml,'
+];
+
 function getNormalizedSchemePrefix(val: string): string {
   let out = '';
   for (let i = 0; i < val.length && out.length < 32; i++) {
@@ -131,6 +146,20 @@ function getNormalizedSchemePrefix(val: string): string {
     }
   }
   return out.toLowerCase();
+}
+
+function isAllowedDataImagePrefix(normalizedPrefix: string): boolean {
+  return ALLOWED_DATA_IMAGE_PREFIXES.some(prefix => normalizedPrefix.startsWith(prefix));
+}
+
+function isSafeImgSrcPrefix(normalizedPrefix: string): boolean {
+  if (normalizedPrefix.startsWith('javascript:') || normalizedPrefix.startsWith('vbscript:')) {
+    return false;
+  }
+  if (normalizedPrefix.startsWith('data:')) {
+    return isAllowedDataImagePrefix(normalizedPrefix);
+  }
+  return true;
 }
 
 export function sanitizeHtml(html: string): string {
@@ -146,6 +175,7 @@ export function sanitizeHtml(html: string): string {
   // 2. Inspect all remaining elements and strip dangerous attributes
   const allElements = doc.body.querySelectorAll('*');
   allElements.forEach(el => {
+    const tagName = el.tagName.toLowerCase();
     const attrs = Array.from(el.attributes);
     for (const attr of attrs) {
       const name = attr.name.toLowerCase();
@@ -157,25 +187,30 @@ export function sanitizeHtml(html: string): string {
         continue;
       }
 
-      // Check URL attributes for executable schemes using prefix inspection
-      if (name === 'href' || name === 'xlink:href' || name === 'action' || name === 'formaction') {
+      // Strictly allow data:image/(png|jpeg|jpg|gif|webp|svg+xml) ONLY on <img src="...">
+      if (name === 'src' && tagName === 'img') {
+        const normalizedPrefix = getNormalizedSchemePrefix(val);
+        if (!isSafeImgSrcPrefix(normalizedPrefix)) {
+          el.removeAttribute(attr.name);
+        }
+        continue;
+      }
+
+      // Block javascript:, vbscript:, and ALL data: schemes on every other tag/attribute
+      if (
+        name === 'href' ||
+        name === 'xlink:href' ||
+        name === 'action' ||
+        name === 'formaction' ||
+        name === 'src' ||
+        name === 'data' ||
+        name === 'poster'
+      ) {
         const normalizedPrefix = getNormalizedSchemePrefix(val);
         if (
           normalizedPrefix.startsWith('javascript:') ||
           normalizedPrefix.startsWith('vbscript:') ||
           normalizedPrefix.startsWith('data:')
-        ) {
-          el.removeAttribute(attr.name);
-          continue;
-        }
-      }
-
-      if (name === 'src' || name === 'data' || name === 'poster') {
-        const normalizedPrefix = getNormalizedSchemePrefix(val);
-        if (
-          normalizedPrefix.startsWith('javascript:') ||
-          normalizedPrefix.startsWith('vbscript:') ||
-          (normalizedPrefix.startsWith('data:') && !normalizedPrefix.startsWith('data:image/'))
         ) {
           el.removeAttribute(attr.name);
           continue;
@@ -190,11 +225,17 @@ export function sanitizeHtml(html: string): string {
       }
     }
 
-    if (el.tagName.toLowerCase() === 'img') {
+    if (tagName === 'img') {
       const srcVal = el.getAttribute('src');
       const activeImages = getActiveImages();
       if (srcVal && activeImages && activeImages[srcVal]) {
-        el.setAttribute('src', activeImages[srcVal]);
+        const resolvedSrc = activeImages[srcVal];
+        const resolvedPrefix = getNormalizedSchemePrefix(resolvedSrc);
+        if (isSafeImgSrcPrefix(resolvedPrefix)) {
+          el.setAttribute('src', resolvedSrc);
+        } else {
+          el.removeAttribute('src');
+        }
       }
     }
   });

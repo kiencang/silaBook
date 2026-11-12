@@ -5,6 +5,10 @@ Tất cả những thay đổi đáng chú ý của dự án silaBook sẽ đư�
 Định dạng dựa trên [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 và dự án này tuân thủ [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.0.139]- 2026-11-12
+### Fixed
+- Khóa chặt giao thức data: chỉ dành riêng cho <img src="...">
+
 ## [v1.0.138]- 2026-11-12
 ### Fixed
 - Điều chỉnh nhỏ vị trí của tooltip trong modal `Quản lý dự án` cho gọn gàng;
