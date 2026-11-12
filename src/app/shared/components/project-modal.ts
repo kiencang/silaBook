@@ -50,7 +50,7 @@ import { DatePipe } from '@angular/common';
             </div>
           } @else {
             <div class="grid gap-4">
-              @for (p of sortedProjects(); track p.id) {
+              @for (p of sortedProjects(); track p.id; let isFirst = $first) {
                 <div class="border border-zinc-200 rounded-xl p-4 hover:border-indigo-300 hover:shadow-md transition-all group flex flex-col gap-4 bg-white relative"
                      [class.ring-2]="store.currentProjectId() === p.id" [class.ring-indigo-500]="store.currentProjectId() === p.id">
                   
@@ -72,17 +72,17 @@ import { DatePipe } from '@angular/common';
                         <div class="flex flex-wrap items-center text-sm text-zinc-500 gap-x-4 gap-y-2">
                           <span class="group/created relative flex items-center">
                             <span class="material-icons text-[16px] mr-1 opacity-70">add_circle_outline</span> {{p.createdAt | date:'dd/MM/yy HH:mm'}}
-                            <span class="pointer-events-none font-normal normal-case absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 w-max opacity-0 transition-opacity duration-150 group-hover/created:opacity-100 z-[100] bg-zinc-900 text-zinc-100 text-xs rounded-lg py-1.5 px-2.5 shadow-lg text-center whitespace-nowrap">
+                            <span class="pointer-events-none font-normal normal-case absolute top-full left-1/2 -translate-x-1/2 mt-1.5 w-max opacity-0 transition-opacity duration-150 group-hover/created:opacity-100 z-[100] bg-zinc-900 text-zinc-100 text-xs rounded-lg py-1.5 px-2.5 shadow-lg text-center whitespace-nowrap">
                               Ngày tạo ban đầu.
-                              <span class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-zinc-900"></span>
+                              <span class="absolute bottom-full left-1/2 -translate-x-1/2 border-4 border-transparent border-b-zinc-900"></span>
                             </span>
                           </span>
                           @if (p.importedAt) {
                             <span class="group/imported relative flex items-center text-indigo-600 font-medium">
                               <span class="material-icons text-[16px] mr-1">publish</span> {{p.importedAt | date:'dd/MM/yy HH:mm'}}
-                              <span class="pointer-events-none font-normal normal-case absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 w-max opacity-0 transition-opacity duration-150 group-hover/imported:opacity-100 z-[100] bg-zinc-900 text-zinc-100 text-xs rounded-lg py-1.5 px-2.5 shadow-lg text-center whitespace-nowrap">
+                              <span class="pointer-events-none font-normal normal-case absolute top-full left-1/2 -translate-x-1/2 mt-1.5 w-max opacity-0 transition-opacity duration-150 group-hover/imported:opacity-100 z-[100] bg-zinc-900 text-zinc-100 text-xs rounded-lg py-1.5 px-2.5 shadow-lg text-center whitespace-nowrap">
                                 Ngày nhập vào máy.
-                                <span class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-zinc-900"></span>
+                                <span class="absolute bottom-full left-1/2 -translate-x-1/2 border-4 border-transparent border-b-zinc-900"></span>
                               </span>
                             </span>
                           }
@@ -131,9 +131,17 @@ import { DatePipe } from '@angular/common';
                       } @else {
                         <button (click)="exportProjectData(p, $event)" class="group/export relative px-4 py-2 w-full bg-purple-50 hover:bg-purple-100 text-purple-700 rounded-lg text-sm font-medium transition-colors border border-purple-200 shadow-sm text-center flex items-center justify-center gap-1.5">
                           <span class="material-icons text-[18px]">save_alt</span> Xuất dự án
-                          <div class="pointer-events-none font-normal normal-case absolute top-full right-0 mt-2 w-max max-w-[calc(100vw-4rem)] sm:max-w-md opacity-0 transition-opacity duration-150 group-hover/export:opacity-100 z-[100] bg-zinc-900 text-zinc-100 text-xs leading-relaxed rounded-lg py-2 px-3 shadow-lg text-left">
+                          <div class="pointer-events-none font-normal normal-case absolute right-0 w-max max-w-[calc(100vw-4rem)] sm:max-w-md opacity-0 transition-opacity duration-150 group-hover/export:opacity-100 z-[100] bg-zinc-900 text-zinc-100 text-xs leading-relaxed rounded-lg py-2 px-3 shadow-lg text-left"
+                               [class.top-full]="isFirst"
+                               [class.mt-2]="isFirst"
+                               [class.bottom-full]="!isFirst"
+                               [class.mb-2]="!isFirst">
                             Xuất toàn bộ dữ liệu dự án (định dạng ZIP).<br>Cho mục đích lưu trữ hoặc nhập vào thiết bị khác dịch tiếp.
-                            <div class="absolute bottom-full right-6 border-4 border-transparent border-b-zinc-900"></div>
+                            <div class="absolute right-6 border-4 border-transparent"
+                                 [class.bottom-full]="isFirst"
+                                 [class.border-b-zinc-900]="isFirst"
+                                 [class.top-full]="!isFirst"
+                                 [class.border-t-zinc-900]="!isFirst"></div>
                           </div>
                         </button>
                         <button (click)="loadProject(p.id)" class="px-4 py-2 w-full bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg text-sm font-medium transition-colors border border-indigo-200 shadow-sm text-center flex items-center justify-center gap-1.5">
@@ -151,30 +159,30 @@ import { DatePipe } from '@angular/common';
                       <span class="text-xs font-medium text-zinc-500 mr-1">Download</span>
                       <button (click)="exportProjectToEpub(p, $event)" class="group/epub relative px-2 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded text-xs font-semibold transition-colors border border-indigo-200 shadow-sm flex items-center gap-1">
                         <span class="material-icons text-[13px]">menu_book</span>EPUB
-                        <div class="pointer-events-none font-normal normal-case absolute bottom-full left-0 mb-2 w-max opacity-0 transition-opacity duration-150 group-hover/epub:opacity-100 z-[100] bg-zinc-900 text-zinc-100 text-xs rounded-lg py-1.5 px-2.5 shadow-lg text-center whitespace-nowrap">
+                        <div class="pointer-events-none font-normal normal-case absolute top-full left-0 mt-2 w-max opacity-0 transition-opacity duration-150 group-hover/epub:opacity-100 z-[100] bg-zinc-900 text-zinc-100 text-xs rounded-lg py-1.5 px-2.5 shadow-lg text-center whitespace-nowrap">
                           Tải về định dạng sách điện tử EPUB.
-                          <div class="absolute top-full left-5 border-4 border-transparent border-t-zinc-900"></div>
+                          <div class="absolute bottom-full left-5 border-4 border-transparent border-b-zinc-900"></div>
                         </div>
                       </button>
                       <button (click)="exportProjectToDocx(p, $event)" class="group/docx relative px-2 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded text-xs font-semibold transition-colors border border-blue-200 shadow-sm flex items-center gap-1">
                         <span class="material-icons text-[13px]">description</span>DOCX
-                        <div class="pointer-events-none font-normal normal-case absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max opacity-0 transition-opacity duration-150 group-hover/docx:opacity-100 z-[100] bg-zinc-900 text-zinc-100 text-xs rounded-lg py-1.5 px-2.5 shadow-lg text-center whitespace-nowrap">
+                        <div class="pointer-events-none font-normal normal-case absolute top-full left-1/2 -translate-x-1/2 mt-2 w-max opacity-0 transition-opacity duration-150 group-hover/docx:opacity-100 z-[100] bg-zinc-900 text-zinc-100 text-xs rounded-lg py-1.5 px-2.5 shadow-lg text-center whitespace-nowrap">
                           Tải về định dạng Word (DOCX).
-                          <div class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-zinc-900"></div>
+                          <div class="absolute bottom-full left-1/2 -translate-x-1/2 border-4 border-transparent border-b-zinc-900"></div>
                         </div>
                       </button>
                       <button (click)="exportProjectToPdf(p, $event)" class="group/pdf relative px-2 py-1 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded text-xs font-semibold transition-colors border border-rose-200 shadow-sm flex items-center gap-1">
                         <span class="material-icons text-[13px]">picture_as_pdf</span>PDF
-                        <div class="pointer-events-none font-normal normal-case absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max opacity-0 transition-opacity duration-150 group-hover/pdf:opacity-100 z-[100] bg-zinc-900 text-zinc-100 text-xs rounded-lg py-1.5 px-2.5 shadow-lg text-center whitespace-nowrap">
+                        <div class="pointer-events-none font-normal normal-case absolute top-full left-1/2 -translate-x-1/2 mt-2 w-max opacity-0 transition-opacity duration-150 group-hover/pdf:opacity-100 z-[100] bg-zinc-900 text-zinc-100 text-xs rounded-lg py-1.5 px-2.5 shadow-lg text-center whitespace-nowrap">
                           Tải về định dạng PDF.
-                          <div class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-zinc-900"></div>
+                          <div class="absolute bottom-full left-1/2 -translate-x-1/2 border-4 border-transparent border-b-zinc-900"></div>
                         </div>
                       </button>
                       <button (click)="exportProjectToHtml(p, $event)" class="group/html relative px-2 py-1 bg-green-50 hover:bg-green-100 text-green-700 rounded text-xs font-semibold transition-colors border border-green-200 shadow-sm flex items-center gap-1">
                         <span class="material-icons text-[13px]">html</span>HTML
-                        <div class="pointer-events-none font-normal normal-case absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-max opacity-0 transition-opacity duration-150 group-hover/html:opacity-100 z-[100] bg-zinc-900 text-zinc-100 text-xs rounded-lg py-1.5 px-2.5 shadow-lg text-center whitespace-nowrap">
+                        <div class="pointer-events-none font-normal normal-case absolute top-full left-1/2 -translate-x-1/2 mt-2 w-max opacity-0 transition-opacity duration-150 group-hover/html:opacity-100 z-[100] bg-zinc-900 text-zinc-100 text-xs rounded-lg py-1.5 px-2.5 shadow-lg text-center whitespace-nowrap">
                           Tải về định dạng trang web HTML (tối ưu cho khả năng đọc).
-                          <div class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-zinc-900"></div>
+                          <div class="absolute bottom-full left-1/2 -translate-x-1/2 border-4 border-transparent border-b-zinc-900"></div>
                         </div>
                       </button>
                     </div>
@@ -335,7 +343,7 @@ export class ProjectModal implements OnInit, OnDestroy {
     
     this.toast.info('Đang chuẩn bị dữ liệu xuất bản... Xin vui lòng chờ');
     
-    const baseFileName = `SilaProject_${p.name.replace(/\s+/g, '_')}_${p.id}`;
+    const baseFileName = `silaBook_Project_${p.name.replace(/\s+/g, '_')}_${p.id}`;
     let blob: Blob;
     try {
       const result = await this.runProjectWorkerTask('EXPORT_PROJECT', fullProject);
