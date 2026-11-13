@@ -2,7 +2,6 @@ import { Component, input, model, signal, computed, effect } from '@angular/core
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
-import * as XLSX from 'xlsx';
 
 @Component({
   selector: 'app-markdown-table-editor',
@@ -235,10 +234,11 @@ export class MarkdownTableEditorComponent {
     }
   }
 
-  exportToExcel() {
+  async exportToExcel() {
     const data = this.tableData();
     if (data.length === 0) return;
 
+    const XLSX = await import('xlsx');
     const ws = XLSX.utils.aoa_to_sheet(data);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, this.exportSheetName());

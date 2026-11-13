@@ -44,9 +44,7 @@ import { ToastService } from '../../../core/toast.service';
 import { getConfiguredMarked, parseMarkdownWithImages } from '../../../core/marked-setup';
 import { ReaderStore } from '../../../core/reader.store';
 import { GeminiClient } from '../../../core/gemini';
-import { OFFLINE_READER_SCRIPT, OFFLINE_READER_STYLES, OFFLINE_READER_TOOLBAR_HTML, PRINT_PDF_STYLES } from '../../../core/html-export.util';
-import { EpubExporter } from '../../../core/epub-export.util';
-import { DocxExporter } from '../../../core/docx-export.util';
+import { OFFLINE_READER_SCRIPT, OFFLINE_READER_STYLES, OFFLINE_READER_TOOLBAR_HTML, PRINT_PDF_STYLES, escapeHtml } from '../../../core/html-export.util';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 @Component({
@@ -1056,6 +1054,7 @@ export class ChapterItemComponent implements OnDestroy {
       const fullTitle = `${this.store.currentProjectName()}_${title}`;
       const chapterImages = this.getChapterImages(processed);
 
+      const { EpubExporter } = await import('../../../core/epub-export.util');
       const blob = await EpubExporter.generateEpub(fullTitle, processed, chapterImages);
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -1085,6 +1084,7 @@ export class ChapterItemComponent implements OnDestroy {
       const fullTitle = `${this.store.currentProjectName()}_${title}`;
       const chapterImages = this.getChapterImages(processed);
 
+      const { DocxExporter } = await import('../../../core/docx-export.util');
       const blob = await DocxExporter.generateDocx(fullTitle, processed, chapterImages);
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -1110,12 +1110,13 @@ export class ChapterItemComponent implements OnDestroy {
       const processed = text.replace(/\[\^([^\]]+)\]/g, `[^${prefix}-$1]`);
       const htmlBody = parseMarkdownWithImages(processed, this.store.images());
       const title = this.chapter().title || `Phần ${this.index() + 1}`;
+      const safeTitle = escapeHtml(`${this.store.currentProjectName()}_${title}_silaBook_vi`);
       const htmlDoc = `<!DOCTYPE html>
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>${this.store.currentProjectName()}_${title}_silaBook_vi</title>
+<title>${safeTitle}</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 ${PRINT_PDF_STYLES}
@@ -1160,14 +1161,17 @@ ${htmlBody}
       const processed = text.replace(/\[\^([^\]]+)\]/g, `[^${prefix}-$1]`);
       const htmlBody = parseMarkdownWithImages(processed, this.store.images());
       const title = this.chapter().title || `Phần ${this.index() + 1}`;
+      const safeProjectId = escapeHtml(this.store.currentProjectId());
+      const safeChapterId = escapeHtml(this.chapter().id);
+      const safeTitle = escapeHtml(`${this.store.currentProjectName()}_${title}_silaBook_vi`);
       const htmlDoc = `<!DOCTYPE html>
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="x-sila-project-id" content="${this.store.currentProjectId()}">
-<meta name="x-sila-chapter-id" content="${this.chapter().id}">
-<title>${this.store.currentProjectName()}_${title}_silaBook_vi</title>
+<meta name="x-sila-project-id" content="${safeProjectId}">
+<meta name="x-sila-chapter-id" content="${safeChapterId}">
+<title>${safeTitle}</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Lexend:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 ${OFFLINE_READER_STYLES}

@@ -3,9 +3,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { DbService, Project, ProjectMeta, SplitSettings } from './db';
 import { ToastService } from './toast.service';
 import { parseMarkdownWithImages } from './marked-setup';
-import { EpubExporter } from './epub-export.util';
-import { DocxExporter } from './docx-export.util';
-import { OFFLINE_READER_SCRIPT, OFFLINE_READER_STYLES, OFFLINE_READER_TOOLBAR_HTML, PRINT_PDF_STYLES } from './html-export.util';
+import { OFFLINE_READER_SCRIPT, OFFLINE_READER_STYLES, OFFLINE_READER_TOOLBAR_HTML, PRINT_PDF_STYLES, escapeHtml } from './html-export.util';
 
 export interface TranslationVersion {
   versionNumber: number;
@@ -538,12 +536,13 @@ export class BookStore {
 
     try {
       const htmlBody = parseMarkdownWithImages(combinedMarkdown, imagesInfo);
+      const safeTitle = escapeHtml(`${name}_silaBook_vi`);
       const htmlDoc = `<!DOCTYPE html>
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>${name}_silaBook_vi</title>
+<title>${safeTitle}</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 ${PRINT_PDF_STYLES}
@@ -600,14 +599,17 @@ ${htmlBody}
 
     try {
       const htmlBody = parseMarkdownWithImages(combinedMarkdown, imagesInfo);
+      const projectId = project ? project.id : this.currentProjectId();
+      const safeProjectId = escapeHtml(projectId);
+      const safeTitle = escapeHtml(`${name}_silaBook_vi`);
       const htmlDoc = `<!DOCTYPE html>
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="x-sila-project-id" content="${this.currentProjectId()}">
+<meta name="x-sila-project-id" content="${safeProjectId}">
 <meta name="x-sila-chapter-id" content="full">
-<title>${name}_silaBook_vi</title>
+<title>${safeTitle}</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Lexend:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 ${OFFLINE_READER_STYLES}
@@ -662,6 +664,7 @@ ${OFFLINE_READER_SCRIPT}
       // EPUB images
       const imagesInfo = project ? project.images : this.images();
 
+      const { EpubExporter } = await import('./epub-export.util');
       const blob = await EpubExporter.generateEpub(name || 'Untitled', combinedMarkdown, imagesInfo);
       
       const url = URL.createObjectURL(blob);
@@ -703,6 +706,7 @@ ${OFFLINE_READER_SCRIPT}
       // DOCX images
       const imagesInfo = project ? project.images : this.images();
 
+      const { DocxExporter } = await import('./docx-export.util');
       const blob = await DocxExporter.generateDocx(name || 'Untitled', combinedMarkdown, imagesInfo);
       
       const url = URL.createObjectURL(blob);

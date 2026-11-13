@@ -228,9 +228,13 @@ export class TranslatorConfigComponent {
     let wordCount = this.countWords(newText);
      
     if (wordCount > 100) {
-        const words = newText.trim().split(/\s+/);
-        newText = words.slice(0, 100).join(' ');
-        wordCount = 100;
+      const matches = Array.from(newText.matchAll(/\S+/g));
+      if (matches.length > 100) {
+        const lastAllowedWord = matches[99];
+        const cutIndex = (lastAllowedWord.index ?? 0) + lastAllowedWord[0].length;
+        newText = newText.slice(0, cutIndex);
+      }
+      wordCount = 100;
     }
 
     this.instructionText.set(newText);
