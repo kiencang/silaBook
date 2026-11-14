@@ -584,7 +584,7 @@ export class GeminiClient {
               },
               recommendedHeading: {
                 type: Type.STRING,
-                enum: ['h2', 'h3', '']
+                enum: ['h2', 'h3', 'none']
               },
               reason: { type: Type.STRING }
             },

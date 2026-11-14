@@ -11,7 +11,7 @@ Cấu trúc JSON bắt buộc:
   "splitOptions": {
     "recommendedOption": "keyword" | "heading" | "standalone",
     "recommendedKeywords": ["string", "string"], 
-    "recommendedHeading": "h2" | "h3" | "",
+    "recommendedHeading": "h2" | "h3" | "none",
     "reason": "string"
   }
 }
@@ -22,12 +22,12 @@ Giải thích các trường:
 <analysis_guidelines>
 <split>
 QUY TẮC PHÂN TÍCH CÁCH PHÂN CHIA SÁCH (splitOptions):
-- Phương thức `keyword` (Tùy chọn 1: Từ khóa): Dùng khi sách chia rõ ràng bằng các từ dễ nhận diện ở đầu dòng như "Chapter", "Part", "Section", "Episode". `recommendedKeywords` là mảng các từ này (để `recommendedHeading` là chuỗi rỗng `""`).
+- Phương thức `keyword` (Tùy chọn 1: Từ khóa): Dùng khi sách chia rõ ràng bằng các từ dễ nhận diện ở đầu dòng như "Chapter", "Part", "Section", "Episode". `recommendedKeywords` là mảng các từ này (để `recommendedHeading` là `"none"`).
 - Phương thức `heading` (Tùy chọn 2: Thẻ Heading Markdown): Dùng khi các phần/chương được phân định bởi định dạng Heading Markdown nhất quán.
     - LƯU Ý QUAN TRỌNG: Hệ thống phải quét CẢ 2 ĐỊNH DẠNG HEADING của Markdown:
         - Dạng ATX (dùng dấu thăng): Ví dụ `## ` (H2) hoặc `### ` (H3).
         - Dạng Setext (dùng gạch dưới): Dòng tiêu đề nằm trên, ngay bên dưới là một dòng chứa các dấu gạch ngang (ví dụ `---` cho H2).
     - Nếu chọn `heading`, trường `recommendedHeading` BẮT BUỘC chỉ trả về chính xác chuỗi `"h2"` (cho H2 dạng ATX `##` hoặc Setext gạch dưới) hoặc `"h3"` (cho H3 dạng ATX `###`). Nếu tìm thấy đồng thời cả H2 và H3, ưu tiên chọn `"h2"` hơn.
-- Phương thức `standalone` (Tùy chọn 3: Tự động): Dùng khi sách không có cấu trúc chuẩn nào, các phần không thể tách bằng thẻ heading hay từ khóa rõ ràng (để `recommendedHeading` là `""`).
+- Phương thức `standalone` (Tùy chọn 3: Tự động): Dùng khi sách không có cấu trúc chuẩn nào, các phần không thể tách bằng thẻ heading hay từ khóa rõ ràng (để `recommendedHeading` là `"none"`).
 </split>
 </analysis_guidelines>
