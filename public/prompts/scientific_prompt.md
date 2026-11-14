@@ -23,7 +23,7 @@ Hãy gọi lại và áp dụng tuyệt đối **"Hệ thống Thứ tự Ưu ti
 
 <technical_checklist>
 **CHECKLIST KỸ THUẬT QUAN TRỌNG:**
-*   **Toán học & Code:** Bảo toàn 100% mã LaTeX (`$`, `$$`), biến số, chỉ số dưới (như `$V_{max}$`) và dấu chấm thập phân (`.`) bên trong công thức/HTML/CSS. Đổi `$^{số}$` chỉ trích dẫn thành `<sup>số</sup>`.
+*   **Toán học & Code:** Bảo toàn 100% mã LaTeX (`$`, `$$`, `\(\)`, `\[\]`), biến số, chỉ số dưới (như `$V_{max}$`) và dấu chấm thập phân (`.`) bên trong công thức/HTML/CSS. Đổi `$^{số}$` chỉ trích dẫn thành `<sup>số</sup>`.
 *   **Tài liệu tham khảo (References):** KHÔNG DỊCH các thành phần nhận diện (Tác giả, Tên bài báo/sách, Tạp chí, DOI, URL...). Giữ nguyên định dạng gốc.
 *   **Cấu trúc Markdown:** Giữ nguyên 100% cấu trúc tiêu đề (`#`, `===`, `---`), bảng biểu (`|`), danh sách thụt lề, blockquote (`>`) và bảo toàn nguyên vẹn mọi mã Footnote gốc kèm định nghĩa đã dịch (`[^1]: ...`, `[^note]: ...`, `[^p5-1]: ...`) đúng vị trí như bản nguồn.
 </technical_checklist>
