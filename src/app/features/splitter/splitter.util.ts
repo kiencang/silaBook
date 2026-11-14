@@ -45,6 +45,7 @@ export function smartHardSplit(text: string, maxWords: number): string[] {
   const targetPos = Math.floor(text.length * 0.5);
 
   let splitPos = -1;
+  const startsWithFootnoteDef = (slice: string) => /^[ \t]*\[\^[^\]]+\]:/.test(slice);
 
   // Pri 1: \n\n
   const doubleNewlineRegex = /\n[ \t]*\n/g;
@@ -53,6 +54,9 @@ export function smartHardSplit(text: string, maxWords: number): string[] {
 
   while ((match = doubleNewlineRegex.exec(text)) !== null) {
       if (match.index >= minPos && match.index <= maxPos) {
+          if (startsWithFootnoteDef(text.slice(match.index + match[0].length))) {
+              continue;
+          }
           const dist = Math.abs(match.index - targetPos);
           if (dist < bestDist) {
               bestDist = dist;
@@ -67,6 +71,9 @@ export function smartHardSplit(text: string, maxWords: number): string[] {
     bestDist = Infinity;
     while ((match = singleNewlineRegex.exec(text)) !== null) {
         if (match.index >= minPos && match.index <= maxPos) {
+            if (startsWithFootnoteDef(text.slice(match.index + match[0].length))) {
+                continue;
+            }
             const dist = Math.abs(match.index - targetPos);
             if (dist < bestDist) {
                 bestDist = dist;

@@ -5,10 +5,14 @@ Tất cả những thay đổi đáng chú ý của dự án silaBook sẽ đư�
 Định dạng dựa trên [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 và dự án này tuân thủ [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.0.144]- 2026-11-15
+### Fixed
+- Điều chỉnh để khả năng xử lý footnote được tốt hơn;
+
 ## [v1.0.143]- 2026-11-14
 ### Fixed
 - Cập nhật SI/Prompt chuyển PDF sang markdown;
-- Điều chỉnh nhỏ một số SI để chính xác mã raw JSON thay vì đóng trong ```JSON ``` markdown;
+- Điều chỉnh nhỏ một số SI để chính xác mã raw JSON thay vì đóng trong ```JSON ```
 - Sửa ` "recommendedOption": "keyword" | "regex" | "standalone",` thành ` "recommendedOption": "keyword" | "heading" | "standalone",` để AI đỡ hiểu nhầm;
 
 ## [v1.0.142]- 2026-11-14

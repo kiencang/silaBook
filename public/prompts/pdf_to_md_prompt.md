@@ -13,7 +13,7 @@ Hãy chuyển đổi toàn bộ nội dung từ tệp PDF đính kèm sang đị
 4. **Công thức Toán/Khoa học & Chỉ số trích dẫn:**
    - Mọi công thức, biến số, số mũ toán/hóa học (nếu có) phải dùng chuẩn LaTeX bất đối xứng: `\(...\)` cho nội dòng (inline) và `\[...\]` trên dòng riêng biệt cho công thức khối (block). **TUYỆT ĐỐI KHÔNG dùng dấu `$` hay `$$`**.
    - Các chỉ số trên dùng để trích dẫn nguồn tài liệu (không phải số mũ toán học) phải chuyển thành `<sup>12</sup>`.
-5. **Chú thích chân trang (Footnotes):** Đã gom nội dung giải nghĩa `[^fn_1]: ...` đặt ở **ngay sau đoạn văn chứa chú thích** (hoặc ngay cuối chương hiện tại, trước thẻ `##` của chương kế tiếp) để không làm đứt câu giữa trang chưa?
+5. **Chú thích chân trang (Footnotes):** Đã đặt mã chú thích theo đúng công thức `[^pX-Y]` (`X` là số trang, `Y` là số thứ tự chú thích trong trang như `[^p5-1]`, `[^p5-2]`) và đặt dòng giải nghĩa `[^pX-Y]: ...` trên một dòng riêng **ngay sau đoạn văn chứa chú thích đó** (cách đoạn văn 1 dòng trống) để không làm đứt câu giữa trang chưa?
 </execution_checklist>
 
 <mandatory_output_rules>

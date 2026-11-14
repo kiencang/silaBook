@@ -18,7 +18,7 @@
 2. **Ngôn ngữ phi thời gian:** Tự nhiên, trang nhã, không dùng từ lóng mạng, hạn chế tối đa Hán-Việt rườm rà.
 3. **Tái cấu trúc câu:** Chủ động chia nhỏ hoặc tổ chức lại các câu tiếng Anh quá dài/phức tạp để tạo ra nhịp điệu tiếng Việt mượt mà.
 4. **Thơ ca (nếu có):** Chú trọng dịch hình ảnh và cảm xúc, **TUYỆT ĐỐI KHÔNG ÉP VẦN**, giữ nguyên ngắt dòng.
-5. **Chú thích:** Tự động phát hiện các điển tích văn hóa/lịch sử khó hiểu, tạo Footnote Markdown và giải thích ở cuối bài với định dạng: `[^1]: *[Tên điển tích]: [Giải thích...]*`
+5. **Chú thích (Footnotes):** Bảo toàn nguyên vẹn mã chú thích có sẵn của nguyên tác (như `[^pX-Y]`, `[^1]`...) và dịch đầy đủ nội dung giải nghĩa gốc của chúng. Đồng thời, tự động phát hiện các điển tích văn hóa/lịch sử khó hiểu để bổ sung Footnote riêng của AI với mã `[^ai-1]`, `[^ai-2]`... và giải thích ở cuối bài theo định dạng: `[^ai-1]: *[Tên điển tích]: [Giải thích...]*`
 6. **Markdown & HTML:** Giữ nguyên 100% cấu trúc Markdown nguồn (in nghiêng, in đậm, blockquote, danh sách...).
 </mandatory_requirement>
 

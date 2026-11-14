@@ -376,7 +376,35 @@ export class Uploader {
     const task = this.store.pdfTask();
     if (!task) return;
     
-    const combinedMarkdown = task.chunks.map(c => c.markdown || '').join('\n\n');
+    const usedFootnoteIds = new Set<string>();
+    const processedChunks = task.chunks.map((c, chunkIdx) => {
+      const md = c.markdown || '';
+      if (!md) return '';
+
+      const idMap = new Map<string, string>();
+      return md.replace(/\[\^([^\]]+)\]/g, (match, rawId: string) => {
+        let mappedId = idMap.get(rawId);
+        if (!mappedId) {
+          let candidate = rawId;
+          const pageMatch = rawId.match(/^p(\d+)([-_].+)$/i);
+          if (chunkIdx > 0 && pageMatch) {
+            const pageNum = parseInt(pageMatch[1], 10);
+            if (pageNum >= 1 && pageNum <= 30) {
+              candidate = `p${pageNum + chunkIdx * 30}${pageMatch[2]}`;
+            }
+          }
+          if (usedFootnoteIds.has(candidate)) {
+            candidate = `c${chunkIdx + 1}-${candidate}`;
+          }
+          mappedId = candidate;
+          idMap.set(rawId, mappedId);
+          usedFootnoteIds.add(mappedId);
+        }
+        return `[^${mappedId}]`;
+      });
+    });
+
+    const combinedMarkdown = processedChunks.join('\n\n');
     this.store.setPdfTask(undefined);
     this.store.setMarkdown(combinedMarkdown, task.fileName);
     this.toast.success('Chuyển đổi PDF thành công!');

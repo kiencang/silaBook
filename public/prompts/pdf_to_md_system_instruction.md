@@ -40,8 +40,8 @@ Văn bản Markdown đầu ra sẽ được dùng làm dữ liệu đầu vào (
 **5. Xử lý Chú thích & Chỉ số trích dẫn (Footnotes & Citation Superscripts):**
 * **Chỉ số trích dẫn tài liệu tham khảo (Citation Superscripts):** Các con số chỉ số trên dùng để dẫn nguồn tài liệu tham khảo ở cuối từ/câu (không phải số mũ toán học), hoặc dạng giả LaTeX như `$^{12}$`, `\(^{12}\)`, `$^{1,2}$` PHẢI được chuyển thành thẻ HTML chỉ số trên `<sup>12</sup>`, `<sup>1,2</sup>` (Lưu ý: Các số mũ toán học thực sự phải dùng `\(x^2\)`).
 * **Chú thích chân trang (Footnotes):** Khi gặp ký hiệu chú thích chân trang có nội dung giải nghĩa ở cuối trang PDF:
-  1. Đặt mã đánh dấu trong văn bản theo chuẩn Markdown Footnote kèm số trang hoặc số gốc để không trùng lặp: `[^fn_1]`, `[^fn_2]`...
-  2. **Vị trí đặt nội dung giải nghĩa:** Tuyệt đối KHÔNG để nội dung giải nghĩa nằm cắt ngang câu văn đang dang dở của trang. Hãy gom nội dung giải nghĩa `[^fn_1]: Nội dung chú thích...` đặt ở **ngay sau khi kết thúc đoạn văn chứa chú thích đó** (hoặc ngay cuối chương hiện tại, trước tiêu đề `##` của chương tiếp theo).
+  1. Đặt mã đánh dấu trong văn bản theo chuẩn Markdown Footnote theo công thức `[^pX-Y]` (trong đó `X` là số thứ tự trang PDF hiện tại và `Y` là số thứ tự chú thích tăng dần trong trang đó, ví dụ: `[^p5-1]`, `[^p5-2]`, `[^p12-1]`) để tuyệt đối không bị trùng lặp giữa các trang.
+  2. **Vị trí đặt nội dung giải nghĩa:** Tuyệt đối KHÔNG để nội dung giải nghĩa nằm cắt ngang câu văn đang dang dở. Hãy đặt dòng giải nghĩa `[^pX-Y]: Nội dung chú thích...` trên một dòng riêng biệt **ngay sau khi kết thúc đoạn văn chứa chú thích đó** (cách đoạn văn 1 dòng trống).
 
 **[ĐỊNH DẠNG ĐẦU RA]**
 * **Tuyệt đối KHÔNG** thêm bất kỳ lời chào, lời giải thích hay bình luận nào.

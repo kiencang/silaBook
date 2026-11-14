@@ -53,6 +53,21 @@ describe('splitter.util', () => {
       expect(chunks[0]).toBe(s1);
       expect(chunks[1]).toBe(s2);
     });
+
+    it('never splits between a paragraph and its following footnote definitions', () => {
+      const p1 = Array.from({ length: 14 }, (_, i) => `intro${i}`).join(' ') + '[^1][^p5-1].';
+      const fn1 = '[^1]: First note definition.';
+      const fn2 = '[^p5-1]: Second note definition.';
+      const p2 = Array.from({ length: 16 }, (_, i) => `outro${i}`).join(' ');
+      const combined = `${p1}\n\n${fn1}\n\n${fn2}\n\n${p2}`;
+
+      const chunks = smartHardSplit(combined, 25);
+      expect(chunks.length).toBe(2);
+      expect(chunks[0]).toContain('[^1][^p5-1].');
+      expect(chunks[0]).toContain(fn1);
+      expect(chunks[0]).toContain(fn2);
+      expect(chunks[1]).toBe(p2);
+    });
   });
 
   describe('generatePreview & Project Gutenberg handling', () => {
