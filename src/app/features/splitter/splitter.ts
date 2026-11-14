@@ -293,12 +293,10 @@ export class Splitter {
             this.applyKeywordMode();
             this.toast.success(`AI phân tích: Theo Từ khóa. Lý do: ${data.splitOptions.reason || 'Sách có cấu trúc từ khóa rõ ràng.'}`);
           }
-        } else if (option === 'regex' && data.splitOptions.recommendedRegex) {
-          const rx = data.splitOptions.recommendedRegex;
-          const rxLower = String(rx).toLowerCase();
-          if (rxLower.includes('h2') || (rx.includes('##') && !rx.includes('###'))) {
-            this.draftHeadingLevel.set('h2');
-          } else if (rxLower.includes('h3') || rx.includes('###')) {
+        } else if (option === 'heading' || option === 'regex') {
+          const headingVal = data.splitOptions.recommendedHeading || data.splitOptions.recommendedRegex || 'h2';
+          const rxLower = String(headingVal).toLowerCase();
+          if (rxLower.includes('h3') || rxLower.includes('###')) {
             this.draftHeadingLevel.set('h3');
           } else {
             this.draftHeadingLevel.set('h2');

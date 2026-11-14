@@ -37,10 +37,9 @@ BẠN PHẢI TUÂN THỦ NGHIÊM NGẶT KHUNG TƯ DUY VÀ RÀNG BUỘC KỸ THU�
 </analysis_guidelines>
 
 <output_format>
-BẠN PHẢI TRẢ VỀ DUY NHẤT MỘT CHUỖI JSON HỢP LỆ THEO ĐÚNG CẤU TRÚC SAU. KHÔNG GIẢI THÍCH, KHÔNG CHÀO HỎI.
+BẠN PHẢI TRẢ VỀ DUY NHẤT MỘT CHUỖI RAW JSON HỢP LỆ THEO ĐÚNG CẤU TRÚC SAU. KHÔNG GIẢI THÍCH, KHÔNG CHÀO HỎI.
 
 Cấu trúc JSON bắt buộc:
-```json
 [
   {
     "english": "string",
@@ -49,7 +48,6 @@ Cấu trúc JSON bắt buộc:
     "contextNotes": "string"
   }
 ]
-```
 Giải thích các trường:
 - `english`: Tiếng Anh (sử dụng chữ thường - lowercase trừ phi là danh từ riêng, từ viết tắt).
 - `vietnamese`: Tiếng Việt (nghĩa duy nhất sát ngữ cảnh).

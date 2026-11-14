@@ -19,10 +19,9 @@ Bảng này sẽ làm kim chỉ nam để đảm bảo tính nhất quán tuyệ
 </analysis_guidelines>
 
 <output_format>
-BẠN PHẢI TRẢ VỀ DUY NHẤT MỘT CHUỖI JSON HỢP LỆ THEO ĐÚNG CẤU TRÚC SAU. KHÔNG GIẢI THÍCH, KHÔNG CHÀO HỎI.
+BẠN PHẢI TRẢ VỀ DUY NHẤT MỘT CHUỖI RAW JSON HỢP LỆ THEO ĐÚNG CẤU TRÚC SAU. KHÔNG GIẢI THÍCH, KHÔNG CHÀO HỎI.
 
 Cấu trúc JSON bắt buộc:
-```json
 [
   {
     "originalName": "string",
@@ -36,7 +35,6 @@ Cấu trúc JSON bắt buộc:
     "notes": "string"
   }
 ]
-```
 Giải thích các trường:
 - originalName: Tên tiếng Anh gốc của nhân vật.
 - gender: Giới tính của nhân vật. Chỉ chọn một trong các giá trị: Male (Nam), Female (Nữ), Non-binary (Phi giới tính / Đa dạng giới), hoặc Unknown (Chưa rõ / Ẩn danh).

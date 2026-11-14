@@ -146,16 +146,14 @@ export class GeminiClient {
       model: model,
       config: configArgs,
       contents: [
-        { text: textPrompt },
-        { inlineData: { data: base64Data, mimeType: 'application/pdf' } }
+        { inlineData: { data: base64Data, mimeType: 'application/pdf' } },
+        { text: textPrompt }
       ]
     });
     
-    let result = response.text || '';
-    if (result.startsWith('```markdown')) {
-      result = result.replace(/^```markdown\n/, '').replace(/\n```$/, '');
-    } else if (result.startsWith('```')) {
-      result = result.replace(/^```\n/, '').replace(/\n```$/, '');
+    let result = (response.text || '').trim();
+    if (/^```(?:markdown|md)?[ \t]*\r?\n/i.test(result) && /\r?\n```[ \t]*$/.test(result)) {
+      result = result.replace(/^```(?:markdown|md)?[ \t]*\r?\n/i, '').replace(/\r?\n```[ \t]*$/, '');
     }
     
     return result;
@@ -576,15 +574,21 @@ export class GeminiClient {
           splitOptions: {
             type: Type.OBJECT,
             properties: {
-              recommendedOption: { type: Type.STRING },
+              recommendedOption: {
+                type: Type.STRING,
+                enum: ['keyword', 'heading', 'standalone']
+              },
               recommendedKeywords: {
                 type: Type.ARRAY,
                 items: { type: Type.STRING }
               },
-              recommendedRegex: { type: Type.STRING },
+              recommendedHeading: {
+                type: Type.STRING,
+                enum: ['h2', 'h3', '']
+              },
               reason: { type: Type.STRING }
             },
-            required: ['recommendedOption', 'recommendedKeywords', 'recommendedRegex', 'reason']
+            required: ['recommendedOption', 'recommendedKeywords', 'recommendedHeading', 'reason']
           }
         },
         required: ['splitOptions']

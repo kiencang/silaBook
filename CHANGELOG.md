@@ -5,6 +5,12 @@ Tất cả những thay đổi đáng chú ý của dự án silaBook sẽ đư�
 Định dạng dựa trên [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 và dự án này tuân thủ [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.0.143]- 2026-11-14
+### Fixed
+- Cập nhật SI/Prompt chuyển PDF sang markdown;
+- Điều chỉnh nhỏ một số SI để chính xác mã raw JSON thay vì đóng trong ```JSON ```
+- Sửa ` "recommendedOption": "keyword" | "regex" | "standalone",` thành ` "recommendedOption": "keyword" | "heading" | "standalone",` để AI đỡ hiểu nhầm;
+
 ## [v1.0.142]- 2026-11-14
 ### Fixed
 - Nâng cấp bộ xuất bản EPUB, có chương mục, và chia sách ra thành các file XHTML để tránh dồn hết vào một file duy nhất. Ngoài ra là đồng bộ tên tác giả cho file EPUB;
