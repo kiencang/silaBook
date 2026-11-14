@@ -373,34 +373,194 @@ export class ProjectModal implements OnInit, OnDestroy {
     this.toast.success(this.toast.Messages.PROJECT_BACKUP_SUCCESS);
   }
 
+  private decompressZipEntrySafely(jsonEntry: unknown, maxBytes: number): Promise<string> {
+    const streamable = jsonEntry as {
+      _data?: { uncompressedSize?: number };
+      internalStream?: (type: 'uint8array') => {
+        on(event: 'data', cb: (chunk: Uint8Array) => void): unknown;
+        on(event: 'end', cb: () => void): unknown;
+        on(event: 'error', cb: (err: Error) => void): unknown;
+        pause(): void;
+        resume(): void;
+      };
+      async: (type: 'string') => Promise<string>;
+    };
+
+    const declaredSize = streamable._data?.uncompressedSize;
+    if (typeof declaredSize === 'number' && (declaredSize > maxBytes || declaredSize < 0)) {
+      return Promise.reject(new Error('ZIP_SIZE_LIMIT_EXCEEDED'));
+    }
+
+    if (typeof streamable.internalStream !== 'function') {
+      return streamable.async('string');
+    }
+
+    return new Promise<string>((resolve, reject) => {
+      const stream = streamable.internalStream!('uint8array');
+      const chunks: Uint8Array[] = [];
+      let totalBytes = 0;
+      let aborted = false;
+
+      stream.on('data', (chunk: Uint8Array) => {
+        if (aborted) return;
+        totalBytes += chunk.byteLength;
+        if (totalBytes > maxBytes) {
+          aborted = true;
+          stream.pause();
+          reject(new Error('ZIP_SIZE_LIMIT_EXCEEDED'));
+          return;
+        }
+        chunks.push(chunk);
+      });
+
+      stream.on('end', () => {
+        if (aborted) return;
+        try {
+          let merged: Uint8Array;
+          if (chunks.length === 1) {
+            merged = chunks[0];
+          } else {
+            merged = new Uint8Array(totalBytes);
+            let offset = 0;
+            for (const c of chunks) {
+              merged.set(c, offset);
+              offset += c.byteLength;
+            }
+          }
+          const decoded = new TextDecoder('utf-8').decode(merged);
+          resolve(decoded);
+        } catch (err) {
+          reject(err);
+        }
+      });
+
+      stream.on('error', (err: Error) => {
+        if (aborted) return;
+        aborted = true;
+        reject(err);
+      });
+
+      stream.resume();
+    });
+  }
+
+  private isValidImportedProject(proj: unknown): proj is Project {
+    if (!proj || typeof proj !== 'object' || Array.isArray(proj)) {
+      return false;
+    }
+
+    const p = proj as Record<string, unknown>;
+
+    if (typeof p['id'] !== 'string' || p['id'].trim().length === 0) {
+      return false;
+    }
+    if (typeof p['name'] !== 'string' || p['name'].trim().length === 0) {
+      return false;
+    }
+
+    const hasSilaSignature =
+      'phase' in p || 'chapters' in p || 'rawMarkdown' in p || 'config' in p;
+    if (!hasSilaSignature) {
+      return false;
+    }
+
+    if (p['chapters'] !== undefined && p['chapters'] !== null) {
+      if (!Array.isArray(p['chapters'])) {
+        return false;
+      }
+      for (const ch of p['chapters']) {
+        if (!ch || typeof ch !== 'object' || Array.isArray(ch)) {
+          return false;
+        }
+        const chapterObj = ch as Record<string, unknown>;
+        if (
+          typeof chapterObj['title'] !== 'string' ||
+          typeof chapterObj['originalText'] !== 'string'
+        ) {
+          return false;
+        }
+      }
+    }
+
+    if (p['images'] !== undefined && p['images'] !== null) {
+      if (typeof p['images'] !== 'object' || Array.isArray(p['images'])) {
+        return false;
+      }
+      for (const val of Object.values(p['images'] as Record<string, unknown>)) {
+        if (typeof val !== 'string') {
+          return false;
+        }
+      }
+    }
+
+    return true;
+  }
+
   async importProject(event: Event) {
     const input = event.target as HTMLInputElement;
     if (!input.files || input.files.length === 0) return;
     const file = input.files[0];
+
+    const MAX_ZIP_FILE_SIZE = 150 * 1024 * 1024; // 150 MB
+    const MAX_JSON_SIZE = 250 * 1024 * 1024; // 250 MB
+    const MAX_ZIP_ENTRIES = 10;
     
     try {
+      const isZip = file.name.toLowerCase().endsWith('.zip') || file.type === 'application/zip' || file.type === 'application/x-zip-compressed';
+      if (isZip && file.size > MAX_ZIP_FILE_SIZE) {
+        this.toast.error('File dự án (.zip) vượt quá giới hạn dung lượng an toàn (tối đa 150MB)!');
+        return;
+      }
+      if (!isZip && file.size > MAX_JSON_SIZE) {
+        this.toast.error('File dự án (.json) vượt quá giới hạn dung lượng an toàn (tối đa 250MB)!');
+        return;
+      }
+
       this.toast.info('Đang nhập dữ liệu... Xin vui lòng chờ');
       let text = '';
-      const isZip = file.name.toLowerCase().endsWith('.zip') || file.type === 'application/zip' || file.type === 'application/x-zip-compressed';
       if (isZip) {
         const JSZip = (await import('jszip')).default;
         const zip = await JSZip.loadAsync(file);
-        const jsonEntry = Object.values(zip.files).find(
-          entry => !entry.dir && entry.name.toLowerCase().endsWith('.json') && !entry.name.includes('__MACOSX')
-        );
-        if (!jsonEntry) {
+        const entries = Object.values(zip.files);
+        if (entries.length > MAX_ZIP_ENTRIES) {
+          this.toast.error('File nén chứa quá nhiều tập tin bất thường, đã chặn để bảo vệ bộ nhớ!');
+          return;
+        }
+        const realFiles = entries.filter(entry => {
+          if (entry.dir) return false;
+          const normalizedName = entry.name.replace(/\\/g, '/');
+          const baseName = normalizedName.split('/').pop() || '';
+          if (
+            normalizedName.includes('__MACOSX/') ||
+            baseName === '.DS_Store' ||
+            baseName.startsWith('._')
+          ) {
+            return false;
+          }
+          return true;
+        });
+        if (realFiles.length !== 1 || !realFiles[0].name.toLowerCase().endsWith('.json')) {
           this.toast.error(this.toast.Messages.PROJECT_IMPORT_DRAFT_ERROR);
           return;
         }
-        text = await jsonEntry.async('string');
+        const jsonEntry = realFiles[0];
+        try {
+          text = await this.decompressZipEntrySafely(jsonEntry, MAX_JSON_SIZE);
+        } catch (zipErr: unknown) {
+          if (zipErr instanceof Error && zipErr.message === 'ZIP_SIZE_LIMIT_EXCEEDED') {
+            this.toast.error('Dữ liệu giải nén vượt quá giới hạn dung lượng an toàn (tối đa 250MB)!');
+            return;
+          }
+          throw zipErr;
+        }
       } else {
         text = await file.text();
       }
       
       const result = await this.runProjectWorkerTask('IMPORT_PROJECT', { text });
-      const proj = result.project as Project;
+      const proj = result.project;
       
-      if (!proj || !proj.id || !proj.name) {
+      if (!this.isValidImportedProject(proj)) {
         this.toast.error(this.toast.Messages.PROJECT_IMPORT_DRAFT_ERROR);
         return;
       }

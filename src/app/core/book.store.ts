@@ -537,6 +537,7 @@ export class BookStore {
     try {
       const htmlBody = parseMarkdownWithImages(combinedMarkdown, imagesInfo);
       const safeTitle = escapeHtml(`${name}_silaBook_vi`);
+      const printScriptUrl = escapeHtml(new URL('print-trigger.js', document.baseURI).href);
       const htmlDoc = `<!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -552,13 +553,7 @@ ${PRINT_PDF_STYLES}
 <div class="content-wrapper">
 ${htmlBody}
 </div>
-<script>
-  window.onload = () => {
-    setTimeout(() => {
-      window.print();
-    }, 500);
-  };
-</script>
+<script src="${printScriptUrl}"></script>
 </body>
 </html>`;
 

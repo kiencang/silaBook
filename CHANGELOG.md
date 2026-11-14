@@ -5,6 +5,13 @@ Tất cả những thay đổi đáng chú ý của dự án silaBook sẽ đư�
 Định dạng dựa trên [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 và dự án này tuân thủ [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.0.141]- 2026-11-14
+### Fixed
+- Nâng cấp bộ lọc sanitizeHtml sang cơ chế Allowlist;
+- Thiết lập Content Security Policy;
+- Cải tiến an toàn hơn khi Nhập dự án (Import Project / Giới hạn dung lượng / số lượng file trong .zip / cấu trúc json) & Tải sách lên (Upload)
+- Sửa các lỗi chính tả còn sót lại;
+
 ## [v1.0.140]- 2026-11-13
 ### Fixed
 - Tối ưu Bundle Size, Lazy Loading;

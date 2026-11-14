@@ -8,11 +8,54 @@ declare global {
   }
 }
 
-const DANGEROUS_TAGS = [
-  'script', 'iframe', 'object', 'embed', 'applet', 'form',
-  'meta', 'base', 'link', 'style', 'frame', 'frameset',
-  'marquee', 'foreignobject', 'set', 'animate', 'animatetransform', 'animatemotion'
+const DROP_SUBTREE_TAGS = [
+  'script', 'style', 'template', 'noscript', 'textarea', 'title', 'xmp',
+  'noembed', 'noframes', 'iframe', 'frame', 'frameset', 'object', 'embed',
+  'applet', 'svg', 'annotation-xml', 'form', 'input', 'button', 'select',
+  'option', 'optgroup', 'datalist', 'keygen', 'output', 'canvas', 'audio',
+  'video', 'source', 'track', 'map', 'area', 'base', 'link', 'meta', 'head',
+  'marquee', 'foreignobject', 'set', 'animate', 'animatetransform',
+  'animatemotion', 'portal', 'slot', 'shadow'
 ];
+
+const DROP_SUBTREE_SELECTOR = DROP_SUBTREE_TAGS.join(',');
+
+const ALLOWED_HTML_TAGS = new Set([
+  // Document & Structural Block Tags
+  'div', 'span', 'p', 'br', 'hr', 'section', 'article', 'aside',
+  'header', 'footer', 'main', 'nav', 'blockquote', 'pre', 'code',
+  'figure', 'figcaption', 'details', 'summary', 'address', 'center', 'hgroup',
+  // Headings
+  'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+  // Lists & Definition Lists
+  'ul', 'ol', 'li', 'dl', 'dt', 'dd', 'dir', 'menu',
+  // Tables
+  'table', 'caption', 'colgroup', 'col', 'thead', 'tbody', 'tfoot', 'tr', 'th', 'td',
+  // Inline Typography & CJK Ruby Annotations
+  'a', 'abbr', 'acronym', 'b', 'bdi', 'bdo', 'big', 'cite', 'data', 'del',
+  'dfn', 'em', 'font', 'i', 'ins', 'kbd', 'mark', 'q', 'rp', 'rt', 'rtc',
+  'ruby', 's', 'samp', 'small', 'strike', 'strong', 'sub', 'sup', 'time',
+  'tt', 'u', 'var', 'wbr',
+  // Media
+  'img', 'picture'
+]);
+
+const ALLOWED_MATHML_TAGS = new Set([
+  'math', 'semantics', 'annotation', 'mrow', 'mi', 'mn', 'mo', 'mtext',
+  'mspace', 'ms', 'mglyph', 'mfrac', 'msqrt', 'mroot', 'mstyle', 'merror',
+  'mpadded', 'mphantom', 'mfenced', 'menclose', 'msub', 'msup', 'msubsup',
+  'munder', 'mover', 'munderover', 'mmultiscripts', 'mprescripts', 'none',
+  'mtable', 'mlabeledtr', 'mtr', 'mtd', 'maligngroup', 'malignmark', 'maction'
+]);
+
+export function escapeHtmlAttr(val: string): string {
+  return val
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
 
 export const BLOCK_MATH_DOLLAR = /^\s*\$\$([\s\S]+?)\$\$\s*(?:\n|$)/;
 export const BLOCK_MATH_BRACKET = /^\s*\\\[([\s\S]+?)\\\]\s*(?:\n|$)/;
@@ -163,32 +206,57 @@ function isSafeImgSrcPrefix(normalizedPrefix: string): boolean {
 }
 
 export function sanitizeHtml(html: string): string {
-  if (!html || typeof DOMParser === 'undefined') return html || '';
+  if (!html || typeof DOMParser === 'undefined') return '';
 
   const parser = new DOMParser();
   const doc = parser.parseFromString(html, 'text/html');
 
-  // 1. Remove dangerous executable elements
-  const dangerousSelector = DANGEROUS_TAGS.join(',');
-  doc.querySelectorAll(dangerousSelector).forEach(el => el.remove());
+  // 1. Remove dangerous executable, raw-text, and mXSS-vector elements along with their subtrees
+  doc.querySelectorAll(DROP_SUBTREE_SELECTOR).forEach(el => el.remove());
 
-  // 2. Inspect all remaining elements and strip dangerous attributes
-  const allElements = doc.body.querySelectorAll('*');
-  allElements.forEach(el => {
+  // 2. Enforce strict HTML & MathML tag allowlist and sanitize attributes
+  const allElements = Array.from(doc.body.querySelectorAll('*'));
+  for (const el of allElements) {
+    if (!el.isConnected) continue;
+
     const tagName = el.tagName.toLowerCase();
+    const inMath = el.closest('math') !== null;
+
+    if (inMath) {
+      if (!ALLOWED_MATHML_TAGS.has(tagName)) {
+        el.remove();
+        continue;
+      }
+    } else {
+      if (tagName !== 'math' && !ALLOWED_HTML_TAGS.has(tagName)) {
+        el.remove();
+        continue;
+      }
+    }
+
     const attrs = Array.from(el.attributes);
     for (const attr of attrs) {
       const name = attr.name.toLowerCase();
       const val = attr.value;
 
-      // Remove all event handlers (onerror, onload, onclick, etc.) and srcdoc
-      if (name.startsWith('on') || name === 'srcdoc') {
+      // Remove all event handlers (onerror, onload, onclick, etc.) and dangerous attributes
+      if (
+        name.startsWith('on') ||
+        name === 'srcdoc' ||
+        name === 'xlink:href' ||
+        name === 'action' ||
+        name === 'formaction'
+      ) {
         el.removeAttribute(attr.name);
         continue;
       }
 
-      // Strictly allow data:image/(png|jpeg|jpg|gif|webp|svg+xml) ONLY on <img src="...">
-      if (name === 'src' && tagName === 'img') {
+      // Only <img> is allowed to carry a src attribute; strictly allow safe URLs or whitelisted data:image/*
+      if (name === 'src') {
+        if (tagName !== 'img') {
+          el.removeAttribute(attr.name);
+          continue;
+        }
         const normalizedPrefix = getNormalizedSchemePrefix(val);
         if (!isSafeImgSrcPrefix(normalizedPrefix)) {
           el.removeAttribute(attr.name);
@@ -196,15 +264,13 @@ export function sanitizeHtml(html: string): string {
         continue;
       }
 
-      // Block javascript:, vbscript:, and ALL data: schemes on every other tag/attribute
+      // Block javascript:, vbscript:, and ALL data: schemes on every other URL-bearing attribute
       if (
         name === 'href' ||
-        name === 'xlink:href' ||
-        name === 'action' ||
-        name === 'formaction' ||
-        name === 'src' ||
         name === 'data' ||
-        name === 'poster'
+        name === 'poster' ||
+        name === 'cite' ||
+        name === 'background'
       ) {
         const normalizedPrefix = getNormalizedSchemePrefix(val);
         if (
@@ -217,9 +283,9 @@ export function sanitizeHtml(html: string): string {
         }
       }
 
-      // Sanitize inline style against legacy expression() or javascript: URLs
+      // Sanitize inline style against legacy expression(), URL schemes, or @import
       if (name === 'style') {
-        if (/expression\s*\(|javascript\s*:|vbscript\s*:|-moz-binding/i.test(val)) {
+        if (/expression\s*\(|javascript\s*:|vbscript\s*:|data\s*:|-moz-binding|@import|behavior\s*:/i.test(val)) {
           el.removeAttribute(attr.name);
         }
       }
@@ -238,7 +304,7 @@ export function sanitizeHtml(html: string): string {
         }
       }
     }
-  });
+  }
 
   return doc.body.innerHTML;
 }
@@ -365,12 +431,12 @@ export function getConfiguredMarked() {
           } else {
             id = parsedText.toLowerCase().replace(/<[^>]+>/g, '').replace(/[^\w-]+/g, '-');
           }
-          return `<h${token.depth} id="${id}">${parsedText}</h${token.depth}>\n`;
+          return `<h${token.depth} id="${escapeHtmlAttr(id)}">${parsedText}</h${token.depth}>\n`;
         },
         image(token) {
-          let out = `<img src="${token.href}" alt="${token.text}"`;
+          let out = `<img src="${escapeHtmlAttr(token.href || '')}" alt="${escapeHtmlAttr(token.text || '')}"`;
           if (token.title) {
-            out += ` title="${token.title}"`;
+            out += ` title="${escapeHtmlAttr(token.title)}"`;
           }
           out += ' class="max-w-full h-auto rounded-lg" />';
           return out;

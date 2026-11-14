@@ -378,7 +378,7 @@ export class PronounSetup {
       this.store.addPronounVersion(this.draftPronounTable(), model, source);
       this.store.savePronounsConf(true);
       this.isManuallyEdited.set(false);
-      this.toast.success('Đã lưu version mới');
+      this.toast.success('Đã lưu phiên bản mới.');
     }
   }
 

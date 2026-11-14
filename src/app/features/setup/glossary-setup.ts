@@ -416,7 +416,7 @@ export class GlossarySetup {
       this.store.addGlossaryVersion(this.draftTable(), model, source);
       this.store.saveGlossaryConf(true);
       this.isManuallyEdited.set(false);
-      this.toast.success('Đã lưu version mới');
+      this.toast.success('Đã lưu phiên bản mới.');
     }
   }
 

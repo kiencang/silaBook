@@ -126,7 +126,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
                         </div>
                       } @else if (chapter().activeVersionNumber === v.versionNumber) {
                         <div class="pointer-events-none font-normal normal-case absolute top-full left-0 mt-2 w-72 opacity-0 transition-opacity group-hover:opacity-100 z-[100] bg-zinc-900 text-zinc-100 text-xs rounded-lg py-2 px-3 shadow-lg text-left">
-                          Bạn đang đọc phiên bản này, phiên bản nào được bạn chọn sẽ là phiên bản được xuất ra khi bản tải file về, bạn có thể chọn bất cứ phiên bản nào mình muốn.
+                          Bạn đang đọc phiên bản này, phiên bản nào được bạn chọn sẽ là phiên bản được xuất ra khi bạn tải file về, bạn có thể chọn bất cứ phiên bản nào mình muốn.
                           <div class="absolute bottom-full left-4 border-4 border-transparent border-b-zinc-900"></div>
                         </div>
                       }
@@ -1111,6 +1111,7 @@ export class ChapterItemComponent implements OnDestroy {
       const htmlBody = parseMarkdownWithImages(processed, this.store.images());
       const title = this.chapter().title || `Phần ${this.index() + 1}`;
       const safeTitle = escapeHtml(`${this.store.currentProjectName()}_${title}_silaBook_vi`);
+      const printScriptUrl = escapeHtml(new URL('print-trigger.js', document.baseURI).href);
       const htmlDoc = `<!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -1126,13 +1127,7 @@ ${PRINT_PDF_STYLES}
 <div class="content-wrapper">
 ${htmlBody}
 </div>
-<script>
-  window.onload = () => {
-    setTimeout(() => {
-      window.print();
-    }, 500);
-  };
-</script>
+<script src="${printScriptUrl}"></script>
 </body>
 </html>`;
 

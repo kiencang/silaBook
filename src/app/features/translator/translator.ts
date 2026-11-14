@@ -330,7 +330,7 @@ export class Translator {
   async executeTranslateAll(forceAll: boolean) {
     const hasKey = await hasSecureApiKey();
     if (!hasKey) {
-      this.toast.error('Vui lòng thêm GEMINI API KEY CÁ NHÂN (biểu tượng chìa khóa ở góc trái dưới cùng màn hình) trước khi dịch chức năng này.');
+      this.toast.error('Vui lòng thêm GEMINI API KEY CÁ NHÂN (biểu tượng chìa khóa ở góc trái dưới cùng màn hình) trước khi dịch.');
       this.confirmAction.set('none');
       return;
     }

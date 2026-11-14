@@ -11,7 +11,7 @@ export function isQuotaError(e: unknown): boolean {
 export function parseGeminiError(e: unknown): string {
   const msg = (e as Error)?.message || e?.toString() || '';
   if (msg.toLowerCase().includes('quota') || msg.toLowerCase().includes('429')) {
-    return 'Lỗi: Đã vượt quá giới hạn API miễn phí (Quota exceeded). Vui thử lại vào ngày mai hoặc đăng nhập tài khoản khác còn API miễn phí.';
+    return 'Lỗi: Đã vượt quá giới hạn API miễn phí (Quota exceeded). Vui lòng thử lại vào ngày mai hoặc đăng nhập tài khoản khác còn API miễn phí.';
   }
   if (msg.toLowerCase().includes('api key') || msg.toLowerCase().includes('403') || msg.toLowerCase().includes('permission_denied')) {
     return 'Lỗi: Thao tác bị từ chối do API Key không hợp lệ hoặc thiếu quyền hạn (Permission Denied). Đợi một lúc rồi thử lại có thể giải quyết được vấn đề này.';

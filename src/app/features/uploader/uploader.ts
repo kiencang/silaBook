@@ -448,9 +448,10 @@ export class Uploader {
   async processFile(file: File) {
     if (this.store.isConverting()) return;
     
-    const ext = file.name.split('.').pop()?.toLowerCase();
+    const hasExtension = file.name.includes('.');
+    const ext = hasExtension ? file.name.split('.').pop()?.toLowerCase() : undefined;
     
-    // File size validation
+    // File format & size validation
     const LIMITS: Record<string, number> = {
        'txt': 10 * 1024 * 1024,
        'md': 10 * 1024 * 1024,
@@ -460,14 +461,22 @@ export class Uploader {
        'pdf': 50 * 1024 * 1024,
     };
 
-    if (ext && ext in LIMITS) {
-       const limit = LIMITS[ext];
-       if (file.size > limit) {
-         const limitMB = limit / (1024 * 1024);
-         this.toast.error(this.toast.Messages.FILE_TOO_LARGE(limitMB, ext));
+    if (!ext || !(ext in LIMITS)) {
+       this.toast.error(this.toast.Messages.FILE_INVALID_FORMAT);
+       if (this.fileInput()) {
          this.fileInput().nativeElement.value = '';
-         return;
        }
+       return;
+    }
+
+    const limit = LIMITS[ext];
+    if (file.size > limit) {
+       const limitMB = limit / (1024 * 1024);
+       this.toast.error(this.toast.Messages.FILE_TOO_LARGE(limitMB, ext));
+       if (this.fileInput()) {
+         this.fileInput().nativeElement.value = '';
+       }
+       return;
     }
     
     if (ext === 'pdf') {

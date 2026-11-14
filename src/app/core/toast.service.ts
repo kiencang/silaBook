@@ -29,7 +29,7 @@ export class ToastService {
    */
   readonly Messages = {
     // -- Lỗi tải file --
-    FILE_INVALID_FORMAT: 'Định dạng file không được hỗ trợ. Vui lòng tải lên file TXT, HTML hoặc PDF.',
+    FILE_INVALID_FORMAT: 'Định dạng file không được hỗ trợ. Vui lòng tải lên file EPUB, HTML, PDF, TXT hoặc Markdown.',
     FILE_TOO_LARGE: (limitMB: number, ext: string) => `Dung lượng file vượt giới hạn (${limitMB}MB đối với file .${ext}). Vui lòng chọn file nhẹ hơn.`,
     FILE_PROCESS_SUCCESS: 'Xử lý file thành công!',
     FILE_PROCESS_ERROR: (msg: string) => `Lỗi khi xử lý file: ${msg}`,
@@ -54,11 +54,11 @@ export class ToastService {
     DOWNLOAD_MARKDOWN_SUCCESS: 'Đã tải về file Markdown thành công!',
     DOWNLOAD_MARKDOWN_ERROR: 'Có lỗi xảy ra khi tải file Markdown',
 
-    // -- Trích xuất siêu dữ liệu (Thuật ngữ, Xưng hô) --
+    // -- Trích xuất siêu dữ liệu (Thuật ngữ, Đại từ) --
     NO_CONTENT_TO_ANALYZE: 'Không có nội dung sách để phân tích.',
     GLOSSARY_SUCCESS: 'Tạo bảng thuật ngữ thành công!',
     GLOSSARY_ERROR: (err: string) => `Lỗi tạo bảng thuật ngữ: ${err}`,
-    PRONOUNS_SUCCESS: 'Tạo bảng xưng hô thành công!',
+    PRONOUNS_SUCCESS: 'Tạo bảng đại từ thành công!',
     PRONOUNS_ERROR: (err: string) => `Lỗi tạo bảng đại từ: ${err}`,
 
     // -- Dịch thuật --

@@ -50,25 +50,30 @@ addEventListener('message', async ({ data }) => {
       const { text } = payload;
       const proj = JSON.parse(text);
       
-      if (proj && proj.pdfTask && proj.pdfTask.chunks) {
+      if (proj && typeof proj === 'object' && Array.isArray(proj.pdfTask?.chunks)) {
          for (const chunk of proj.pdfTask.chunks) {
-           let base64 = null;
+           if (!chunk || typeof chunk !== 'object') continue;
+           let base64: string | null = null;
            
-           if (chunk.base64Pdf) {
-             base64 = chunk.base64Pdf;
+           if (typeof chunk.base64Pdf === 'string') {
+             base64 = chunk.base64Pdf.split(',')[1] || chunk.base64Pdf;
              delete chunk.base64Pdf;
-           } else if (chunk.pdfData && typeof chunk.pdfData === 'string') {
-             base64 = chunk.pdfData;
+           } else if (typeof chunk.pdfData === 'string') {
+             base64 = chunk.pdfData.split(',')[1] || chunk.pdfData;
            } else if (chunk.pdfData && typeof chunk.pdfData === 'object') {
              // In case someone exports an object format
              chunk.pdfData = new Uint8Array(Object.values(chunk.pdfData));
            }
 
            if (base64) {
-             // Use browser native API fetch to parse base64 extremely fast
-             const response = await fetch(`data:application/pdf;base64,${base64}`);
-             const arrayBuffer = await response.arrayBuffer();
-             chunk.pdfData = new Uint8Array(arrayBuffer);
+             const cleanBase64 = base64.replace(/\s+/g, '');
+             const binaryStr = self.atob(cleanBase64);
+             const len = binaryStr.length;
+             const bytes = new Uint8Array(len);
+             for (let i = 0; i < len; i++) {
+               bytes[i] = binaryStr.charCodeAt(i);
+             }
+             chunk.pdfData = bytes;
            }
          }
       }
