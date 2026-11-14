@@ -9,7 +9,7 @@ và dự án này tuân thủ [Semantic Versioning](https://semver.org/spec/v2.0
 ### Fixed
 - Nâng cấp bộ lọc sanitizeHtml sang cơ chế Allowlist;
 - Thiết lập Content Security Policy;
-- Cải tiến an toàn hơn khi Nhập dự án (Import Project / Giới hạn dung lượng / số lượng file trong .zip / cấu trúc json) & Tải sách lên (Upload)
+- Cải tiến an toàn hơn khi Nhập dự án (Import Project / Giới hạn dung lượng / số lượng file trong .zip / cấu trúc json) & Tải sách lên (Upload);
 - Sửa các lỗi chính tả còn sót lại;
 
 ## [v1.0.140]- 2026-11-13
