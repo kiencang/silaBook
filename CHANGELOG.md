@@ -5,6 +5,13 @@ Tất cả những thay đổi đáng chú ý của dự án silaBook sẽ đư�
 Định dạng dựa trên [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 và dự án này tuân thủ [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.0.142]- 2026-11-14
+### Fixed
+- Nâng cấp bộ xuất bản EPUB, có chương mục, và chia sách ra thành các file XHTML để tránh dồn hết vào một file duy nhất. Ngoài ra là đồng bộ tên tác giả cho file EPUB;
+- SI/Promtp lưu vào RAM cache, thay vì phải gọi liên tục; Vẫn giữ được lợi thế kiểm tra SI/Prompt khi cần, chỉ việc F5;
+- Tái cấu trúc (Refactor) Component Chương dịch (chapter-item.ts) cho gọn gàng lại;
+- Xây dựng bộ Unit Test tự động cho các thuật toán lõi (*.spec.ts);
+
 ## [v1.0.141]- 2026-11-14
 ### Fixed
 - Nâng cấp bộ lọc sanitizeHtml sang cơ chế Allowlist;

@@ -1,6 +1,6 @@
 {
-  "name": "ai-studio-angular-app",
-  "version": "0.0.0",
+  "name": "silaBook",
+  "version": "1.0.142",
   "scripts": {
     "ng": "ng",
     "dev": "cross-env NG_ALLOWED_HOSTS=\"*\" ng serve --port=3000 --host=0.0.0.0 --allowed-hosts --define=\"GEMINI_API_KEY=\\'${GEMINI_API_KEY}\\'\" ${DISABLE_HMR:+--live-reload=false}",

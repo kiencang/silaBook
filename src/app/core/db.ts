@@ -350,15 +350,6 @@ export class DbService {
     }
   }
 
-  async saveProjectAssets(id: string, assets: ProjectAsset): Promise<void> {
-    try {
-      const db = await this.getDB();
-      await db.put('project_assets', { id, ...assets } as unknown as { id: string; data: unknown });
-    } catch (e) {
-      console.error('saveProjectAssets error', e);
-    }
-  }
-
   async saveChapter(projectId: string, chapter: Chapter): Promise<void> {
     try {
       const db = await this.getDB();
@@ -455,6 +446,8 @@ export class DbService {
       await assetStore.put({ id: `${project.id}_glossaryVersions`, data: project.glossaryVersions } as { id: string; data: unknown });
       if (project.images) {
          await assetStore.put({ id: `${project.id}_images`, data: project.images } as { id: string; data: unknown });
+      } else {
+         await assetStore.delete(`${project.id}_images`);
       }
       
       await this._saveTask(tx, project.id, 'pdfTask', project.pdfTask);

@@ -1,10 +1,36 @@
 import { parseMarkdownWithImages } from './marked-setup';
 
+interface EpubSection {
+  id: string;
+  fileName: string;
+  nodes: Node[];
+  xhtmlContent?: string;
+  hasMath?: boolean;
+}
+
+interface TocEntry {
+  title: string;
+  level: number;
+  href: string;
+}
+
+interface TocNode {
+  title: string;
+  level: number;
+  href: string;
+  children: TocNode[];
+}
+
 export class EpubExporter {
   /**
    * Zip compilation of valid, standard EPUB structure package
    */
-  static async generateEpub(title: string, markdownContent: string, images?: Record<string, string>): Promise<Blob> {
+  static async generateEpub(
+    title: string,
+    markdownContent: string,
+    images?: Record<string, string>,
+    author?: string
+  ): Promise<Blob> {
     const JSZip = (await import('jszip')).default;
     const zip = new JSZip();
 
@@ -17,8 +43,8 @@ export class EpubExporter {
   </rootfiles>
 </container>`);
 
-    const allImages: { id: string, key: string, dataUrl: string, fileName: string, mediaType: string }[] = [];
-    
+    const allImages: { id: string; key: string; dataUrl: string; fileName: string; mediaType: string }[] = [];
+
     if (images) {
       Object.keys(images).forEach((key) => {
         const dataUrl = images[key];
@@ -48,23 +74,24 @@ export class EpubExporter {
       });
     }
 
-    allImages.forEach(img => {
-      // dataUrl might look like "data:image/png;base64,iVBORw0KGgo..."
+    allImages.forEach((img) => {
       const base64Clean = img.dataUrl.includes('base64,') ? img.dataUrl.split('base64,')[1] : img.dataUrl.split(',')[1];
       zip.file(`OEBPS/${img.fileName}`, base64Clean || '', { base64: true });
     });
 
     const mappedImages: Record<string, string> = {};
-    allImages.forEach(img => {
-      mappedImages[img.key] = img.fileName; // map to local relative path
+    allImages.forEach((img) => {
+      mappedImages[img.key] = img.fileName;
     });
 
-    let htmlContent = parseMarkdownWithImages(markdownContent, mappedImages);
-
+    const rawHtml = parseMarkdownWithImages(markdownContent, mappedImages);
     const escapedTitle = this.escapeXml(title || 'Untitled');
-    htmlContent = this.toStrictXhtml(htmlContent);
+    const escapedAuthor = this.escapeXml(author && author.trim() ? author.trim() : 'Không rõ');
 
-    zip.file('OEBPS/section1.xhtml', `<?xml version="1.0" encoding="utf-8"?>
+    const { sections, tocEntries } = this.buildSectionsAndToc(rawHtml);
+
+    sections.forEach((sec) => {
+      zip.file(`OEBPS/${sec.fileName}`, `<?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -72,9 +99,10 @@ export class EpubExporter {
   <link rel="stylesheet" type="text/css" href="stylesheet.css"/>
 </head>
 <body>
-  ${htmlContent}
+  ${sec.xhtmlContent || ''}
 </body>
 </html>`);
+    });
 
     zip.file('OEBPS/stylesheet.css', `body {
   font-family: "Liberation Serif", "Times New Roman", serif;
@@ -121,6 +149,9 @@ code {
   border-radius: 3px;
 }`);
 
+    const tocTree = this.buildTocTree(tocEntries, sections[0]?.fileName || 'section1.xhtml');
+    const navOlHtml = this.renderNavOl(tocTree, '    ');
+
     zip.file('OEBPS/nav.xhtml', `<?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops">
@@ -131,16 +162,22 @@ code {
 <body>
   <nav epub:type="toc" id="toc">
     <h2>Mục lục</h2>
-    <ol>
-      <li><a href="section1.xhtml">Nội dung chính</a></li>
-    </ol>
+${navOlHtml}
   </nav>
 </body>
 </html>`);
 
     const uuid = this.generateUuid();
+    let sectionManifestItems = '';
+    let spineItems = '    <itemref idref="nav"/>\n';
+    sections.forEach((sec) => {
+      const mathProp = sec.hasMath ? ' properties="mathml"' : '';
+      sectionManifestItems += `    <item id="${sec.id}" href="${sec.fileName}" media-type="application/xhtml+xml"${mathProp}/>\n`;
+      spineItems += `    <itemref idref="${sec.id}"/>\n`;
+    });
+
     let imageManifestItems = '';
-    allImages.forEach(img => {
+    allImages.forEach((img) => {
       imageManifestItems += `    <item id="${img.id}" href="${img.fileName}" media-type="${img.mediaType}"/>\n`;
     });
 
@@ -149,8 +186,8 @@ code {
 <package xmlns:opf="http://www.idpf.org/2007/opf" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.idpf.org/2007/opf" version="3.0" unique-identifier="id" xml:lang="vi">
   <metadata>
     <dc:identifier id="id">urn:uuid:${uuid}</dc:identifier>
-    <dc:creator id="author_0">PDF-2-EPUB AI Converter</dc:creator>
-    <meta property="file-as" refines="#author_0">PDF-2-EPUB AI Converter</meta>
+    <dc:creator id="author_0">${escapedAuthor}</dc:creator>
+    <meta property="file-as" refines="#author_0">${escapedAuthor}</meta>
     <meta property="role" refines="#author_0" scheme="marc:relators">aut</meta>
     <dc:title>${escapedTitle}</dc:title>
     <dc:language>vi</dc:language>
@@ -160,35 +197,325 @@ code {
     <item id="ncx" href="toc.ncx" media-type="application/x-dtbncx+xml"/>
     <item id="nav" href="nav.xhtml" media-type="application/xhtml+xml" properties="nav"/>
     <item id="style" href="stylesheet.css" media-type="text/css"/>
-    <item id="section1" href="section1.xhtml" media-type="application/xhtml+xml" properties="mathml"/>
-${imageManifestItems}  </manifest>
+${sectionManifestItems}${imageManifestItems}  </manifest>
   <spine toc="ncx">
-    <itemref idref="nav"/>
-    <itemref idref="section1"/>
+${spineItems.trimEnd()}
   </spine>
 </package>`);
+
+    const maxDepth = this.getTocMaxDepth(tocTree);
+    const ncxNavPoints = this.renderNcxNavPoints(tocTree);
 
     zip.file('OEBPS/toc.ncx', `<?xml version="1.0" encoding="UTF-8"?>
 <ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1">
   <head>
     <meta name="dtb:uid" content="urn:uuid:${uuid}"/>
-    <meta name="dtb:depth" content="1"/>
+    <meta name="dtb:depth" content="${maxDepth}"/>
   </head>
   <docTitle><text>${escapedTitle}</text></docTitle>
   <navMap>
-    <navPoint id="navpoint-1" playOrder="1">
-      <navLabel><text>Mục lục</text></navLabel>
-      <content src="nav.xhtml"/>
-    </navPoint>
-    <navPoint id="navpoint-2" playOrder="2">
-      <navLabel><text>Nội dung</text></navLabel>
-      <content src="section1.xhtml"/>
-    </navPoint>
+${ncxNavPoints}
   </navMap>
 </ncx>`);
 
     const blob = await zip.generateAsync({ type: 'blob', mimeType: 'application/epub+zip' });
     return blob;
+  }
+
+  private static buildSectionsAndToc(rawHtml: string): { sections: EpubSection[]; tocEntries: TocEntry[] } {
+    const cleaned = this.stripInvalidXmlChars(rawHtml);
+
+    if (typeof DOMParser === 'undefined' || typeof XMLSerializer === 'undefined') {
+      const xhtml = this.toStrictXhtmlFallback(cleaned);
+      return {
+        sections: [
+          {
+            id: 'section1',
+            fileName: 'section1.xhtml',
+            nodes: [],
+            xhtmlContent: xhtml,
+            hasMath: xhtml.includes('<math')
+          }
+        ],
+        tocEntries: []
+      };
+    }
+
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(`<!DOCTYPE html><html><body>${cleaned}</body></html>`, 'text/html');
+
+    // Localize default marked-footnote heading if present
+    const footnoteHeading = doc.body.querySelector('section.footnotes h2#footnote-label');
+    if (footnoteHeading && footnoteHeading.textContent?.trim().toLowerCase() === 'footnotes') {
+      footnoteHeading.textContent = 'Chú thích';
+    }
+
+    // Ensure all existing IDs are tracked and all headings (h1, h2, h3) have valid, unique XML IDs
+    const usedIds = new Set<string>();
+    doc.body.querySelectorAll('[id]').forEach((el) => {
+      const tag = el.tagName.toLowerCase();
+      if (tag !== 'h1' && tag !== 'h2' && tag !== 'h3') {
+        const id = el.getAttribute('id')?.trim();
+        if (id) usedIds.add(id);
+      }
+    });
+
+    let headingCounter = 1;
+    doc.body.querySelectorAll('h1, h2, h3').forEach((heading) => {
+      let id = (heading.getAttribute('id') || '').trim();
+      // XML ID must start with a letter or underscore and contain only valid XML Name characters
+      const isValidXmlId = /^[A-Za-z_][A-Za-z0-9_.-]*$/.test(id);
+      if (!id || !isValidXmlId || usedIds.has(id)) {
+        const base = isValidXmlId && id ? id : `heading-${headingCounter}`;
+        let candidate = base;
+        let suffix = 1;
+        while (usedIds.has(candidate)) {
+          candidate = `${base}-${suffix++}`;
+        }
+        id = candidate;
+        heading.setAttribute('id', id);
+      }
+      usedIds.add(id);
+      headingCounter++;
+    });
+
+    // Split top-level body childNodes into logical sections at H1/H2 boundaries, footnotes, or size limit
+    const MAX_SECTION_CHARS = 45000;
+    const rawSections: Node[][] = [];
+    let currentNodes: Node[] = [];
+    let currentHasBodyContent = false;
+    let currentHasH1 = false;
+    let currentHasH2 = false;
+    let currentCharLen = 0;
+
+    const flushSection = () => {
+      if (currentNodes.length > 0) {
+        rawSections.push(currentNodes);
+        currentNodes = [];
+        currentHasBodyContent = false;
+        currentHasH1 = false;
+        currentHasH2 = false;
+        currentCharLen = 0;
+      }
+    };
+
+    for (const node of Array.from(doc.body.childNodes)) {
+      if (node.nodeType === Node.ELEMENT_NODE) {
+        const el = node as Element;
+        const tag = el.tagName.toLowerCase();
+        const isFootnotesSection = tag === 'section' && el.classList.contains('footnotes');
+
+        if (isFootnotesSection) {
+          flushSection();
+          currentNodes.push(node);
+          flushSection();
+          continue;
+        }
+
+        if (tag === 'h1') {
+          if (currentHasBodyContent || currentHasH1 || currentHasH2) {
+            flushSection();
+          }
+          currentHasH1 = true;
+        } else if (tag === 'h2') {
+          if (currentHasBodyContent || currentHasH2) {
+            flushSection();
+          }
+          currentHasH2 = true;
+        } else {
+          if (currentCharLen >= MAX_SECTION_CHARS && (tag === 'p' || tag === 'h3' || tag === 'blockquote' || tag === 'div' || tag === 'hr')) {
+            flushSection();
+          }
+          if ((el.textContent || '').trim().length > 0 || tag === 'img' || tag === 'table' || tag === 'figure') {
+            currentHasBodyContent = true;
+          }
+        }
+
+        currentNodes.push(node);
+        currentCharLen += (el.textContent || '').length;
+      } else if (node.nodeType === Node.TEXT_NODE) {
+        const text = node.textContent || '';
+        if (text.trim().length > 0) {
+          currentHasBodyContent = true;
+          currentCharLen += text.length;
+        }
+        currentNodes.push(node);
+      }
+    }
+    flushSection();
+
+    if (rawSections.length === 0) {
+      rawSections.push([]);
+    }
+
+    const sections: EpubSection[] = rawSections.map((nodes, idx) => ({
+      id: `section${idx + 1}`,
+      fileName: `section${idx + 1}.xhtml`,
+      nodes
+    }));
+
+    // Map every [id] across all sections to its owning section fileName
+    const idToFileMap = new Map<string, string>();
+    for (const sec of sections) {
+      for (const node of sec.nodes) {
+        if (node.nodeType === Node.ELEMENT_NODE) {
+          const el = node as Element;
+          const ownId = el.getAttribute('id');
+          if (ownId) {
+            idToFileMap.set(ownId, sec.fileName);
+          }
+          el.querySelectorAll('[id]').forEach((child) => {
+            const cid = child.getAttribute('id');
+            if (cid) {
+              idToFileMap.set(cid, sec.fileName);
+            }
+          });
+        }
+      }
+    }
+
+    // Rewrite internal #anchor links so cross-section links (such as footnotes and backrefs) point to sectionN.xhtml#id
+    const tocEntries: TocEntry[] = [];
+    const serializer = new XMLSerializer();
+
+    for (const sec of sections) {
+      const container = doc.createElement('div');
+      for (const node of sec.nodes) {
+        container.appendChild(node);
+      }
+
+      container.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+        const href = anchor.getAttribute('href') || '';
+        if (href.length > 1) {
+          const rawId = href.substring(1);
+          let decodedId = rawId;
+          try {
+            decodedId = decodeURIComponent(rawId);
+          } catch {
+            // keep rawId
+          }
+          const targetFile = idToFileMap.get(decodedId) || idToFileMap.get(rawId);
+          if (targetFile && targetFile !== sec.fileName) {
+            anchor.setAttribute('href', `${targetFile}#${rawId}`);
+          }
+        }
+      });
+
+      container.querySelectorAll('h1, h2, h3').forEach((heading) => {
+        const titleText = (heading.textContent || '').replace(/\s+/g, ' ').trim();
+        const hid = heading.getAttribute('id');
+        if (titleText && hid) {
+          const level = parseInt(heading.tagName.substring(1), 10);
+          tocEntries.push({
+            title: titleText,
+            level,
+            href: `${sec.fileName}#${hid}`
+          });
+        }
+      });
+
+      let serialized = serializer.serializeToString(container);
+      serialized = serialized
+        .replace(/^<div[^>]*>/i, '')
+        .replace(/<\/div>$/i, '')
+        .replace(/\s+xmlns="http:\/\/www\.w3\.org\/1999\/xhtml"/g, '');
+
+      sec.xhtmlContent = serialized;
+      sec.hasMath = serialized.includes('<math');
+    }
+
+    return { sections, tocEntries };
+  }
+
+  private static buildTocTree(entries: TocEntry[], fallbackFileName: string): TocNode[] {
+    if (entries.length === 0) {
+      return [
+        {
+          title: 'Nội dung chính',
+          level: 1,
+          href: fallbackFileName,
+          children: []
+        }
+      ];
+    }
+
+    const roots: TocNode[] = [];
+    const stack: TocNode[] = [];
+
+    for (const entry of entries) {
+      const node: TocNode = {
+        title: entry.title,
+        level: entry.level,
+        href: entry.href,
+        children: []
+      };
+
+      while (stack.length > 0 && stack[stack.length - 1].level >= node.level) {
+        stack.pop();
+      }
+
+      if (stack.length === 0) {
+        roots.push(node);
+      } else {
+        stack[stack.length - 1].children.push(node);
+      }
+
+      stack.push(node);
+    }
+
+    return roots;
+  }
+
+  private static renderNavOl(nodes: TocNode[], indent: string): string {
+    let out = `${indent}<ol>\n`;
+    for (const node of nodes) {
+      const safeTitle = this.escapeXml(node.title);
+      const safeHref = this.escapeXml(node.href);
+      if (node.children.length > 0) {
+        out += `${indent}  <li>\n`;
+        out += `${indent}    <a href="${safeHref}">${safeTitle}</a>\n`;
+        out += this.renderNavOl(node.children, `${indent}    `) + '\n';
+        out += `${indent}  </li>\n`;
+      } else {
+        out += `${indent}  <li><a href="${safeHref}">${safeTitle}</a></li>\n`;
+      }
+    }
+    out += `${indent}</ol>`;
+    return out;
+  }
+
+  private static getTocMaxDepth(nodes: TocNode[]): number {
+    let max = 1;
+    for (const node of nodes) {
+      if (node.children.length > 0) {
+        const childDepth = 1 + this.getTocMaxDepth(node.children);
+        if (childDepth > max) max = childDepth;
+      }
+    }
+    return max;
+  }
+
+  private static renderNcxNavPoints(nodes: TocNode[]): string {
+    let playOrder = 1;
+
+    const renderList = (list: TocNode[], indent: string): string => {
+      let out = '';
+      for (const node of list) {
+        const currentOrder = playOrder++;
+        const safeTitle = this.escapeXml(node.title);
+        const safeHref = this.escapeXml(node.href);
+        out += `${indent}<navPoint id="navpoint-${currentOrder}" playOrder="${currentOrder}">\n`;
+        out += `${indent}  <navLabel><text>${safeTitle}</text></navLabel>\n`;
+        out += `${indent}  <content src="${safeHref}"/>\n`;
+        if (node.children.length > 0) {
+          out += renderList(node.children, `${indent}  `);
+        }
+        out += `${indent}</navPoint>\n`;
+      }
+      return out;
+    };
+
+    return renderList(nodes, '    ').trimEnd();
   }
 
   private static escapeXml(str: string): string {
@@ -209,23 +536,7 @@ ${imageManifestItems}  </manifest>
       .join('');
   }
 
-  private static toStrictXhtml(html: string): string {
-    const cleaned = this.stripInvalidXmlChars(html);
-    if (typeof DOMParser !== 'undefined' && typeof XMLSerializer !== 'undefined') {
-      try {
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(`<!DOCTYPE html><html><body>${cleaned}</body></html>`, 'text/html');
-        const serializer = new XMLSerializer();
-        const bodyXml = serializer.serializeToString(doc.body);
-        return bodyXml
-          .replace(/^<body[^>]*>/i, '')
-          .replace(/<\/body>$/i, '')
-          .replace(/\s+xmlns="http:\/\/www\.w3\.org\/1999\/xhtml"/g, '');
-      } catch {
-        // Fallback to regex cleanup if DOM serialization fails
-      }
-    }
-
+  private static toStrictXhtmlFallback(cleaned: string): string {
     return cleaned
       .replace(/<(img|br|hr|col|wbr|input|source|area|base|embed|link|meta|param|track)\b([^>]*?)>/gi, (match) => {
         if (match.endsWith('/>')) return match;

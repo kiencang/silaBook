@@ -77,22 +77,37 @@ export class GeminiClient {
     });
   }
 
-  private async loadPromptText(url: string): Promise<string | null> {
-    const defaultOpts: RequestInit = { 
-      cache: 'no-store',
-      headers: {
-        'Cache-Control': 'no-cache, no-store, must-revalidate',
-        'Pragma': 'no-cache',
-        'Expires': '0'
-      }
-    };
-    try {
-      const res = await fetch(`${url}?t=${Date.now()}`, defaultOpts);
-      if (res.ok) return await res.text();
-    } catch (e) {
-      console.error(`Failed to load ${url}`, e);
+  private promptCache = new Map<string, Promise<string | null>>();
+
+  private loadPromptText(url: string): Promise<string | null> {
+    const cached = this.promptCache.get(url);
+    if (cached) {
+      return cached;
     }
-    return null;
+
+    const fetchPromise = (async () => {
+      const defaultOpts: RequestInit = { 
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        }
+      };
+      try {
+        const res = await fetch(`${url}?t=${Date.now()}`, defaultOpts);
+        if (res.ok) {
+          return await res.text();
+        }
+      } catch (e) {
+        console.error(`Failed to load ${url}`, e);
+      }
+      this.promptCache.delete(url);
+      return null;
+    })();
+
+    this.promptCache.set(url, fetchPromise);
+    return fetchPromise;
   }
 
   async countTokens(base64Data: string, mimeType = 'application/pdf', model = 'gemini-flash-lite-latest'): Promise<number> {

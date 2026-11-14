@@ -658,9 +658,11 @@ ${OFFLINE_READER_SCRIPT}
 
       // EPUB images
       const imagesInfo = project ? project.images : this.images();
+      const authorName = (project ? project.author : this.author())?.trim() || 'Không rõ';
+      const epubTitle = (project ? (project.bookTitle?.trim() || project.name) : (this.bookTitle().trim() || this.currentProjectName())) || 'Untitled';
 
       const { EpubExporter } = await import('./epub-export.util');
-      const blob = await EpubExporter.generateEpub(name || 'Untitled', combinedMarkdown, imagesInfo);
+      const blob = await EpubExporter.generateEpub(epubTitle, combinedMarkdown, imagesInfo, authorName);
       
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
