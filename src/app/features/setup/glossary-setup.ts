@@ -239,7 +239,7 @@ export class GlossarySetup {
       if (v.model === 'Tải lên từ Excel') return 'Từ file Excel';
       return 'Thủ công';
     }
-    const name = v.model.includes('pro') ? 'Pro' : 'Flash';
+    const name = v.model || '';
     if (v.source === 'ai_edited') return `${name} (Chỉnh tay)`;
     return name;
   }

@@ -210,8 +210,8 @@ export class PronounSetup {
 
   getModelDisplay(v: import('../../core/db').ContentVersion | null | undefined): string {
     if (!v) return '';
-    const name = v.model.includes('pro') ? 'Pro' : 'Flash';
     if (v.source === 'manual') return 'Thủ công';
+    const name = v.model || '';
     if (v.source === 'ai_edited') return `${name} (Chỉnh tay)`;
     return name;
   }
