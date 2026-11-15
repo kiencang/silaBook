@@ -74,10 +74,23 @@ export class GeminiClient {
     return GEMINI_API_KEY;
   }
 
-  private async getAi(): Promise<GoogleGenAI> {
+  private resolveApiVersion(model?: string): 'v1' | 'v1beta' {
+    const normalized = (model || '').toLowerCase();
+    if (
+      normalized.includes('-latest') ||
+      normalized.includes('-preview') ||
+      normalized.includes('-exp')
+    ) {
+      return 'v1beta';
+    }
+    return 'v1';
+  }
+
+  private async getAi(model?: string): Promise<GoogleGenAI> {
     const key = await this.getApiKey();
     return new GoogleGenAI({ 
       apiKey: key,
+      apiVersion: this.resolveApiVersion(model),
       httpOptions: {
         headers: {
           'User-Agent': 'aistudio-build'
@@ -158,7 +171,7 @@ export class GeminiClient {
 
   async countTokens(base64Data: string, mimeType = 'application/pdf', model = 'gemini-flash-lite-latest'): Promise<number> {
     try {
-      const ai = await this.getAi();
+      const ai = await this.getAi(model);
       const response = await ai.models.countTokens({
         model: model,
         contents: [
@@ -183,7 +196,7 @@ export class GeminiClient {
       pdfSI ? { systemInstruction: pdfSI } : {}
     );
 
-    const response = await (await this.getAi()).models.generateContent({
+    const response = await (await this.getAi(model)).models.generateContent({
       model: model,
       config: configArgs,
       contents: [
@@ -251,7 +264,7 @@ export class GeminiClient {
         }
       });
 
-      const response = await (await this.getAi()).models.generateContent({
+      const response = await (await this.getAi(filterModel)).models.generateContent({
         model: filterModel,
         contents: [ { text: prompt } ],
         config: filterConfig
@@ -301,7 +314,7 @@ export class GeminiClient {
         systemInstruction: si,
       });
 
-      const response = await (await this.getAi()).models.generateContent({
+      const response = await (await this.getAi(model)).models.generateContent({
         model: model,
         contents: [ { text: prompt } ],
         config: filterConfig
@@ -394,7 +407,7 @@ export class GeminiClient {
       systemInstruction ? { systemInstruction } : {}
     );
 
-    const response = await (await this.getAi()).models.generateContent({
+    const response = await (await this.getAi(model)).models.generateContent({
       model: model,
       contents: [
         { text: finalPrompt }
@@ -457,7 +470,7 @@ export class GeminiClient {
       }
     });
 
-    const response = await (await this.getAi()).models.generateContent({
+    const response = await (await this.getAi(model)).models.generateContent({
       model: model,
       contents: [{ text: finalPrompt }],
       config: configArgs
@@ -529,7 +542,7 @@ export class GeminiClient {
       }
     });
 
-    const response = await (await this.getAi()).models.generateContent({
+    const response = await (await this.getAi(model)).models.generateContent({
       model: model,
       contents: [{ text: finalPrompt }],
       config: configArgs
@@ -613,7 +626,7 @@ export class GeminiClient {
       }
     });
 
-    const response = await (await this.getAi()).models.generateContent({
+    const response = await (await this.getAi(model)).models.generateContent({
       model: model,
       contents: [{ text: finalPrompt }],
       config: configArgs
@@ -656,7 +669,7 @@ export class GeminiClient {
         systemInstruction,
       });
 
-      const response = await (await this.getAi()).models.generateContent({
+      const response = await (await this.getAi(model)).models.generateContent({
         model: model,
         contents: [ { text: finalPrompt } ],
         config: configArgs
