@@ -5,6 +5,11 @@ Tất cả những thay đổi đáng chú ý của dự án silaBook sẽ đư�
 Định dạng dựa trên [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 và dự án này tuân thủ [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.0.145]- 2026-11-15
+### Fixed
+- Cập nhật thư viện `google/genai` lên phiên bản mới nhất;
+- Bổ sung model mới `gemini-4-hydrogen`;
+
 ## [v1.0.144]- 2026-11-15
 ### Fixed
 - Điều chỉnh để khả năng xử lý footnote được tốt hơn;

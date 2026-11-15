@@ -68,6 +68,17 @@ import { BookStore } from '../../../core/book.store';
                 class="w-4 h-4 text-red-600 border-zinc-300 focus:ring-red-500 disabled:cursor-not-allowed">
               <span class="text-sm text-zinc-700 font-medium tracking-tight">Pro</span>
             </label>
+            <label class="flex items-center space-x-3 transition-opacity"
+                    [class.cursor-pointer]="!store.isTranslatingAny()"
+                    [class.cursor-not-allowed]="store.isTranslatingAny()"
+                    [class.opacity-50]="store.isTranslatingAny()">
+              <input type="radio" name="model" value="gemini-4-hydrogen" 
+                [disabled]="store.isTranslatingAny()"
+                [checked]="store.config().model === 'gemini-4-hydrogen'"
+                (change)="store.updateConfig({model: 'gemini-4-hydrogen'})"
+                class="w-4 h-4 text-emerald-600 border-zinc-300 focus:ring-emerald-500 disabled:cursor-not-allowed">
+              <span class="text-sm text-zinc-700 font-medium tracking-tight">Hydrogen</span>
+            </label>
           </div>
         </div>
 

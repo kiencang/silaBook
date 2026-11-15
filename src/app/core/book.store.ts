@@ -42,7 +42,7 @@ export interface Chapter {
 }
 
 export interface TranslationConfig {
-  model: 'gemini-flash-latest' | 'gemini-pro-latest';
+  model: 'gemini-flash-latest' | 'gemini-pro-latest' | 'gemini-4-hydrogen';
   translationMode?: 'standard' | 'scientific';
   pronounGenModel?: string;
   glossaryGenModel?: string;

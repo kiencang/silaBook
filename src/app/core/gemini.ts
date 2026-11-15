@@ -1,5 +1,14 @@
 import { Injectable } from '@angular/core';
-import { GoogleGenAI, Type } from '@google/genai';
+import {
+  GenerateContentConfig,
+  GoogleGenAI,
+  HarmBlockThreshold,
+  HarmCategory,
+  SafetySetting,
+  ThinkingConfig,
+  ThinkingLevel,
+  Type,
+} from '@google/genai';
 import { getSecureApiKey } from './crypto-storage.util';
 
 export function isQuotaError(e: unknown): boolean {
@@ -46,11 +55,11 @@ export function parseGeminiError(e: unknown): string {
   return msg ? msg : `Lỗi không xác định trong quá trình xử lý, vui lòng thử lại.`;
 }
 
-const DEFAULT_SAFETY_SETTINGS = [
-  { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_NONE' },
-  { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_NONE' },
-  { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' },
-  { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' }
+const DEFAULT_SAFETY_SETTINGS: SafetySetting[] = [
+  { category: HarmCategory.HARM_CATEGORY_HARASSMENT, threshold: HarmBlockThreshold.BLOCK_NONE },
+  { category: HarmCategory.HARM_CATEGORY_HATE_SPEECH, threshold: HarmBlockThreshold.BLOCK_NONE },
+  { category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold: HarmBlockThreshold.BLOCK_NONE },
+  { category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT, threshold: HarmBlockThreshold.BLOCK_NONE },
 ];
 
 @Injectable({ providedIn: 'root' })
@@ -110,6 +119,43 @@ export class GeminiClient {
     return fetchPromise;
   }
 
+  private buildThinkingConfig(
+    model: string,
+    desiredLevel: ThinkingLevel = ThinkingLevel.HIGH
+  ): ThinkingConfig | undefined {
+    const normalized = model.toLowerCase();
+    // thinkingLevel applies to Gemini 3, Gemini 4, and *-latest aliases; skip on Gemini 1.x / 2.x
+    if (normalized.includes('gemini-1.') || normalized.includes('gemini-2.')) {
+      return undefined;
+    }
+    // XHIGH is only supported on gemini-4-hydrogen; MINIMAL is not supported on Gemini 4
+    if (desiredLevel === ThinkingLevel.XHIGH && !normalized.includes('gemini-4-hydrogen')) {
+      return { thinkingLevel: ThinkingLevel.HIGH };
+    }
+    if (desiredLevel === ThinkingLevel.MINIMAL && normalized.includes('gemini-4-')) {
+      return { thinkingLevel: ThinkingLevel.LOW };
+    }
+    return { thinkingLevel: desiredLevel };
+  }
+
+  private buildMaxOutputTokens(model: string): number {
+    return model.toLowerCase().includes('gemini-4-hydrogen') ? 100000 : 65536;
+  }
+
+  private buildConfig(
+    model: string,
+    overrides: Partial<GenerateContentConfig> = {},
+    desiredThinkingLevel: ThinkingLevel = ThinkingLevel.HIGH
+  ): GenerateContentConfig {
+    const thinkingConfig = this.buildThinkingConfig(model, desiredThinkingLevel);
+    return {
+      ...(thinkingConfig ? { thinkingConfig } : {}),
+      maxOutputTokens: this.buildMaxOutputTokens(model),
+      safetySettings: DEFAULT_SAFETY_SETTINGS,
+      ...overrides,
+    };
+  }
+
   async countTokens(base64Data: string, mimeType = 'application/pdf', model = 'gemini-flash-lite-latest'): Promise<number> {
     try {
       const ai = await this.getAi();
@@ -132,15 +178,10 @@ export class GeminiClient {
 
     const textPrompt = pdfP || 'You are an exact document converter. Convert the provided document into standard Markdown. Preserve all headings, lists, paragraphs, tables, and overall structure precisely without adding any extra conversational text. Ignore images and header/footer elements like page numbers.';
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const configArgs: any = {
-      thinkingConfig: { thinkingLevel: 'HIGH' },
-      safetySettings: DEFAULT_SAFETY_SETTINGS,
-    };
-
-    if (pdfSI) {
-      configArgs.systemInstruction = pdfSI;
-    }
+    const configArgs: GenerateContentConfig = this.buildConfig(
+      model,
+      pdfSI ? { systemInstruction: pdfSI } : {}
+    );
 
     const response = await (await this.getAi()).models.generateContent({
       model: model,
@@ -193,11 +234,9 @@ export class GeminiClient {
       prompt = prompt.replace('{{danh sách thuật ngữ}}', () => JSON.stringify(compactList));
       prompt = prompt.replace('{{nội dung cần dịch}}', () => text);
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const filterConfig: any = {
+      const filterModel = 'gemini-flash-lite-latest';
+      const filterConfig: GenerateContentConfig = this.buildConfig(filterModel, {
         systemInstruction: si,
-        thinkingConfig: { thinkingLevel: 'HIGH' },
-        safetySettings: DEFAULT_SAFETY_SETTINGS,
         responseMimeType: 'application/json',
         responseSchema: {
           type: Type.ARRAY,
@@ -210,10 +249,10 @@ export class GeminiClient {
             required: ["english", "pos"]
           }
         }
-      };
+      });
 
       const response = await (await this.getAi()).models.generateContent({
-        model: 'gemini-flash-lite-latest',
+        model: filterModel,
         contents: [ { text: prompt } ],
         config: filterConfig
       });
@@ -258,12 +297,9 @@ export class GeminiClient {
       prompt = prompt.replace('{{bảng đại từ}}', () => rawPronounTable);
       prompt = prompt.replace('{{nội dung}}', () => text);
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const filterConfig: any = {
+      const filterConfig: GenerateContentConfig = this.buildConfig(model, {
         systemInstruction: si,
-        thinkingConfig: { thinkingLevel: 'HIGH' },
-        safetySettings: DEFAULT_SAFETY_SETTINGS,
-      };
+      });
 
       const response = await (await this.getAi()).models.generateContent({
         model: model,
@@ -353,15 +389,10 @@ export class GeminiClient {
       finalPrompt = `Translate the following text into Vietnamese. Maintain the original Markdown formatting and structure. Do not add any conversational text.\n\n${text}`;
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const configArgs: any = {
-      thinkingConfig: { thinkingLevel: 'HIGH' },
-      safetySettings: DEFAULT_SAFETY_SETTINGS,
-    };
-
-    if (systemInstruction) {
-      configArgs.systemInstruction = systemInstruction;
-    }
+    const configArgs: GenerateContentConfig = this.buildConfig(
+      model,
+      systemInstruction ? { systemInstruction } : {}
+    );
 
     const response = await (await this.getAi()).models.generateContent({
       model: model,
@@ -393,10 +424,8 @@ export class GeminiClient {
     finalPrompt = finalPrompt.replace('{{tên tác giả}}', () => author || 'Vô danh');
     finalPrompt = finalPrompt.replace('{{nội dung}}', () => text);
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const configArgs: any = {
-      thinkingConfig: { thinkingLevel: 'HIGH' },
-      safetySettings: DEFAULT_SAFETY_SETTINGS,
+    const configArgs: GenerateContentConfig = this.buildConfig(model, {
+      ...(psi ? { systemInstruction: psi } : {}),
       responseMimeType: 'application/json',
       responseSchema: {
         type: Type.ARRAY,
@@ -426,10 +455,7 @@ export class GeminiClient {
           ]
         }
       }
-    };
-    if (psi) {
-       configArgs.systemInstruction = psi;
-    }
+    });
 
     const response = await (await this.getAi()).models.generateContent({
       model: model,
@@ -485,10 +511,8 @@ export class GeminiClient {
     finalPrompt = finalPrompt.replace('{{tên tác giả}}', () => author || 'Vô danh');
     finalPrompt = finalPrompt.replace('{{nội dung}}', () => text);
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const configArgs: any = {
-      thinkingConfig: { thinkingLevel: 'HIGH' },
-      safetySettings: DEFAULT_SAFETY_SETTINGS,
+    const configArgs: GenerateContentConfig = this.buildConfig(model, {
+      ...(gsi ? { systemInstruction: gsi } : {}),
       responseMimeType: 'application/json',
       responseSchema: {
         type: Type.ARRAY,
@@ -503,11 +527,7 @@ export class GeminiClient {
           required: ['english', 'vietnamese', 'pos', 'contextNotes']
         }
       }
-    };
-
-    if (gsi) {
-       configArgs.systemInstruction = gsi;
-    }
+    });
 
     const response = await (await this.getAi()).models.generateContent({
       model: model,
@@ -563,10 +583,8 @@ export class GeminiClient {
     finalPrompt = finalPrompt.replace('{{tên tác giả}}', () => author || 'Vô danh');
     finalPrompt = finalPrompt.replace('{{nội dung}}', () => text);
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const configArgs: any = {
-      thinkingConfig: { thinkingLevel: 'HIGH' },
-      safetySettings: DEFAULT_SAFETY_SETTINGS,
+    const configArgs: GenerateContentConfig = this.buildConfig(model, {
+      ...(si ? { systemInstruction: si } : {}),
       responseMimeType: 'application/json',
       responseSchema: {
         type: Type.OBJECT,
@@ -593,11 +611,7 @@ export class GeminiClient {
         },
         required: ['splitOptions']
       }
-    };
-
-    if (si) {
-       configArgs.systemInstruction = si;
-    }
+    });
 
     const response = await (await this.getAi()).models.generateContent({
       model: model,
@@ -638,12 +652,9 @@ export class GeminiClient {
       
       const finalPrompt = promptTemplate.replace('{{nội dung}}', () => translatedText);
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const configArgs: any = {
-        systemInstruction: systemInstruction,
-        thinkingConfig: { thinkingLevel: 'HIGH' },
-        safetySettings: DEFAULT_SAFETY_SETTINGS,
-      };
+      const configArgs: GenerateContentConfig = this.buildConfig(model, {
+        systemInstruction,
+      });
 
       const response = await (await this.getAi()).models.generateContent({
         model: model,

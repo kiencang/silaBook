@@ -38,6 +38,7 @@ import { hasSecureApiKey } from '../../core/crypto-storage.util';
               <select id="pronounModel" [value]="pronounModel()" (change)="pronounModel.set($any($event.target).value)" [disabled]="isGeneratingPronouns() || !!pronounTask()" class="w-full pl-3 pr-8 py-2 text-sm border-zinc-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded-lg border disabled:cursor-not-allowed">
                 <option value="gemini-flash-latest">Flash (Nhanh & Tiết kiệm)</option>
                 <option value="gemini-pro-latest">Pro (Tư duy sâu & Chuẩn xác)</option>
+                <option value="gemini-4-hydrogen">Gemini-4 Hydrogen (Thế hệ mới)</option>
               </select>
             </div>
             
