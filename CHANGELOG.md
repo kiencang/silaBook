@@ -7,12 +7,12 @@ và dự án này tuân thủ [Semantic Versioning](https://semver.org/spec/v2.0
 
 ## [v1.0.146]- 2026-11-15
 ### Fixed
-- Tất cả các SI/Prompt gọi từ cùng một nguồn duy nhất, không fallback bằng SI/Prompt cứng lỗi thời;
+- Tất cả các SI/Prompt gọi từ cùng một nguồn duy nhất, không fallback bằng SI/Prompt code cứng trong mã nguồn đã lỗi thời;
 - Nếu việc tải SI/Prompt bị lỗi sẽ dừng lại để báo thay vì nuốt lỗi;
 
 ## [v1.0.145]- 2026-11-15
 ### Fixed
-- Cập nhật thư viện `google/genai` lên phiên bản mới nhất;
+- Cập nhật thư viện `google/genai` lên phiên bản mới nhất (để đảm bảo hoạt động được với các model mới nhất của Gemini);
 - Bổ sung model mới `gemini-4-hydrogen`;
 
 ## [v1.0.144]- 2026-11-15
