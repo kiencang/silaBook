@@ -266,11 +266,6 @@ export class Translator {
         config.translationMode || 'standard'
       );
       
-      let summaryText: string | undefined = undefined;
-      if (config.generateSummary !== false) {
-        summaryText = await this.gemini.summarizeTranslation(translatedText, config.model, config.translationMode);
-      }
-      
       const newVersionNumber = (chapter.latestVersionNumber || 0) + 1;
       const newVersion: TranslationVersion = {
         versionNumber: newVersionNumber,
@@ -280,7 +275,6 @@ export class Translator {
         customGlossary: customGlossary,
         glossaryStatus: glossaryStatus,
         glossaryRatio: glossaryRatio,
-        summary: summaryText,
         usePronouns: this.store.usePronouns(),
         pronounSnapshot: this.store.usePronouns() ? this.store.pronounTable() : undefined,
         pronounVersionNumber: this.store.usePronouns() ? this.store.activePronounVersionNumber() : undefined,
@@ -293,16 +287,38 @@ export class Translator {
         customInstructionsSnapshot: this.store.customInstructions() || undefined,
         translationMode: config.translationMode || 'standard'
       };
-      
+
       const versions = [...(chapter.versions || []), newVersion].slice(-3);
-      
-      this.store.updateChapter(chapter.id, { 
+
+      this.store.updateChapter(chapter.id, {
         status: 'done',
         translatedText: translatedText,
         versions: versions,
         latestVersionNumber: newVersionNumber,
         activeVersionNumber: newVersionNumber
       });
+
+      if (config.generateSummary !== false) {
+        try {
+          const summaryText = await this.gemini.summarizeTranslation(translatedText, config.model, config.translationMode);
+          if (summaryText) {
+            const updatedVersions = versions.map(v =>
+              v.versionNumber === newVersionNumber ? { ...v, summary: summaryText } : v
+            );
+            this.store.updateChapter(chapter.id, {
+              versions: updatedVersions
+            });
+          }
+        } catch (summaryError: unknown) {
+          if (!isQuotaError(summaryError)) {
+            console.error(summaryError);
+          }
+          this.toast.error(
+            `Đã lưu bản dịch chương "${chapter.title}", nhưng bước tạo tóm tắt bị lỗi: ${parseGeminiError(summaryError)}`
+          );
+          return false;
+        }
+      }
       return true;
     } catch (e: unknown) {
       if (!isQuotaError(e)) {
@@ -314,7 +330,8 @@ export class Translator {
       const msg = (e as Error)?.message || e?.toString() || '';
       const lowerMsg = msg.toLowerCase();
       if (lowerMsg.includes('quota') || lowerMsg.includes('429') || 
-          lowerMsg.includes('api key') || lowerMsg.includes('403') || lowerMsg.includes('permission_denied')) {
+          lowerMsg.includes('api key') || lowerMsg.includes('403') || lowerMsg.includes('permission_denied') ||
+          lowerMsg.includes('không thể tải cấu hình hướng dẫn ai')) {
         return false;
       }
       return true;

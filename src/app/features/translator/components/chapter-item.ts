@@ -6,7 +6,7 @@ import { BookStore, Chapter, TranslationVersion } from '../../../core/book.store
 import { ToastService } from '../../../core/toast.service';
 import { getConfiguredMarked, parseMarkdownWithImages } from '../../../core/marked-setup';
 import { ReaderStore } from '../../../core/reader.store';
-import { GeminiClient } from '../../../core/gemini';
+import { GeminiClient, parseGeminiError } from '../../../core/gemini';
 import { OFFLINE_READER_SCRIPT, OFFLINE_READER_STYLES, OFFLINE_READER_TOOLBAR_HTML, PRINT_PDF_STYLES, escapeHtml } from '../../../core/html-export.util';
 import { TranslatingSkeletonComponent } from './translating-skeleton';
 
@@ -157,7 +157,7 @@ export class ChapterItemComponent implements OnDestroy {
       }
     } catch (e) {
       console.error('Failed to create missing summary', e);
-      this.toast.error('Có lỗi xảy ra khi tạo bản tóm tắt.');
+      this.toast.error(`Có lỗi xảy ra khi tạo bản tóm tắt: ${parseGeminiError(e)}`);
     } finally {
       this.isGeneratingSummary.set(false);
       this.selectedVersionForSummary.set(null);

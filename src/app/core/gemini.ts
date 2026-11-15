@@ -99,33 +99,53 @@ export class GeminiClient {
     });
   }
 
-  private promptCache = new Map<string, Promise<string | null>>();
+  private promptCache = new Map<string, Promise<string>>();
 
-  private loadPromptText(url: string): Promise<string | null> {
+  private requirePromptText(url: string, label: string): Promise<string> {
     const cached = this.promptCache.get(url);
     if (cached) {
       return cached;
     }
 
     const fetchPromise = (async () => {
-      const defaultOpts: RequestInit = { 
+      const defaultOpts: RequestInit = {
         cache: 'no-store',
         headers: {
           'Cache-Control': 'no-cache, no-store, must-revalidate',
           'Pragma': 'no-cache',
-          'Expires': '0'
-        }
+          'Expires': '0',
+        },
       };
-      try {
-        const res = await fetch(`${url}?t=${Date.now()}`, defaultOpts);
-        if (res.ok) {
-          return await res.text();
+
+      const retryDelaysMs = [300, 700];
+      let lastError: unknown;
+
+      for (let attempt = 0; attempt <= retryDelaysMs.length; attempt++) {
+        try {
+          const res = await fetch(`${url}?t=${Date.now()}`, defaultOpts);
+          if (res.ok) {
+            const text = await res.text();
+            if (text.trim().length > 0) {
+              return text;
+            }
+            lastError = new Error(`Tệp cấu hình rỗng (${res.status})`);
+          } else {
+            lastError = new Error(`HTTP ${res.status} ${res.statusText}`);
+          }
+        } catch (e) {
+          lastError = e;
         }
-      } catch (e) {
-        console.error(`Failed to load ${url}`, e);
+
+        if (attempt < retryDelaysMs.length) {
+          await new Promise(resolve => setTimeout(resolve, retryDelaysMs[attempt]));
+        }
       }
+
       this.promptCache.delete(url);
-      return null;
+      console.error(`Failed to load ${url} after retries`, lastError);
+      throw new Error(
+        `Không thể tải cấu hình hướng dẫn AI (${label}: ${url}). Vui lòng kiểm tra kết nối mạng và thử lại.`
+      );
     })();
 
     this.promptCache.set(url, fetchPromise);
@@ -186,15 +206,14 @@ export class GeminiClient {
   }
 
   async convertPdfToMarkdown(base64Data: string, model = 'gemini-flash-lite-latest'): Promise<string> {
-    const pdfSI = await this.loadPromptText('/prompts/pdf_to_md_system_instruction.md');
-    const pdfP = await this.loadPromptText('/prompts/pdf_to_md_prompt.md');
+    const [pdfSI, textPrompt] = await Promise.all([
+      this.requirePromptText('/prompts/pdf_to_md_system_instruction.md', 'Chuyển PDF System Instruction'),
+      this.requirePromptText('/prompts/pdf_to_md_prompt.md', 'Chuyển PDF Prompt'),
+    ]);
 
-    const textPrompt = pdfP || 'You are an exact document converter. Convert the provided document into standard Markdown. Preserve all headings, lists, paragraphs, tables, and overall structure precisely without adding any extra conversational text. Ignore images and header/footer elements like page numbers.';
-
-    const configArgs: GenerateContentConfig = this.buildConfig(
-      model,
-      pdfSI ? { systemInstruction: pdfSI } : {}
-    );
+    const configArgs: GenerateContentConfig = this.buildConfig(model, {
+      systemInstruction: pdfSI,
+    });
 
     const response = await (await this.getAi(model)).models.generateContent({
       model: model,
@@ -214,125 +233,121 @@ export class GeminiClient {
   }
 
   async filterGlossary(text: string, glossaryTable: string): Promise<{ text: string; usedCount: number; totalCount: number }> {
-    try {
-      const lines = glossaryTable.split('\n').filter(l => l.trim().startsWith('|'));
-      if (lines.length <= 2) return { text: glossaryTable, usedCount: 0, totalCount: 0 };
+    const lines = glossaryTable.split('\n').filter(l => l.trim().startsWith('|'));
+    if (lines.length <= 2) return { text: glossaryTable, usedCount: 0, totalCount: 0 };
 
-      const headers = lines[0].split('|').map(h => h.trim()).filter(h => h);
-      if (headers.length < 4 || headers[0] !== 'Tiếng Anh') return { text: glossaryTable, usedCount: 0, totalCount: 0 };
+    const headers = lines[0].split('|').map(h => h.trim()).filter(h => h);
+    if (headers.length < 4 || headers[0] !== 'Tiếng Anh') return { text: glossaryTable, usedCount: 0, totalCount: 0 };
 
-      const fullGlossary: { english: string; pos: string; vietnamese: string; notes: string }[] = [];
-      const compactList: { english: string; pos: string }[] = [];
-      
-      for (let i = 2; i < lines.length; i++) {
-        const cells = lines[i].split('|').map(c => c.trim());
-        if (cells.length >= 5) {
-           const english = cells[1];
-           const pos = cells[2];
-           const vietnamese = cells[3];
-           const notes = cells[4];
-           fullGlossary.push({ english, pos, vietnamese, notes });
-           compactList.push({ english, pos });
-        }
+    const fullGlossary: { english: string; pos: string; vietnamese: string; notes: string }[] = [];
+    const compactList: { english: string; pos: string }[] = [];
+
+    for (let i = 2; i < lines.length; i++) {
+      const cells = lines[i].split('|').map(c => c.trim());
+      if (cells.length >= 5) {
+        const english = cells[1];
+        const pos = cells[2];
+        const vietnamese = cells[3];
+        const notes = cells[4];
+        fullGlossary.push({ english, pos, vietnamese, notes });
+        compactList.push({ english, pos });
       }
-
-      if (compactList.length <= 100) return { text: glossaryTable, usedCount: compactList.length, totalCount: compactList.length };
-
-      const si = await this.loadPromptText('/prompts/filter_glossary_system_instruction.md') || 'You are an expert terminology extractor. Your task is to filter a given list of glossary terms and identify which ones are present in the provided text block. Return ONLY a valid JSON array of objects with "english" and "pos" properties.';
-      let prompt = await this.loadPromptText('/prompts/filter_glossary_prompt.md');
-      if (!prompt) {
-        prompt = "Glossary Terms:\n{{danh sách thuật ngữ}}\n\nText Block:\n{{nội dung cần dịch}}";
-      }
-      
-      prompt = prompt.replace('{{danh sách thuật ngữ}}', () => JSON.stringify(compactList));
-      prompt = prompt.replace('{{nội dung cần dịch}}', () => text);
-
-      const filterModel = 'gemini-flash-lite-latest';
-      const filterConfig: GenerateContentConfig = this.buildConfig(filterModel, {
-        systemInstruction: si,
-        responseMimeType: 'application/json',
-        responseSchema: {
-          type: Type.ARRAY,
-          items: {
-            type: Type.OBJECT,
-            properties: {
-              english: { type: Type.STRING },
-              pos: { type: Type.STRING }
-            },
-            required: ["english", "pos"]
-          }
-        }
-      });
-
-      const response = await (await this.getAi(filterModel)).models.generateContent({
-        model: filterModel,
-        contents: [ { text: prompt } ],
-        config: filterConfig
-      });
-      
-      const resultText = response.text || '[]';
-      const matchedItems = JSON.parse(resultText);
-      
-      if (!Array.isArray(matchedItems) || matchedItems.length === 0) {
-        return { text: '', usedCount: 0, totalCount: fullGlossary.length };
-      }
-      
-      const matchedSet = new Set(matchedItems.map((item: { english: string; pos: string }) => `${item.english}_${item.pos}`.toLowerCase()));
-      const filteredGlossary = fullGlossary.filter(item => matchedSet.has(`${item.english}_${item.pos}`.toLowerCase()));
-      
-      if (filteredGlossary.length === 0) return { text: '', usedCount: 0, totalCount: fullGlossary.length };
-      
-      let resultTable = '| Tiếng Anh | Từ loại | Tiếng Việt | Ghi chú văn cảnh |\n|---|---|---|---|\n';
-      for (const item of filteredGlossary) {
-        resultTable += `| ${item.english} | ${item.pos} | ${item.vietnamese} | ${item.notes} |\n`;
-      }
-      
-      return { text: resultTable, usedCount: filteredGlossary.length, totalCount: fullGlossary.length };
-      
-    } catch (e) {
-      console.error('Failed to filter glossary', e);
-      return { text: glossaryTable, usedCount: 0, totalCount: 0 }; 
     }
+
+    if (compactList.length <= 100) return { text: glossaryTable, usedCount: compactList.length, totalCount: compactList.length };
+
+    const [si, promptTemplate] = await Promise.all([
+      this.requirePromptText('/prompts/filter_glossary_system_instruction.md', 'Lọc thuật ngữ System Instruction'),
+      this.requirePromptText('/prompts/filter_glossary_prompt.md', 'Lọc thuật ngữ Prompt'),
+    ]);
+
+    let prompt = promptTemplate;
+    prompt = prompt.replace('{{danh sách thuật ngữ}}', () => JSON.stringify(compactList));
+    prompt = prompt.replace('{{nội dung cần dịch}}', () => text);
+
+    const filterModel = 'gemini-flash-lite-latest';
+    const filterConfig: GenerateContentConfig = this.buildConfig(filterModel, {
+      systemInstruction: si,
+      responseMimeType: 'application/json',
+      responseSchema: {
+        type: Type.ARRAY,
+        items: {
+          type: Type.OBJECT,
+          properties: {
+            english: { type: Type.STRING },
+            pos: { type: Type.STRING }
+          },
+          required: ["english", "pos"]
+        }
+      }
+    });
+
+    const response = await (await this.getAi(filterModel)).models.generateContent({
+      model: filterModel,
+      contents: [ { text: prompt } ],
+      config: filterConfig
+    });
+
+    const resultText = response.text || '[]';
+    let matchedItems: unknown;
+    try {
+      matchedItems = JSON.parse(resultText);
+    } catch (e) {
+      console.warn('Failed to parse filterGlossary JSON', e, resultText);
+      throw new Error('Không thể đọc dữ liệu lọc thuật ngữ từ AI. Vui lòng thử lại sau vài giây.');
+    }
+
+    if (!Array.isArray(matchedItems) || matchedItems.length === 0) {
+      return { text: '', usedCount: 0, totalCount: fullGlossary.length };
+    }
+
+    const matchedSet = new Set(
+      matchedItems.map((item: { english: string; pos: string }) => `${item.english}_${item.pos}`.toLowerCase())
+    );
+    const filteredGlossary = fullGlossary.filter(item => matchedSet.has(`${item.english}_${item.pos}`.toLowerCase()));
+
+    if (filteredGlossary.length === 0) return { text: '', usedCount: 0, totalCount: fullGlossary.length };
+
+    let resultTable = '| Tiếng Anh | Từ loại | Tiếng Việt | Ghi chú văn cảnh |\n|---|---|---|---|\n';
+    for (const item of filteredGlossary) {
+      resultTable += `| ${item.english} | ${item.pos} | ${item.vietnamese} | ${item.notes} |\n`;
+    }
+
+    return { text: resultTable, usedCount: filteredGlossary.length, totalCount: fullGlossary.length };
   }
 
   async normalizePronouns(text: string, rawPronounTable: string, model: string, bookTitle: string, author: string): Promise<string> {
-    try {
-      if (!rawPronounTable.trim()) return '';
-      
-      const si = await this.loadPromptText('/prompts/normalize_pronouns_system_instructions.md') || 'You are an expert context analyzer. Your task is to normalize and refine the provided raw pronoun table based on the full book content.';
-      let prompt = await this.loadPromptText('/prompts/normalize_pronouns_prompt.md');
-      if (!prompt) {
-        prompt = "Raw Pronoun Table:\n{{bảng đại từ}}\n\nFull Book Content:\n{{nội dung}}\n\nPlease normalize it.";
-      }
-      
-      prompt = prompt.replace('{{tên sách}}', () => bookTitle || 'Không rõ');
-      prompt = prompt.replace('{{tên tác giả}}', () => author || 'Vô danh');
-      prompt = prompt.replace('{{bảng đại từ}}', () => rawPronounTable);
-      prompt = prompt.replace('{{nội dung}}', () => text);
+    if (!rawPronounTable.trim()) return '';
 
-      const filterConfig: GenerateContentConfig = this.buildConfig(model, {
-        systemInstruction: si,
-      });
+    const [si, promptTemplate] = await Promise.all([
+      this.requirePromptText('/prompts/normalize_pronouns_system_instructions.md', 'Chuẩn hóa đại từ System Instruction'),
+      this.requirePromptText('/prompts/normalize_pronouns_prompt.md', 'Chuẩn hóa đại từ Prompt'),
+    ]);
 
-      const response = await (await this.getAi(model)).models.generateContent({
-        model: model,
-        contents: [ { text: prompt } ],
-        config: filterConfig
-      });
-      
-      let result = response.text || '';
-      if (result.startsWith('```markdown')) {
-        result = result.replace(/^```markdown\n/, '').replace(/\n```$/, '');
-      } else if (result.startsWith('```')) {
-        result = result.replace(/^```\n/, '').replace(/\n```$/, '');
-      }
-      
-      return result;
-      
-    } catch (e) {
-      console.error('Failed to normalize pronouns', e);
-      return rawPronounTable; 
+    let prompt = promptTemplate;
+    prompt = prompt.replace('{{tên sách}}', () => bookTitle || 'Không rõ');
+    prompt = prompt.replace('{{tên tác giả}}', () => author || 'Vô danh');
+    prompt = prompt.replace('{{bảng đại từ}}', () => rawPronounTable);
+    prompt = prompt.replace('{{nội dung}}', () => text);
+
+    const filterConfig: GenerateContentConfig = this.buildConfig(model, {
+      systemInstruction: si,
+    });
+
+    const response = await (await this.getAi(model)).models.generateContent({
+      model: model,
+      contents: [ { text: prompt } ],
+      config: filterConfig
+    });
+
+    let result = response.text || '';
+    if (result.startsWith('```markdown')) {
+      result = result.replace(/^```markdown\n/, '').replace(/\n```$/, '');
+    } else if (result.startsWith('```')) {
+      result = result.replace(/^```\n/, '').replace(/\n```$/, '');
     }
+
+    return result;
   }
 
   async translateChapter(text: string, model: string, bookTitle = '', author = '', pronounTable = '', usePronouns = false, glossaryTable = '', useGlossary = false, shouldFilterGlossary = true, contextSummary?: string, customInstructions?: string, translationMode: 'standard' | 'scientific' = 'standard'): Promise<{text: string, customGlossary?: string, glossaryStatus?: 'none' | 'full' | 'filtered', glossaryRatio?: number}> {
@@ -359,53 +374,50 @@ export class GeminiClient {
     const siFileName = translationMode === 'scientific' ? '/prompts/scientific_system_instructions.md' : '/prompts/multi_system_instructions.md';
     const promptFileName = translationMode === 'scientific' ? '/prompts/scientific_prompt.md' : '/prompts/multi_prompt.md';
     
-    const systemInstruction = await this.loadPromptText(siFileName);
-    let finalPrompt = await this.loadPromptText(promptFileName) || '';
-    
-    if (finalPrompt) {
-      finalPrompt = finalPrompt.replace('{{tên sách}}', () => bookTitle || 'Không rõ');
-      finalPrompt = finalPrompt.replace('{{tên tác giả}}', () => author || 'Vô danh');
-      
-      if (usePronouns && pronounTable) {
-        const pronounBlock = `<pronouns_rules>\n**Bảng đại từ nhân xưng:**\n${pronounTable}\n\n*LƯU Ý: Ở trên là Bảng đại từ nhân xưng tham chiếu. Bạn BẮT BUỘC phải sử dụng cấu trúc xưng hô này cho cách người kể chuyện gọi nhân vật (ngôi thứ 3) và trong các cuộc hội thoại thông thường. TUY NHIÊN, bạn được phép điều chỉnh linh hoạt cách xưng hô (ngôi thứ 1 & 2) nếu bối cảnh cảm xúc của câu chuyện thực sự đòi hỏi sự chuyển đổi.*\n</pronouns_rules>`;
-        finalPrompt = finalPrompt.replace('{{đại từ nhân xưng}}', () => pronounBlock);
-      } else {
-        finalPrompt = finalPrompt.replace('{{đại từ nhân xưng}}', '');
-      }
+    const [systemInstruction, promptTemplate] = await Promise.all([
+      this.requirePromptText(siFileName, 'Dịch chương System Instruction'),
+      this.requirePromptText(promptFileName, 'Dịch chương Prompt'),
+    ]);
 
-      if (activeGlossary) {
-        const glossaryBlock = `<glossary_rules>\n**Bảng thuật ngữ / Từ khó:**\n${activeGlossary}\n\n*LƯU Ý: Bảng thuật ngữ trên đây là một DANH SÁCH THAM KHẢO quan trọng, NHƯNG bạn hãy áp dụng LINH HOẠT các thuật ngữ này vào bản dịch để đảm bảo tính thống nhất chuyên môn/từ ngữ toàn cục của cuốn sách. Điều cần ghi nhớ là đừng ép buộc áp dụng một cách cứng nhắc nếu ngữ cảnh cụ thể của đoạn văn hoàn toàn khác.*\n</glossary_rules>`;
-        finalPrompt = finalPrompt.replace('{{thuật ngữ}}', () => glossaryBlock);
-      } else {
-        finalPrompt = finalPrompt.replace('{{thuật ngữ}}', '');
-      }
+    let finalPrompt = promptTemplate;
+    finalPrompt = finalPrompt.replace('{{tên sách}}', () => bookTitle || 'Không rõ');
+    finalPrompt = finalPrompt.replace('{{tên tác giả}}', () => author || 'Vô danh');
 
-      if (contextSummary) {
-         const contextBlock = `<previous_chunk_handoff>\n**Tóm tắt bối cảnh từ phần trước để tham khảo:**\n${contextSummary}\n\n*LƯU Ý: Đây là thông tin nối tiếp từ khối văn bản trước (diễn biến sự kiện, trạng thái nhân vật, hoặc luồng logic/lập luận, **cùng với sắc thái/giọng điệu chung**). Hãy dùng nó để nắm bắt ngữ cảnh nhằm đảm bảo tính liền mạch cho bản dịch, đặc biệt là duy trì đúng giọng điệu và cảm xúc. TUYỆT ĐỐI KHÔNG lặp lại nội dung tóm tắt này vào phần bản dịch.*\n</previous_chunk_handoff>`;
-         finalPrompt = finalPrompt.replace('{{tóm tắt bối cảnh}}', () => contextBlock);
-      } else {
-         finalPrompt = finalPrompt.replace('{{tóm tắt bối cảnh}}', '');
-      }
-
-      if (customInstructions) {
-         const instructionsBlock = `<custom_instructions>\n**Chỉ thị bổ sung khi dịch:**\n${customInstructions}\n</custom_instructions>`;
-         finalPrompt = finalPrompt.replace('{{chỉ thị bổ sung}}', () => instructionsBlock);
-      } else {
-         finalPrompt = finalPrompt.replace('{{chỉ thị bổ sung}}', '');
-      }
-
-      finalPrompt = finalPrompt.replace('{{nội dung cần dịch}}', () => '\n' + text);
-      
-      // Clean up multiple newlines that might arise from empty replacements
-      finalPrompt = finalPrompt.replace(/\n\s*\n\s*\n/g, '\n\n');
+    if (usePronouns && pronounTable) {
+      const pronounBlock = `<pronouns_rules>\n**Bảng đại từ nhân xưng:**\n${pronounTable}\n\n*LƯU Ý: Ở trên là Bảng đại từ nhân xưng tham chiếu. Bạn BẮT BUỘC phải sử dụng cấu trúc xưng hô này cho cách người kể chuyện gọi nhân vật (ngôi thứ 3) và trong các cuộc hội thoại thông thường. TUY NHIÊN, bạn được phép điều chỉnh linh hoạt cách xưng hô (ngôi thứ 1 & 2) nếu bối cảnh cảm xúc của câu chuyện thực sự đòi hỏi sự chuyển đổi.*\n</pronouns_rules>`;
+      finalPrompt = finalPrompt.replace('{{đại từ nhân xưng}}', () => pronounBlock);
     } else {
-      finalPrompt = `Translate the following text into Vietnamese. Maintain the original Markdown formatting and structure. Do not add any conversational text.\n\n${text}`;
+      finalPrompt = finalPrompt.replace('{{đại từ nhân xưng}}', '');
     }
 
-    const configArgs: GenerateContentConfig = this.buildConfig(
-      model,
-      systemInstruction ? { systemInstruction } : {}
-    );
+    if (activeGlossary) {
+      const glossaryBlock = `<glossary_rules>\n**Bảng thuật ngữ / Từ khó:**\n${activeGlossary}\n\n*LƯU Ý: Bảng thuật ngữ trên đây là một DANH SÁCH THAM KHẢO quan trọng, NHƯNG bạn hãy áp dụng LINH HOẠT các thuật ngữ này vào bản dịch để đảm bảo tính thống nhất chuyên môn/từ ngữ toàn cục của cuốn sách. Điều cần ghi nhớ là đừng ép buộc áp dụng một cách cứng nhắc nếu ngữ cảnh cụ thể của đoạn văn hoàn toàn khác.*\n</glossary_rules>`;
+      finalPrompt = finalPrompt.replace('{{thuật ngữ}}', () => glossaryBlock);
+    } else {
+      finalPrompt = finalPrompt.replace('{{thuật ngữ}}', '');
+    }
+
+    if (contextSummary) {
+      const contextBlock = `<previous_chunk_handoff>\n**Tóm tắt bối cảnh từ phần trước để tham khảo:**\n${contextSummary}\n\n*LƯU Ý: Đây là thông tin nối tiếp từ khối văn bản trước (diễn biến sự kiện, trạng thái nhân vật, hoặc luồng logic/lập luận, **cùng với sắc thái/giọng điệu chung**). Hãy dùng nó để nắm bắt ngữ cảnh nhằm đảm bảo tính liền mạch cho bản dịch, đặc biệt là duy trì đúng giọng điệu và cảm xúc. TUYỆT ĐỐI KHÔNG lặp lại nội dung tóm tắt này vào phần bản dịch.*\n</previous_chunk_handoff>`;
+      finalPrompt = finalPrompt.replace('{{tóm tắt bối cảnh}}', () => contextBlock);
+    } else {
+      finalPrompt = finalPrompt.replace('{{tóm tắt bối cảnh}}', '');
+    }
+
+    if (customInstructions) {
+      const instructionsBlock = `<custom_instructions>\n**Chỉ thị bổ sung khi dịch:**\n${customInstructions}\n</custom_instructions>`;
+      finalPrompt = finalPrompt.replace('{{chỉ thị bổ sung}}', () => instructionsBlock);
+    } else {
+      finalPrompt = finalPrompt.replace('{{chỉ thị bổ sung}}', '');
+    }
+
+    // Clean up multiple newlines that might arise from empty optional blocks before inserting source text
+    finalPrompt = finalPrompt.replace(/\n\s*\n\s*\n/g, '\n\n');
+    finalPrompt = finalPrompt.replace('{{nội dung cần dịch}}', () => '\n' + text);
+
+    const configArgs: GenerateContentConfig = this.buildConfig(model, {
+      systemInstruction,
+    });
 
     const response = await (await this.getAi(model)).models.generateContent({
       model: model,
@@ -428,17 +440,18 @@ export class GeminiClient {
   }
 
   async generatePronounsRaw(text: string, model: string, bookTitle = '', author = ''): Promise<{ originalName?: string; gender?: string; ageGroup?: string; role?: string; translatedTitles?: string; narratorPronoun?: string; dialoguePronouns?: string; reasoning?: string; notes?: string; }[]> {
-    const psi = await this.loadPromptText('/prompts/pronouns_system_instructions.md');
-    const pp = await this.loadPromptText('/prompts/pronouns_prompt.md');
+    const [psi, pp] = await Promise.all([
+      this.requirePromptText('/prompts/pronouns_system_instructions.md', 'Tạo đại từ System Instruction'),
+      this.requirePromptText('/prompts/pronouns_prompt.md', 'Tạo đại từ Prompt'),
+    ]);
 
-    let finalPrompt = pp || `Hãy phân tích đoạn văn bản nguồn dưới đây và lập Bảng đại từ nhân xưng chuẩn xác nhất.\n\n<metadata>\n- Tên sách: {{tên sách}}\n- Tác giả: {{tên tác giả}}\n</metadata>\n\n<source_text>\n{{nội dung}}\n</source_text>`;
-    
+    let finalPrompt = pp;
     finalPrompt = finalPrompt.replace('{{tên sách}}', () => bookTitle || 'Không rõ');
     finalPrompt = finalPrompt.replace('{{tên tác giả}}', () => author || 'Vô danh');
     finalPrompt = finalPrompt.replace('{{nội dung}}', () => text);
 
     const configArgs: GenerateContentConfig = this.buildConfig(model, {
-      ...(psi ? { systemInstruction: psi } : {}),
+      systemInstruction: psi,
       responseMimeType: 'application/json',
       responseSchema: {
         type: Type.ARRAY,
@@ -515,17 +528,18 @@ export class GeminiClient {
   }
 
   async generateGlossaryRaw(text: string, model: string, bookTitle = '', author = ''): Promise<{ english?: string; pos?: string; vietnamese?: string; contextNotes?: string; }[]> {
-    const gsi = await this.loadPromptText('/prompts/glossary_system_instructions.md');
-    const gp = await this.loadPromptText('/prompts/glossary_prompt.md');
+    const [gsi, gp] = await Promise.all([
+      this.requirePromptText('/prompts/glossary_system_instructions.md', 'Tạo thuật ngữ System Instruction'),
+      this.requirePromptText('/prompts/glossary_prompt.md', 'Tạo thuật ngữ Prompt'),
+    ]);
 
-    let finalPrompt = gp || `Hãy phân tích nội dung và trích xuất Bảng thuật ngữ chuyên ngành/Từ khó dịch tiếng Anh - Việt.\n\n<metadata>\n- Tên sách: {{tên sách}}\n- Tác giả: {{tên tác giả}}\n</metadata>\n\n<source_text>\n{{nội dung}}\n</source_text>`;
-    
+    let finalPrompt = gp;
     finalPrompt = finalPrompt.replace('{{tên sách}}', () => bookTitle || 'Không rõ');
     finalPrompt = finalPrompt.replace('{{tên tác giả}}', () => author || 'Vô danh');
     finalPrompt = finalPrompt.replace('{{nội dung}}', () => text);
 
     const configArgs: GenerateContentConfig = this.buildConfig(model, {
-      ...(gsi ? { systemInstruction: gsi } : {}),
+      systemInstruction: gsi,
       responseMimeType: 'application/json',
       responseSchema: {
         type: Type.ARRAY,
@@ -587,17 +601,18 @@ export class GeminiClient {
   }
 
   async analyzeBook(text: string, model: string, bookTitle = '', author = ''): Promise<string> {
-    const si = await this.loadPromptText('/prompts/book_analysis_system_instructions.md');
-    const p = await this.loadPromptText('/prompts/book_analysis_prompt.md');
+    const [si, p] = await Promise.all([
+      this.requirePromptText('/prompts/book_analysis_system_instructions.md', 'Phân tích sách System Instruction'),
+      this.requirePromptText('/prompts/book_analysis_prompt.md', 'Phân tích sách Prompt'),
+    ]);
 
-    let finalPrompt = p || `Phân tích văn bản và trả về JSON cấu hình theo yêu cầu.\n\n<source_text>\n{{nội dung}}\n</source_text>`;
-    
+    let finalPrompt = p;
     finalPrompt = finalPrompt.replace('{{tên sách}}', () => bookTitle || 'Không rõ');
     finalPrompt = finalPrompt.replace('{{tên tác giả}}', () => author || 'Vô danh');
     finalPrompt = finalPrompt.replace('{{nội dung}}', () => text);
 
     const configArgs: GenerateContentConfig = this.buildConfig(model, {
-      ...(si ? { systemInstruction: si } : {}),
+      systemInstruction: si,
       responseMimeType: 'application/json',
       responseSchema: {
         type: Type.OBJECT,
@@ -642,43 +657,32 @@ export class GeminiClient {
   }
 
   async summarizeTranslation(translatedText: string, model: string, translationMode: 'standard' | 'scientific' = 'standard'): Promise<string> {
-    try {
-      if (!translatedText.trim()) return '';
+    if (!translatedText.trim()) return '';
 
-      let siPath = '/prompts/summary_multi_system_instruction.md';
-      let pPath = '/prompts/summary_multi_prompt.md';
-      let fallbackSi = 'Bạn là chuyên gia phân tích ngữ cảnh truyện/tiểu thuyết. Nhiệm vụ của bạn là trích xuất ngữ cảnh kết nối cốt lõi để làm đầu vào cho khối dịch tiếp theo.';
-      let fallbackP = 'Phân tích khối văn bản dưới đây và trích xuất thông tin bối cảnh thiết yếu nhất:\n\n{{nội dung}}';
+    const siPath = translationMode === 'scientific'
+      ? '/prompts/summary_scientific_system_instruction.md'
+      : '/prompts/summary_multi_system_instruction.md';
+    const pPath = translationMode === 'scientific'
+      ? '/prompts/summary_scientific_prompt.md'
+      : '/prompts/summary_multi_prompt.md';
 
-      if (translationMode === 'scientific') {
-        siPath = '/prompts/summary_scientific_system_instruction.md';
-        pPath = '/prompts/summary_scientific_prompt.md';
-        fallbackSi = 'Bạn là chuyên gia phân tích ngữ cảnh tài liệu khoa học/kỹ thuật. Nhiệm vụ của bạn là trích xuất ngữ cảnh kết nối logic để làm đầu vào cho khối dịch tiếp theo.';
-        fallbackP = 'Phân tích khối tài liệu khoa học dưới đây và trích xuất thông tin bối cảnh thiết yếu nhất:\n\n{{nội dung}}';
-      }
+    const [systemInstruction, promptTemplate] = await Promise.all([
+      this.requirePromptText(siPath, 'Tóm tắt ngữ cảnh System Instruction'),
+      this.requirePromptText(pPath, 'Tóm tắt ngữ cảnh Prompt'),
+    ]);
 
-      const si = await this.loadPromptText(siPath);
-      const p = await this.loadPromptText(pPath);
+    const finalPrompt = promptTemplate.replace('{{nội dung}}', () => translatedText);
 
-      const systemInstruction = si || fallbackSi;
-      const promptTemplate = p || fallbackP;
-      
-      const finalPrompt = promptTemplate.replace('{{nội dung}}', () => translatedText);
+    const configArgs: GenerateContentConfig = this.buildConfig(model, {
+      systemInstruction,
+    });
 
-      const configArgs: GenerateContentConfig = this.buildConfig(model, {
-        systemInstruction,
-      });
+    const response = await (await this.getAi(model)).models.generateContent({
+      model: model,
+      contents: [ { text: finalPrompt } ],
+      config: configArgs
+    });
 
-      const response = await (await this.getAi(model)).models.generateContent({
-        model: model,
-        contents: [ { text: finalPrompt } ],
-        config: configArgs
-      });
-      
-      return (response.text || '').trim();
-    } catch (e) {
-      console.error('Failed to summarize translation', e);
-      return '';
-    }
+    return (response.text || '').trim();
   }
 }
